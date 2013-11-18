@@ -1,31 +1,24 @@
-<plugin name='core-domain' version='0.4' grailsVersion='2.1 &gt; *'>
+<plugin name='nucleus' version='0.1' grailsVersion='2.3 &gt; *'>
   <author>CauseCode</author>
-  <title>Core Domain Plugin</title>
+  <title>Nucleus Plugin</title>
   <description>            Brief summary/description of the plugin.
         </description>
-  <documentation>http://grails.org/plugin/core-domain</documentation>
-  <type>CoreDomainGrailsPlugin</type>
+  <documentation>https://bitbucket.org/causecode/nucleus</documentation>
+  <type>NucleusGrailsPlugin</type>
   <resources>
+    <resource>LoginController</resource>
+    <resource>LogoutController</resource>
     <resource>com.cc.core.currency.CurrencyController</resource>
-    <resource>com.cc.core.contact.Contact</resource>
-    <resource>com.cc.core.currency.Currency</resource>
-    <resource>com.cc.core.geo.contact.Phone</resource>
-    <resource>com.cc.core.geo.contact.PhoneCountryCode</resource>
-    <resource>com.cc.core.geo.location.City</resource>
-    <resource>com.cc.core.geo.location.Country</resource>
-    <resource>com.cc.core.geo.location.Location</resource>
-    <resource>com.cc.core.contact.ContactService</resource>
+    <resource>com.cc.contact.Contact</resource>
+    <resource>com.cc.contact.Phone</resource>
+    <resource>com.cc.contact.PhoneCountryCode</resource>
+    <resource>com.cc.currency.Currency</resource>
+    <resource>com.cc.geo.location.City</resource>
+    <resource>com.cc.geo.location.Country</resource>
+    <resource>com.cc.geo.location.Location</resource>
+    <resource>com.cc.user.Role</resource>
+    <resource>com.cc.user.User</resource>
+    <resource>com.cc.user.UserRole</resource>
+    <resource>com.cc.contact.ContactService</resource>
   </resources>
-  <repositories>
-    <repository name='grailsCentral' url='http://grails.org/plugins' />
-    <repository name='mavenCentral' url='http://repo1.maven.org/maven2/' />
-  </repositories>
-  <dependencies />
-  <plugins>
-    <runtime>
-      <plugin group='org.grails.plugins' name='hibernate' version='2.2.2' />
-    </runtime>
-  </plugins>
-  <runtimePluginRequirements />
-  <behavior />
 </plugin>
