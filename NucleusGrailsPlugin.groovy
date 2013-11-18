@@ -6,23 +6,23 @@
  * without modification, are not permitted.
  */
 
-class CoreGrailsPlugin {
+class NucleusGrailsPlugin {
 
     def version = "0.1"
-    def grailsVersion = "2.1 > *"
+    def grailsVersion = "2.3 > *"
     def groupId = "com.cc.plugins"
     def dependsOn = [:]
     def pluginExcludes = [
         "grails-app/views/error.gsp"
     ]
 
-    def title = "Core Plugin"
+    def title = "Nucleus Plugin"
     def author = "CauseCode"
     def authorEmail = ""
     def description = '''\
             Brief summary/description of the plugin.
         '''
 
-    def documentation = "https://bitbucket.org/causecode/core"
+    def documentation = "https://bitbucket.org/causecode/nucleus"
 
 }

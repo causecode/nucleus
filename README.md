@@ -1,8 +1,8 @@
-# Core Plugin
+# Nucleus Plugin
 
 ## By CauseCode Technologies Pvt. Ltd.
 
-* This plugin is used as the base of every project.
+* This plugin is used as the base plugin of every project.
 
 ## Basic Domain Hierarchy
 
