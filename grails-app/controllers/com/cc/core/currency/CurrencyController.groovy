@@ -8,11 +8,11 @@
 
 package com.cc.core.currency
 
-import grails.plugins.springsecurity.Secured
+import grails.plugin.springsecurity.annotation.Secured
 
 import org.springframework.dao.DataIntegrityViolationException
 
-import com.cc.currency.Currency;
+import com.cc.currency.Currency
 
 @Secured(["ROLE_ADMIN"])
 class CurrencyController {

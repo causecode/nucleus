@@ -6,7 +6,7 @@
  * without modification, are not permitted.
  */
 
-class CoreDomainGrailsPlugin {
+class CoreGrailsPlugin {
 
     def version = "0.1"
     def grailsVersion = "2.1 > *"
