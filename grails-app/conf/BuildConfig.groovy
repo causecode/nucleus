@@ -21,10 +21,11 @@ grails.project.dependency.resolution = {
 
     plugins {
         compile group: "com.cc.plugins", name: "file-uploader", version: "2.3", export: false
+        compile group: "com.cc.plugins", name: "content", version: "2.1", export: false
         build(":tomcat:7.0.42", ":release:3.0.1", ":rest-client-builder:1.0.3", ":hibernate:3.6.10.3") {
             export = false
         }
-        compile (":spring-security-core:2.0-RC2") {
+        compile (":spring-security-core:1.2.7.3", ":taggable:1.0.1") {
             export = false
         }
     }

@@ -17,6 +17,7 @@ class UserRole implements Serializable {
     User user
     Role role
 
+    @Override
     boolean equals(other) {
         if (!(other instanceof UserRole)) {
             return false
@@ -25,6 +26,7 @@ class UserRole implements Serializable {
         other.user?.id == user?.id && other.role?.id == role?.id
     }
 
+    @Override
     int hashCode() {
         def builder = new HashCodeBuilder()
         if (user) builder.append(user.id)
@@ -40,6 +42,10 @@ class UserRole implements Serializable {
 
     static UserRole create(User user, Role role, boolean flush = false) {
         new UserRole(user: user, role: role).save(flush: flush, insert: true)
+    }
+
+    static UserRole create(User user, String role = "ROLE_USER", flush = false) {
+        new UserRole(user: user, role: Role.findOrSaveByAuthority(role)).save(flush: flush, insert: true)
     }
 
     static boolean remove(User u, Role r, boolean flush = false) {
