@@ -1,0 +1,31 @@
+<plugin name='core-domain' version='0.4' grailsVersion='2.1 &gt; *'>
+  <author>CauseCode</author>
+  <title>Core Domain Plugin</title>
+  <description>            Brief summary/description of the plugin.
+        </description>
+  <documentation>http://grails.org/plugin/core-domain</documentation>
+  <type>CoreDomainGrailsPlugin</type>
+  <resources>
+    <resource>com.cc.core.currency.CurrencyController</resource>
+    <resource>com.cc.core.contact.Contact</resource>
+    <resource>com.cc.core.currency.Currency</resource>
+    <resource>com.cc.core.geo.contact.Phone</resource>
+    <resource>com.cc.core.geo.contact.PhoneCountryCode</resource>
+    <resource>com.cc.core.geo.location.City</resource>
+    <resource>com.cc.core.geo.location.Country</resource>
+    <resource>com.cc.core.geo.location.Location</resource>
+    <resource>com.cc.core.contact.ContactService</resource>
+  </resources>
+  <repositories>
+    <repository name='grailsCentral' url='http://grails.org/plugins' />
+    <repository name='mavenCentral' url='http://repo1.maven.org/maven2/' />
+  </repositories>
+  <dependencies />
+  <plugins>
+    <runtime>
+      <plugin group='org.grails.plugins' name='hibernate' version='2.2.2' />
+    </runtime>
+  </plugins>
+  <runtimePluginRequirements />
+  <behavior />
+</plugin>
