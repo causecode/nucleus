@@ -25,7 +25,6 @@ class PhoneCountryCode {
     }
 
     static mapping = {
-        country cascade: 'all'
         table "cc_location_phone_country_code"
     }
 

@@ -29,7 +29,7 @@ class Contact {
         altEmail email: true, nullable: true
         dateCreated bindable: false
         email email: true, nullable: true
-        facebook nullable: true
+        facebook nullable: true, url: true
         twitter nullable: true
         lastUpdated bindable: false
         linkedIn nullable: true
