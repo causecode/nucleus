@@ -8,17 +8,21 @@
 
 package com.cc.user
 
+import org.grails.databinding.BindingFormat
+
 import com.cc.annotation.sanitizedTitle.SanitizedTitle
 
 class User {
 
     transient springSecurityService
 
-    boolean enabled = true
     boolean accountExpired
     boolean accountLocked
+    boolean enabled = true
     boolean passwordExpired
 
+    @BindingFormat('MM/dd/yyyy')
+    Date birthdate
     Date dateCreated
     Date lastUpdated
 
@@ -38,6 +42,7 @@ class User {
         gender inList: ["male", "female"], size: 4..6
         password blank: false
         username blank: false, unique: true
+        birthdate max: new Date().clearTime()
     }
 
     static mapping = {
