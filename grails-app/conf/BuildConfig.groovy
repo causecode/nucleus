@@ -7,7 +7,7 @@ grails.project.dependency.resolution = {
     inherits("global") {
     }
 
-    log "warn" // log level of Ivy resolver, either 'error', 'warn', 'info', 'debug' or 'verbose'
+    log "warn"
 
     repositories {
         mavenRepo "http://maven.causecode.com"
@@ -21,8 +21,9 @@ grails.project.dependency.resolution = {
     }
 
     plugins {
-        compile group: "com.cc.plugins", name: "file-uploader", version: "2.3", export: false
-        compile group: "com.cc.plugins", name: "content", version: "2.1", export: false
+        compile("com.cc.plugins:content:2.1"/*, "com.cc.plugins:file-uploader:2.3"*/) {
+            export = false
+        }
         build(":tomcat:7.0.42", ":release:3.0.1", ":rest-client-builder:1.0.3", ":hibernate:3.6.10.3") {
             export = false
         }
