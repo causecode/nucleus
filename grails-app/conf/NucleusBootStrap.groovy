@@ -21,7 +21,7 @@ class NucleusBootStrap {
         if(!adminUser) {
             log.debug "Admin user not found. Saving .."
             adminUser = new User([username: "admin", password: "causecode.11", firstName: "Vishesh", lastName: "Duggar",
-                email: "vishesh@causecode.com", birthdate: new Date(), gender: "male"])
+                email: "vishesh@causecode.com", birthdate: "01/01/1985", gender: "male"])
             adminUser.save(failOnError: true)
             log.debug "Admin user saved."
         }
