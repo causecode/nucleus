@@ -4,16 +4,12 @@
 
 * This plugin is used as the base plugin of every project.
 
-## Basic Domain Hierarchy
+## Login via Email / Username
 
-* Contact: [Address, email, Phone]
+To add facility to login via email / username add following snippet to your `/grails-app/conf/spring/resources.groovy` file:
 
-* Address: [address, zip, City]
-
-* City: [city, state, country]
-
-* Country: [name, code, flag]
-
-* Phone: [number, CountryCode]
-
-* CountryCode: [code, Country]
+```
+beans = {
+    userDetailsService(CustomUserDetailsService)
+}
+```
