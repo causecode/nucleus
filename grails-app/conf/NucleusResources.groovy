@@ -1,6 +1,6 @@
 modules = {
     nucleusCore {
-        resource url: [dir: 'js', file: "application.js", plugin: "nucleus"]
+        resource url: [dir: 'js', file: "core.js", plugin: "nucleus"]
     }
     validation {
         resource url: [dir: "js", file: "jquery.validate.js", plugin: "nucleus"]
