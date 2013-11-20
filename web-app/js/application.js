@@ -10,7 +10,9 @@ $(window).on("scroll", function() {
         $("nav.main-menu").removeClass("scrolled-up");
     }
 }).resize(function() {
-    setMinimumHeight();
+    if(window.setMinimumHeight) {
+        setMinimumHeight();
+    }
 })
 
 $(document).ajaxStart(function() {
@@ -40,13 +42,6 @@ $(document).ajaxStart(function() {
     $("[rel=tooltip]").tooltip();
     $("[rel=popover]").popover();
 })
-
-function setMinimumHeight() {
-    var minHeight = $(window).height() - $("#content-footer").height();
-    $("div#content-body > .container").css("min-height", minHeight - 10);
-}
-
-setMinimumHeight();
 
 (function($) {
     $.fn.disable = function(action) {
