@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletRequest
 
 import com.cc.geo.location.City
 import com.cc.geo.location.Country
+import com.cc.user.User
 
 class ContactService {
 
@@ -24,7 +25,7 @@ class ContactService {
         String country = args["country"]
         PhoneCountryCode countryCodeInstance
 
-        def currentUserInstance = springSecurityService.currentUser
+        User currentUserInstance = springSecurityService.currentUser
         String logText = "User [${currentUserInstance?.email ?: 'Anonymous'}]"
 
         if(args["cityState"]) {

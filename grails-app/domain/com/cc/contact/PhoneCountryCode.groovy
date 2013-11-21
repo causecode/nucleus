@@ -19,7 +19,7 @@ class PhoneCountryCode {
     Country country
 
     static constraints = {
-        code blank: false, unique: true
+        code blank: false, unique: true, maxSize: 2
         dateCreated bindable: false
         lastUpdated bindable: false
     }

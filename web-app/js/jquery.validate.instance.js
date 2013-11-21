@@ -16,7 +16,11 @@ $(document).ready(function () {
                 if(element.data("error-placement")) {
                     error.appendTo($(element.data("error-placement")));
                 } else {
-                    error.appendTo(element.parent());
+                    if(element.parent().hasClass("input-group")) {
+                        error.appendTo(element.parent().parent());
+                    } else {
+                        error.appendTo(element.parent());
+                    }
                 }
             },
             highlight : function(element, errorClass) {

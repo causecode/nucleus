@@ -43,49 +43,25 @@ $(document).ajaxStart(function() {
     $("[rel=popover]").popover();
 })
 
-(function($) {
+//(function($) {
     $.fn.disable = function(action) {
         this.each(function() {
-            $(this).toggleClass("disabled", action);
+            var $this = $(this).toggleClass("disabled", action);
             if(action) {
-                $(this).prop("disabled", "");
+                $(this).prop("disabled", "").attr("disabled", "");
+                if($this.is("form")) {
+                    $this.find("fieldset").disable(true);
+                }
+                if($this.hasClass("modal")) {
+                    $this.find("form").disable(true);
+                }
             } else {
-                $(this).removeProp("disabled");
+                $(this).removeProp("disabled").removeAttr("disabled");
             }
             return $(this);
         })
     }
-}(jQuery))
-
-$('form.jquery-form').each(function(index) {
-    var form = this;
-    var validatorInstance = $(this).validate({
-        errorElement : 'span',
-        showErrors: function(errorMap, errorList) {
-            this.defaultShowErrors();
-            if(!$(form).hasClass("auto-disable")) {
-                return;
-            }
-            $("[type=submit]", form).disable(this.numberOfInvalids() != 0);
-        },
-        errorClass : 'help-block icon-exclamation-sign',
-        errorPlacement : function(error, element) {
-            if(element.data("error-placement")) {
-                error.appendTo($(element.data("error-placement")));
-            } else {
-                error.appendTo(element.parent());
-            }
-        },
-        highlight : function(element, errorClass) {
-            $(element).parents('.form-group').addClass("has-error");
-        },
-        unhighlight : function(element, errorClass) {
-            $(element).parents('.form-group').removeClass("has-error");
-        },
-    });
-    App.jqval[$(form).attr('id')] = validatorInstance;
-
-});
+//}(jQuery));
 
 /**
  * A script to select/un-select same all same name of checkbox
@@ -164,9 +140,10 @@ $("div.modal").on('hidden.bs.modal', function() {
             $(".modal-footer", $this).fadeIn();
         return $this;
     }).data("showSpinner", function(action) {
+        $(".modal-title", $this).addClass("inline");
         var $spinner = $(".modal-header i.icon-spinner", $this);
         if($spinner.length == 0) {
-            $(".modal-header .modal-title", $this).after("&nbsp;<i class=\"icon-spinner icon-spin\"></i>");
+            $(".modal-header .modal-title", $this).after("&nbsp;<i class=\"fa fa-spinner fa-spin icon-spinner icon-spin\"></i>");
             $spinner = $(".modal-header i.icon-spinner", $this);
         }
         $spinner.toggle(action);
@@ -261,6 +238,7 @@ function resetSection(element) {
     var cc = cc || {}
     if (element.is("form")) {
         element[0].reset();
+        element.find("fieldset").disable(false);
     } else {
         if ($('form', element).size() > 0) {
             $('form', element)[0].reset();
