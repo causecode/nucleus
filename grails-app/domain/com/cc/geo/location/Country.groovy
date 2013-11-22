@@ -8,24 +8,24 @@
 
 package com.cc.geo.location
 
-//import com.lucastex.grails.fileuploader.UFile
+import com.lucastex.grails.fileuploader.UFile
 
 class Country {
 
     String code
     String name
 
-    //UFile flag
+    UFile flag
 
     Date dateCreated
     Date lastUpdated
 
     static constraints = {
         code nullable: true
-        name blank: false, unique: true
-        //flag nullable: true
         dateCreated bindable: false
+        flag nullable: true
         lastUpdated bindable: false
+        name blank: false, unique: true
     }
 
     static mapping = {
