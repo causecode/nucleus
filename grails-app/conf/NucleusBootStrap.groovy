@@ -6,28 +6,19 @@
  * without modification, are not permitted.
  */
 
-import com.cc.user.Role
-import com.cc.user.User
-import com.cc.user.UserRole
+import grails.converters.JSON
+
+import com.cc.util.CustomValidationErrorMarshaller
 
 class NucleusBootStrap {
 
+    def grailsApplication
+
     def init = { servletContext ->
         log.debug "Nucleus Bootstrap started executing .."
-        Role userRole = Role.findOrSaveByAuthority("ROLE_USER")
-        Role adminRole = Role.findOrSaveByAuthority("ROLE_ADMIN")
-        User adminUser = User.findByUsername("admin")
 
-        if(!adminUser) {
-            log.debug "Admin user not found. Saving .."
-            adminUser = new User([username: "admin", password: "causecode.11", firstName: "Vishesh", lastName: "Duggar",
-                email: "vishesh@causecode.com", birthdate: "01/01/1985", gender: "male"])
-            adminUser.save(failOnError: true)
-            log.debug "Admin user saved."
-        }
+        JSON.registerObjectMarshaller(new CustomValidationErrorMarshaller(grailsApplication.mainContext))
 
-        UserRole.findOrSaveByUserAndRole(adminUser, adminRole)
-        UserRole.findOrSaveByUserAndRole(adminUser, userRole)
         log.debug "Nucleus Bootstrap finished executing."
     }
 
