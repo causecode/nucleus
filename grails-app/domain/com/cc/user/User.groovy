@@ -42,7 +42,9 @@ class User {
         gender inList: ["male", "female"], size: 4..6
         password blank: false
         username blank: false, unique: true
-        birthdate max: new Date().clearTime()
+        birthdate nullable: true, max: new Date().clearTime()
+        firstName maxSize: 100
+        lastName: maxSize: 100
     }
 
     static mapping = {
