@@ -21,10 +21,10 @@ grails.project.dependency.resolution = {
     }
 
     plugins {
-        compile("com.cc.plugins:content:2.1", "com.cc.plugins:file-uploader:2.3.1") {
+        compile("com.cc.plugins:content:2.1", /*"com.cc.plugins:file-uploader:2.3.1"*/) {
             export = false
         }
-        build(":tomcat:7.0.42", ":release:3.0.1", ":rest-client-builder:1.0.3", ":hibernate:3.6.10.4") {
+        build(":tomcat:7.0.42", ":release:3.0.1", ":rest-client-builder:1.0.3", ":hibernate:3.6.10.3") {
             export = false
         }
         compile (":spring-security-core:1.2.7.3", ":taggable:1.0.1") {
