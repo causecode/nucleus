@@ -44,7 +44,7 @@ class User {
         username blank: false, unique: true
         birthdate nullable: true, max: new Date().clearTime()
         firstName maxSize: 100
-        lastName: maxSize: 100
+        lastName maxSize: 100
     }
 
     static mapping = {

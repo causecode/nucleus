@@ -7,8 +7,10 @@
  */
 
 import grails.converters.JSON
+import grails.converters.XML
 
 import com.cc.util.CustomValidationErrorMarshaller
+import com.cc.util.SitemapMarshaller
 
 class NucleusBootStrap {
 
@@ -16,6 +18,8 @@ class NucleusBootStrap {
 
     def init = { servletContext ->
         log.debug "Nucleus Bootstrap started executing .."
+        
+        XML.registerObjectMarshaller(new SitemapMarshaller())
 
         JSON.registerObjectMarshaller(new CustomValidationErrorMarshaller(grailsApplication.mainContext))
 
