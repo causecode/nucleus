@@ -8,7 +8,7 @@
 
 class NucleusGrailsPlugin {
 
-    def version = "0.1.7"
+    def version = "0.1.8"
     def grailsVersion = "2.3 > *"
     def groupId = "com.cc.plugins"
     def dependsOn = [:]
