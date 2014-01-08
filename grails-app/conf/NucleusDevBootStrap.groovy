@@ -31,7 +31,7 @@ class NucleusDevBootStrap {
             }
 
             if(!shashank) {
-                shashank = new User([username: "shashank.agrawal", password: "causecode.11",
+                shashank = new User([username: "shashank.agrawal", password: "causecode.11", gender: "male",
                     email:"shashank.agrawal@causecode.com", enabled: true, firstName: "Shashank", lastName: "Agrawal"])
                 shashank.save(failOnError: true)
             }
