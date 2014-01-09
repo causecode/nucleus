@@ -39,7 +39,7 @@ class User {
 
     static constraints = {
         email blank: false, email: true, unique: true
-        gender inList: ["male", "female"], size: 4..6
+        gender inList: ["male", "female"], size: 4..6, nullable: true
         password blank: false
         username blank: false, unique: true
         birthdate nullable: true, max: new Date().clearTime()
