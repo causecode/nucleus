@@ -8,7 +8,7 @@
 
 class NucleusGrailsPlugin {
 
-    def version = "0.1.8"
+    def version = "0.1.9"
     def grailsVersion = "2.2 > *"
     def groupId = "com.cc.plugins"
     def dependsOn = [:]
@@ -18,7 +18,7 @@ class NucleusGrailsPlugin {
 
     def title = "Nucleus Plugin"
     def author = "CauseCode"
-    def authorEmail = ""
+    def authorEmail = "shashank.agrawal@causecode.com"
     def description = '''\
             Brief summary/description of the plugin.
         '''
