@@ -39,7 +39,6 @@ class Contact {
     static mapping = {
         address cascade: 'all'
         phone cascade: 'all'
-        table "cc_location_contact"
     }
 
 }

@@ -28,10 +28,6 @@ class Country {
         name blank: false, unique: true
     }
 
-    static mapping = {
-        table "cc_location_country"
-    }
-
     @Override
     String toString() {
         name

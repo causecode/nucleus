@@ -31,12 +31,7 @@ class Location {
         name nullable: true
     }
 
-    static mapping = {
-        table "cc_location_location"
-    }
-
     def getFullAddress() {
         return address + ', ' + city.cityStateCountry + ' - ' + zip
     }
-
 }

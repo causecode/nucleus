@@ -24,10 +24,6 @@ class Phone {
         lastUpdated bindable: false
     }
 
-    static mapping = {
-        table "cc_location_phone"
-    }
-
     def getFullPhoneNumber() {
         return '+(' + countryCode.code + ')' + number
     }

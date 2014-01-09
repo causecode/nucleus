@@ -29,10 +29,6 @@ class City {
         stateCode nullable:true
     }
 
-    static mapping = {
-        table "cc_location_city"
-    }
-
     @Deprecated
     String getCityStateCountry() {
         def cityList = []
