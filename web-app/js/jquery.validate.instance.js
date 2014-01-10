@@ -11,7 +11,7 @@ $(document).ready(function () {
                 }
                 $("[type=submit]", form).disable(this.numberOfInvalids() != 0);
             },
-            errorClass : 'help-block icon-exclamation-sign',
+            errorClass : 'help-block icon-exclamation-sign fa fa-exclamation-circle error-sign',
             errorPlacement : function(error, element) {
                 if(element.data("error-placement")) {
                     error.appendTo($(element.data("error-placement")));
