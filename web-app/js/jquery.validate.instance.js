@@ -1,38 +1,38 @@
-$(document).ready(function () {
-
-    $('form.jquery-form').each(function(index) {
-        var form = this;
-        var validatorInstance = $(this).validate({
-            errorElement : 'span',
-            showErrors: function(errorMap, errorList) {
-                this.defaultShowErrors();
-                if(!$(form).hasClass("auto-disable")) {
-                    return;
-                }
-                $("[type=submit]", form).disable(this.numberOfInvalids() != 0);
-            },
-            errorClass : 'help-block icon-exclamation-sign fa fa-exclamation-circle error-sign',
-            errorPlacement : function(error, element) {
-                if(element.data("error-placement")) {
-                    error.appendTo($(element.data("error-placement")));
+$('form.jquery-form').each(function(index) {
+    var form = this;
+    var validatorInstance = $(this).validate({
+        errorElement : "span",
+        showErrors: function(errorMap, errorList) {
+            this.defaultShowErrors();
+            if(!$(form).hasClass("auto-disable")) {
+                return;
+            }
+            $("[type=submit]", form).disable(this.numberOfInvalids() != 0);
+        },
+        errorClass : 'help-block icon-exclamation-sign fa fa-exclamation-circle error-sign',
+        errorPlacement : function(error, element) {
+            if(element.data("error-placement")) {
+                error.appendTo($(element.data("error-placement")));
+            } else {
+                if(element.parent().hasClass("input-group")) {
+                    error.appendTo(element.parent().parent());
                 } else {
-                    if(element.parent().hasClass("input-group")) {
-                        error.appendTo(element.parent().parent());
-                    } else {
-                        error.appendTo(element.parent());
-                    }
+                    error.appendTo(element.parent());
                 }
-            },
-            highlight : function(element, errorClass) {
-                $(element).parents('.form-group').addClass("has-error");
-            },
-            unhighlight : function(element, errorClass) {
-                $(element).parents('.form-group').removeClass("has-error");
-            },
-        });
-        App.jqval[$(form).attr('id')] = validatorInstance;
-
+            }
+        },
+        highlight : function(element, errorClass) {
+            $(element).parents('.form-group').addClass("has-error");
+        },
+        unhighlight : function(element, errorClass) {
+            $(element).parents('.form-group').removeClass("has-error");
+        },
     });
+    App.jqval[$(form).attr('id')] = validatorInstance;
+
+});
+
+$(document).ready(function () {
 
     jQuery.validator.setDefaults({ 
         onfocusout: function(element) {
