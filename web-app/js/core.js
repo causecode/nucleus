@@ -23,7 +23,7 @@ $(document).ajaxStart(function() {
     var $popover = $(this);
     var timeout = $popover.data('hide');
     if(!timeout) return false;
-    
+
     setTimeout(function() {
         if(!$popover.is(':hover')) {
             destroyPopover(null, "div.popover");
@@ -44,23 +44,23 @@ $(document).ajaxStart(function() {
 })
 
 //(function($) {
-    $.fn.disable = function(action) {
-        this.each(function() {
-            var $this = $(this).toggleClass("disabled", action);
-            if(action) {
-                $(this).prop("disabled", "").attr("disabled", "");
-                if($this.is("form")) {
-                    $this.find("fieldset").disable(true);
-                }
-                if($this.hasClass("modal")) {
-                    $this.find("form").disable(true);
-                }
-            } else {
-                $(this).removeProp("disabled").removeAttr("disabled");
+$.fn.disable = function(action) {
+    this.each(function() {
+        var $this = $(this).toggleClass("disabled", action);
+        if(action) {
+            $(this).prop("disabled", "").attr("disabled", "");
+            if($this.is("form")) {
+                $this.find("fieldset").disable(true);
             }
-            return $(this);
-        })
-    }
+            if($this.hasClass("modal")) {
+                $this.find("form").disable(true);
+            }
+        } else {
+            $(this).removeProp("disabled").removeAttr("disabled");
+        }
+        return $(this);
+    })
+}
 //}(jQuery));
 
 /**
@@ -72,7 +72,7 @@ var $allSelector = $("input[type=checkbox].check-uncheck");
 var selectorName = $allSelector.data("checkbox-name");
 selectorName = selectorName ? selectorName : "selectedUser";
 
-$allSelector.on("change", function() {;
+$allSelector.on("change", function() {
     $('input[name='+selectorName+']').prop('checked', $allSelector.is(':checked'));
 });
 
@@ -206,36 +206,48 @@ function blockPage(action, text) {
  *  4) scrollToAlert: set to true to automatic scroll window to alert message.
  */
 function showAlertMessage(message, type, params) {
-    if (!params)
-        params = {};
-    if (!type)
-        type = 'warning';
-    if (!params.timeout)
-        params.timeout = 10000;
-    if (params.makeStrong == undefined)
-        params.makeStrong = true;
-    if (!params.innerElement)
-        params.innerElement = 'p';
-    if (!params.element)
-        params.element = 'div#alert-message';
+    if(!type) type = "info";
+    if(!params) params = {};
+    if(!params.timeout) params.timeout = 10000;
+    if(!params.innerElement) params.innerElement = "p";
+    if(!params.element) params.element = 'div#alert-message';
+    if(params.makeStrong == undefined) params.makeStrong = true;
 
-    $(params.element).removeClass('alert-warning alert-error alert-success alert-info');
-    $(params.innerElement, params.element).html(message);
+    if(params.icon) {
+        message = "<i class=\"fa " + params.icon + " \"></i> " + message;
+    }
 
-    if (params.makeStrong)
-        $(params.innerElement, params.element).wrapInner('<strong>');
+    var $parent = $(params.element);
+    var $innderElement = $(params.innerElement, params.element);
 
-    $(params.element).addClass('alert-' + type).fadeIn().removeClass("hide");
+    $parent.removeClass('alert-warning alert-danger alert-success alert-info');
+    $innderElement.html(message);
 
-    if (params.scrollToAlert && params.scrollToAlert != undefined)
+    if(params.makeStrong)
+        $innderElement.wrapInner("<strong>");
+
+    $parent.addClass("alert-" + type)
+
+    if($parent.hasClass("slide")) {
+        $parent.slideDown();
+    } else {
+        $parent.fadeIn().removeClass("hide hid");
+    }
+
+    if(params.scrollToAlert) {
         $("html, body").animate({
             scrollTop : 0
         }, 600);
+    }
 
     if (params.timeout != "clear") {
-        setTimeout(function() {
+        var alertTimeoutId = setTimeout(function() {
             $(params.element).fadeOut();
         }, params.timeout);
+
+        $parent.find("button.close").click(function() {
+            clearTimeout(alertTimeoutId);
+        })
     }
 }
 
@@ -245,7 +257,7 @@ function resetSection(element) {
         element[0].reset();
         element.find("fieldset").disable(false);
     } else {
-        if ($('form', element).size() > 0) {
+        if($('form', element).size() > 0) {
             $('form', element)[0].reset();
         }
     }
@@ -260,8 +272,7 @@ function resetSection(element) {
     /**
      * Iterating through each element and clearing all the data
      */
-    cc.formElements = $(element).find(
-            "input[type=text], input[type=email], select, textarea")
+    cc.formElements = $(element).find("input[type=text], input[type=email], select, textarea");
     $.each(cc.formElements, function(index, el) {
         $(el).parents('.form-group.has-error').removeClass('has-error'); // Remove validation errors
         $(el).parent().find('span[class~=icon-exclamation-sign], label[class~=error]').hide();
