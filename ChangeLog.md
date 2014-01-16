@@ -1,6 +1,6 @@
 # ChangeLog
 
-## Version 0.1.9, 0.1.9.1
+## Version 0.1.9 - 0.1.9.2
 
 ### Database changes
 
@@ -9,4 +9,5 @@
 
 ### Fixes
 
-1. Fixed support for multiple error classses on jquery validation
+1. Fixed support for multiple error classses on jquery validation,
+2. Some fixes for showing alert messages.
