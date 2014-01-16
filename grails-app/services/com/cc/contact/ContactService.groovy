@@ -80,7 +80,6 @@ class ContactService {
         args["${fieldName}.address.zip"] = args["zip"]
         args["${fieldName}.address.latitude"] = args["latitude"] ?: 0
         args["${fieldName}.address.longitude"] = args["longitude"] ?: 0
-        args["${fieldName}.address.city.country.id"] = countryInstance.id
         args["${fieldName}.address.city.id"] = cityInstance.id
         return true
     }

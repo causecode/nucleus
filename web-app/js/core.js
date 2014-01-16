@@ -185,8 +185,13 @@ $("[data-default]").each(function(index, el) {
     }
 })
 
-function blockPage(action) {
-    $("div#block-page-overlay").modal(action ? "show" : "hide");
+function blockPage(action, text) {
+    if(!text) {
+        text = "<i class=\"fa fa-spin fa-spinner fa-fw\"></i> Please Wait ...";
+    }
+    $("div#block-page-overlay")
+        .modal(action ? "show" : "hide")
+        .find("strong").html(text);
 }
 
 /**
