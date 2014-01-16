@@ -242,7 +242,11 @@ function showAlertMessage(message, type, params) {
 
     if (params.timeout != "clear") {
         var alertTimeoutId = setTimeout(function() {
-            $(params.element).fadeOut();
+            if($parent.hasClass("slide")) {
+                $parent.slideUp();
+            } else {
+                $parent.fadeOut();
+            }
         }, params.timeout);
 
         $parent.find("button.close").click(function() {
