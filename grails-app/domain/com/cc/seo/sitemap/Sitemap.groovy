@@ -8,6 +8,9 @@
 
 package com.cc.seo.sitemap
 
+import grails.rest.Resource
+
+@Resource(uri = "/sitemap", formats = ["xml"])
 class Sitemap {
 
     static hasMany = [urlset: Url]

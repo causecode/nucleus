@@ -14,6 +14,8 @@ import grails.plugins.springsecurity.Secured
 @Secured(["ROLE_ADMIN"])
 class SitemapController {
 
+    private static Sitemap EMPTY_SITEMAP = new Sitemap()
+
     def sitemapService
 
     def generate() {
@@ -24,10 +26,8 @@ class SitemapController {
     }
 
     @Secured(["permitAll"])
-    def index = {
-        List sitemapList = Sitemap.list()
-        def sitemap = sitemapList.pop()
-        render sitemap as XML
+    def index() {
+        respond Sitemap.first() ?: EMPTY_SITEMAP
     }
 
 }
