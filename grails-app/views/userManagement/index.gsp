@@ -23,9 +23,9 @@
                         <g:remoteLink action="clearSelection" onSuccess="clearSelectedUsers()" update="[success: 'clear-selection']"> 
                             Clear selected users</g:remoteLink>
                         <span title="Total selected user">
-                            <abbr title="Selected user id's:
-                                ${session.selectedUser.size() == 1 ? session.seletedUser : session.selectedUser.sort{ a,b -> a.toLong() <=> b.toLong()} }">
-                                ${session.selectedUser.size() }</abbr>
+                            <abbr title="Selected user id's:">
+                                <span ng-repeat="user in selectedUser" > {{user.id}}</span>
+                                </abbr>
                         </span>
                     </small>
                 </span>
@@ -74,7 +74,7 @@
                         <g:radio name="roleType" ng-model="roleType" value="Any Granted" /><small>Any</small>
                     </label>
                     <label class="btn btn-default btn-sm" ng-click="setRoleType('All')">
-                        <g:radio name="roleType" /><small>All</small>
+                        <g:radio name="roleType" value="All"/><small>All</small>
                     </label>
                     <label class="btn btn-default btn-sm" ng-click="setRoleType('Only Granted')">
                         <g:radio name="roleType" ng-model="roleType" value="Only Granted"/><small>Only</small>
