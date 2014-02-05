@@ -2,6 +2,8 @@ package com.cc.user
 
 import grails.converters.JSON
 import grails.plugins.springsecurity.Secured
+import liquibase.util.csv.CSVWriter
+import org.apache.solr.client.solrj.SolrServerException
 
 class UserManagementController {
 
@@ -100,43 +102,6 @@ class UserManagementController {
         render true
     }
 
-    @Secured(["hasRole('ROLE_MANAGER_ORGS') and isFullyAuthenticated()"])
-    def manageUser() {
-        def userInstanceList
-        def totalUsers
-        saveSelectedIds()
-        if(params.clear)
-            params.remove(params.clear)
-
-        params.max = params.max ?: 20
-        params.offset = params.offset ?: 0
-        params.sort = params.sort ?: 'id'
-        params.order = params.order ?: 'asc'
-
-        if(params.letter) {
-            userInstanceList = User.createCriteria().list(params) {
-                ilike('firstName', "${params.letter}%")
-            }
-            totalUsers = userInstanceList.totalCount
-        } else if(params.query) {
-            userInstanceList = User.createCriteria().list(params) {
-                or {
-                    ilike('firstName', "%${params.query }%")
-                    ilike('lastName', "%${params.query }%")
-                    ilike('email', "%${params.query }%")
-                    ilike('username', "%${params.query }%")
-                }
-            }
-            totalUsers = userInstanceList.totalCount
-        } else {
-            userInstanceList = User.list(params)
-            totalUsers = User.count()
-        }
-        params.remove("selectedUser"); params.remove("_selectedUser")
-        params.remove("check-uncheck"); params.remove("_check-uncheck")
-        [userInstanceList: userInstanceList, totalUsers: totalUsers]
-    }
-
     private void saveSelectedIds() {
         List<Long> selectedUser = params.list('selectedUser')
         if(!selectedUser) return;
@@ -226,7 +191,7 @@ class UserManagementController {
         render "User's account set to ${type ? '' : 'in-'}active successfully."
     }
 
-    def downloadEmails() { return
+    /*def downloadEmails() { return
         //saveSelectedIds()
         response.setHeader("Content-disposition", "attachment; filename=user-report.csv");
         def out = response.outputStream
@@ -250,5 +215,5 @@ class UserManagementController {
             }
             csvWriter.flush()
         }
-    }
+    }*/
 }

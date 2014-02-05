@@ -45,6 +45,7 @@
         <div class="row" style="margin-bottom:10px;">
             <span class="col-sm-3">
                 <g:select name="userAction" noSelection="${['null':'- User Action -']}" class="form-control"
+                    ng-change="userAction()"
                     from="${['Make user in-active', 'Make user active', 'Send bulk message', 'Export email list'] }" />
             </span>
             <div class="col-sm-6">

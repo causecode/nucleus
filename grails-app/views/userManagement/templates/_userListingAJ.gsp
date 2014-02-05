@@ -19,10 +19,10 @@
                 </g:if>
                 <li>
                     <small>
-                            <span class="label label-default assigned-role {{authority.replace('_', '-').toLowerCase() }}" 
-                                ng-repeat="authority in userInstance.authorities">
-                                {{authority.substring(5).replace('_', ' ') }}
-                            </span>
+                        <span class="label label-default assigned-role {{authority.replace('_', '-').toLowerCase() }}" 
+                            ng-repeat="authority in userInstance.authorities">
+                            {{authority.substring(5).replace('_', ' ') }}
+                        </span>
                     </small>
                 </li>
             </ul>

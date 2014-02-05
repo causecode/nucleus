@@ -108,25 +108,12 @@ nucleusApp.controller('UserManagementCtrl',['$scope', '$rootScope', '$resource',
             $scope.userInstanceTotal = data.userInstanceTotal;
             $scope.roleList = data.roleList;
             $scope.currentUserInstance = data.currentUserInstance;
-            if(data.listContent.trim() == "") {
-                    response.listContent = "<div class=\"list-group-item\"><i class=\"fa fa-meh-o\"></i> No matching records found.</div>";
-            }
-            $("div#user-list-container").html(response.listContent);
-                $("ul.pagination").html(response.paginationContent).find("a").wrap("<li></li>");
-                $("span.step.gap", ".pagination").wrap("<li></li>");
-                $("span.currentStep", ".pagination").wrap("<li class='active'></li>")*/
         })
     }
-        /*var dataToSend = stateObj;
-        if(data) {
-            dataToSend = data;
-        } else {
-            String uri = "/user/list?"
-            if(filterRoleList.length > 0) {
-                uri += "roleFilter=" + filterRoleList.join(",");
-            }
-            //history.pushState(stateObj, "", "/user/list?roleFilter=" + filterRoleList.join(","));
-        }*/
+    
+    $scope.userAction = function() {
+        console.log('user-action')
+    }
 }]);
 
 /*
