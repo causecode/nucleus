@@ -10,10 +10,10 @@ class UserManagementController {
     private User userInstance
 
     def index() {
-        redirect(action: "list", params: params)
     }
 
     def list(Integer max, String roleType) {
+        println "Params recived to fetch users :"+params
         params.offset = params.offset ?: 0
         params.sort = params.sort ?: "id"
         params.max = Math.min(max ?: 10, 100)
@@ -63,21 +63,11 @@ class UserManagementController {
 
         userInstanceList = UserRole.executeQuery(query.toString(), queryStringParams, [max: params.max, offset: params.offset])
 
-        if(request.xhr) {
-            userInstanceTotal = UserRole.executeQuery(countQuery, queryStringParams).size()
+        userInstanceTotal = UserRole.executeQuery(countQuery, queryStringParams).size()
 
-            Map result = [max: params.max, offset: params.offset]
-            result.paginationContent = g.paginate(total: userInstanceTotal)
-
-            result.listContent = g.render(template: '/user/templates/userListing', model: [userInstanceList:
-                userInstanceList, currentUserInstance: springSecurityService.currentUser])
-
-            render result as JSON
-            return
-        }
-        userInstanceTotal = User.count()
-        [userInstanceList: userInstanceList, userInstanceTotal: userInstanceTotal, roleList: Role.list([sort: 'authority']),
-            currentUserInstance: springSecurityService.currentUser]
+        println "userInstanceList***"+userInstanceList
+        render ([userInstanceList: userInstanceList, userInstanceTotal: userInstanceTotal, roleList: Role.list([sort: 'authority']),
+            currentUserInstance: springSecurityService.currentUser]  as JSON)
     }
 
     private void makeQueryToCheckEachRole(StringBuilder query, roleFilterList) {

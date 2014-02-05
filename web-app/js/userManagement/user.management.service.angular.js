@@ -1,4 +1,4 @@
-nucleusServices.factory("userService", ["$resource", "$rootScope", "$http", "$filter", function($resource, $rootScope, $http, $filter) {
+/*nucleusServices.factory("userService", ["$resource", "$rootScope", "$http", "$filter", function($resource, $rootScope, $http, $filter) {
     var User = $resource("/user/:id?ajax=true");
 
     var userInstance;
@@ -21,4 +21,4 @@ nucleusServices.factory("userService", ["$resource", "$rootScope", "$http", "$fi
             return userDataResponse;
         },
     }
-}]);
+}]);*/

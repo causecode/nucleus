@@ -1,16 +1,14 @@
-
-var nucleusApp = angular.module("nucleus", ["ngCookies", "ngResource", "ngRoute", "nucleusControllers"], 
+var nucleusApp = angular.module("nucleus", ["ngCookies", "ngResource", "ngRoute"], 
   function($routeProvider, $locationProvider, $httpProvider) {});
-var nucleusControllers = angular.module("nucleusControllers", []);
-var nucleusServices = angular.module("nucleusServices", []);
 
-nucleusControllers.controller('UserManagementCtrl',['$scope', '$rootScope', '$resource', function ($scope, $rootScope, $resource) {
-    var User = $resource("/user/list?ajax=true");
+nucleusApp.controller('UserManagementCtrl',['$scope', '$rootScope', '$resource', function ($scope, $rootScope, $resource) {
+    var User = $resource("/userManagement/list?ajax=true");
+
+    console.log('zfas');
 
     User.get(null, function(data) {
-        console.log(data)
-        $("div#loading-stores-message").remove();
-        $scope.userData = data.userInstanceList;
+        console.log(data,'data');
+        $scope.userInstanceList = data.userInstanceList;
         $scope.userInstanceTotal = data.userInstanceTotal;
         $scope.roleList = data.roleList;
         $scope.currentUserInstance = data.currentUserInstance;
@@ -20,9 +18,9 @@ nucleusControllers.controller('UserManagementCtrl',['$scope', '$rootScope', '$re
         $scope.userInstance = this
         console.log('sasa');
     }
-}])
+}]);
 
-
+/*
 var App = window.App;
 
 $('select#userAction').on("change", function() {
@@ -223,7 +221,7 @@ $modifyRoleForm.submit(function() {
     })
 
     return false;
-}).data("validator").settings.ignore = " ";
+})//.data("validator").settings.ignore = " ";
 
 function fetchAndDisplayList(data) {
     var stateObj = {sort: sort, order: order, max: max, offset: offset, roleFilter: filterRoleList.join(","), roleType: roleType};
@@ -232,10 +230,10 @@ function fetchAndDisplayList(data) {
     if(data) {
         dataToSend = data;
     } else {
-        /*String uri = "/user/list?"
+        String uri = "/user/list?"
         if(filterRoleList.length > 0) {
             uri += "roleFilter=" + filterRoleList.join(",");
-        }*/
+        }
         //history.pushState(stateObj, "", "/user/list?roleFilter=" + filterRoleList.join(","));
     }
     $.ajax({
@@ -255,4 +253,4 @@ function fetchAndDisplayList(data) {
 
 window.onpopstate = function(event) {
     //fetchAndDisplayList(event.state);
-}
+}*/
