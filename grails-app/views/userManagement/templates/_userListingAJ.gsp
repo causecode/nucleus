@@ -4,7 +4,7 @@
             <ul class="list-inline">
                 <li>
                     <h4 class="list-group-item-heading inline">
-                        <g:checkBox name="userId" value="{{userInstance.id }}" checked="false" ng-model="userInstance.selected"/>
+                        <g:checkBox name="userId" checked="false" ng-model="userInstance.selected" ng-checked="userSelected" />
                         <span class="btn-link">{{userInstance.firstName }}&nbsp;{{userInstance.lastName }} </span>
                         <%--
                         <g:link uri="${cc.searchLink([instance: user]) }">{{userInstance.fullName }}</g:link>
@@ -43,4 +43,7 @@
             </g:if>
         </div>
     </div>
+</div>
+<div ng-hide="{{!userInstanceList}}" class="list-group-item">
+    <i class="fa fa-meh-o"></i> No matching records found.
 </div>

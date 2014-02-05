@@ -3,21 +3,130 @@ var nucleusApp = angular.module("nucleus", ["ngCookies", "ngResource", "ngRoute"
 
 nucleusApp.controller('UserManagementCtrl',['$scope', '$rootScope', '$resource', function ($scope, $rootScope, $resource) {
     var User = $resource("/userManagement/list?ajax=true");
-
-    console.log('zfas');
+    $scope.selectedUser = [];
+    $scope.selectedRole = [];
+    $scope.selectedRoleFilter = [];
+    $scope.roleType= 'Any Granted';
+    $scope.roleActionType = 'refresh'
+    $scope.letter = '';
+    $scope.query = '';
 
     User.get(null, function(data) {
         console.log(data,'data');
         $scope.userInstanceList = data.userInstanceList;
         $scope.userInstanceTotal = data.userInstanceTotal;
         $scope.roleList = data.roleList;
+        $scope.roleFilterList = data.roleList;
         $scope.currentUserInstance = data.currentUserInstance;
     })
 
-    $scope.selectUnselectUser = function() {
-        $scope.userInstance = this
-        console.log('sasa');
+    $scope.modifyRole = function(data) {
+        var selectedUserIdList = $scope.getSelectedUserList();
+        var selectedRoleIdList = $scope.getSelectedRoleList();
+        var modifyRoles = $resource("/userManagement/modifyRoles?ajax=true");
+        modifyRoles.get({userIds:selectedUserIdList, roles: selectedRoleIdList, roleActionType: $scope.roleActionType}, function(data){
+            console.log('roles Modified successfully');
+            $("div#modify-role-overlay").modal("hide");
+        })
     }
+
+    $scope.addOrRemoveFromRoleFilter = function(roleId) {
+        var index = $scope.selectedRoleFilter.indexOf(roleId);
+        if(index > -1) {
+            //this.removeClass('active');
+            $scope.selectedRoleFilter.splice(index, 1);
+        } else {
+            //this.addClass('active');
+            $scope.selectedRoleFilter.push(roleId);
+        }
+        console.log(this)
+        $scope.fetchAndDisplayList()
+        return false;
+    }
+
+    $scope.setRoleType = function(roleType) {
+        $scope.roleType = roleType
+        $scope.fetchAndDisplayList();
+        return false;
+    }
+
+    $scope.selectAllUser = function() {
+        angular.forEach($scope.userInstanceList, function(user) {
+            if(user.selected) {
+                user.selected = false
+            } else {
+                user.selected = true
+            }
+        });
+        console.log($scope.userInstanceList,'$scope.userInstanceList')
+        return false;
+    }
+
+    $scope.getSelectedUserList = function() {
+        $scope.selectedUser = [];
+        angular.forEach($scope.userInstanceList, function(user) {
+            if(user.selected) {
+                $scope.selectedUser.push(user.id);
+            }
+        });
+        return $scope.selectedUser
+    }
+
+    $scope.getSelectedRoleList = function() {
+        console.log('role select');
+        $scope.selectedRole = [];
+        angular.forEach($scope.roleList, function(role) {
+            if(role.selected) {
+                console.log('role select',role);
+                $scope.selectedRole.push(role.id);
+            }
+        });
+        return $scope.selectedRole
+    }
+    $scope.searchLetter = function(letter) {
+        console.log('search', letter);
+        $scope.letter = letter;
+        $scope.fetchAndDisplayList();
+        return false
+    }
+
+    $scope.searchQuery = function(query) {
+        console.log('search', query);
+        $scope.query = query;
+        $scope.fetchAndDisplayList();
+        return false
+    }
+
+    $scope.fetchAndDisplayList = function() {
+        console.log('fetchAndDisplayList');
+        var stateObj = {sort: sort, order: order, max: max, offset: offset, roleFilter: $scope.selectedRoleFilter, roleType: $scope.roleType,
+                letter: $scope.letter, query: $scope.query};
+
+        User.get(stateObj, function(data) {
+            console.log(data,'data');
+            $scope.userInstanceList = data.userInstanceList;
+            $scope.userInstanceTotal = data.userInstanceTotal;
+            $scope.roleList = data.roleList;
+            $scope.currentUserInstance = data.currentUserInstance;
+            if(data.listContent.trim() == "") {
+                    response.listContent = "<div class=\"list-group-item\"><i class=\"fa fa-meh-o\"></i> No matching records found.</div>";
+            }
+            $("div#user-list-container").html(response.listContent);
+                $("ul.pagination").html(response.paginationContent).find("a").wrap("<li></li>");
+                $("span.step.gap", ".pagination").wrap("<li></li>");
+                $("span.currentStep", ".pagination").wrap("<li class='active'></li>")*/
+        })
+    }
+        /*var dataToSend = stateObj;
+        if(data) {
+            dataToSend = data;
+        } else {
+            String uri = "/user/list?"
+            if(filterRoleList.length > 0) {
+                uri += "roleFilter=" + filterRoleList.join(",");
+            }
+            //history.pushState(stateObj, "", "/user/list?roleFilter=" + filterRoleList.join(","));
+        }*/
 }]);
 
 /*
@@ -151,106 +260,4 @@ $("a", "div#order-list").click(function() {
     fetchAndDisplayList();
 })
 
-$("a", "div#role-filter").click(function() {
-    var $this = $(this);
-    var value = $this.data("value");
-    var selecting = $this.hasClass("active");
-
-    if(selecting) {
-        $this.removeClass("active");
-        var index = filterRoleList.indexOf(value);
-        if(index > -1) {
-            filterRoleList.splice(index, 1);
-        }
-    } else {
-        $this.addClass("active");
-        filterRoleList.push(value)
-    }
-    console.log(filterRoleList);
-    fetchAndDisplayList();
-    return false;
-})
-
-$("input#roleType").change(function() {
-    roleType = $(this).val();
-    fetchAndDisplayList();
-    return false;
-})
-
-$(document).on("click", "div#user-list-container div.list-group-item", function(e) {
-    if(!$(e.target).is("input")) {
-        var userCheckbox = $(this).find("input#userId");
-        var checked = userCheckbox.is(":checked");
-
-        userCheckbox.prop("checked", !checked);
-        if(checked) {
-            userCheckbox.removeAttr("checked");
-        } else {
-            userCheckbox.attr("checked", "checked");
-        }
-        handleUserSelect();
-    }
-})
-
-var $modifyRoleOverlayModal = $("div#modify-role-overlay")
-var $modifyRoleForm = $("form", $modifyRoleOverlayModal);
-
-$("a#modify-role").click(function() {
-    var userIds = "";
-    $("input[name=userId]:checked").each(function(index, item) {
-        userIds += $(item).val();
-        if(index < $("input[name=userId]:checked").length - 1) {
-            userIds += ",";
-        }
-    })
-    $("input#userIds", $modifyRoleForm).val(userIds);
-    $modifyRoleOverlayModal.modal("show");
-})
-
-$modifyRoleForm.submit(function() {
-    if(!$modifyRoleForm.valid()) {
-        return false;
-    }
-    $.ajax({
-        data: $modifyRoleForm.serialize(),
-        url: "/user/modifyRoles",
-        success: function() {
-            $modifyRoleOverlayModal.modal("hide");
-            fetchAndDisplayList();
-        }
-    })
-
-    return false;
-})//.data("validator").settings.ignore = " ";
-
-function fetchAndDisplayList(data) {
-    var stateObj = {sort: sort, order: order, max: max, offset: offset, roleFilter: filterRoleList.join(","), roleType: roleType};
-
-    var dataToSend = stateObj;
-    if(data) {
-        dataToSend = data;
-    } else {
-        String uri = "/user/list?"
-        if(filterRoleList.length > 0) {
-            uri += "roleFilter=" + filterRoleList.join(",");
-        }
-        //history.pushState(stateObj, "", "/user/list?roleFilter=" + filterRoleList.join(","));
-    }
-    $.ajax({
-        data: dataToSend,
-        url: '/user/list',
-        success: function(response) {
-            if(response.listContent.trim() == "") {
-                response.listContent = "<div class=\"list-group-item\"><i class=\"fa fa-meh-o\"></i> No matching records found.</div>";
-            }
-            $("div#user-list-container").html(response.listContent);
-            $("ul.pagination").html(response.paginationContent).find("a").wrap("<li></li>");
-            $("span.step.gap", ".pagination").wrap("<li></li>");
-            $("span.currentStep", ".pagination").wrap("<li class='active'></li>")
-        }
-    })
-}
-
-window.onpopstate = function(event) {
-    //fetchAndDisplayList(event.state);
-}*/
+*/

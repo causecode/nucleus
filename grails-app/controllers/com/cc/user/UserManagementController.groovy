@@ -32,7 +32,7 @@ class UserManagementController {
         params.remove("check-uncheck"); params.remove("_check-uncheck")
 
         if(params.roleFilter) {
-            List roleFilterList = params.roleFilter.tokenize(",")*.toLong()
+            List roleFilterList = params.list("roleFilter")*.toLong()
 
             if(roleType == "Any Granted") {
                 queryStringParams.roles = roleFilterList
@@ -65,7 +65,6 @@ class UserManagementController {
 
         userInstanceTotal = UserRole.executeQuery(countQuery, queryStringParams).size()
 
-        println "userInstanceList***"+userInstanceList
         render ([userInstanceList: userInstanceList, userInstanceTotal: userInstanceTotal, roleList: Role.list([sort: 'authority']),
             currentUserInstance: springSecurityService.currentUser]  as JSON)
     }
@@ -81,9 +80,11 @@ class UserManagementController {
     }
 
     def modifyRoles(String roleActionType) {
-        List userIds = params.userIds.tokenize(",")
+        println params
+        List userIds = params.list("userIds")
         List roles = params.list("roleIds")
-
+        render true
+        return
         List roleInstanceList = Role.getAll(roles)
 
         userIds.each { userId ->
@@ -226,28 +227,28 @@ class UserManagementController {
     }
 
     def downloadEmails() { return
-        /*saveSelectedIds()
-         response.setHeader("Content-disposition", "attachment; filename=user-report.csv");
-         def out = response.outputStream
-         out.withWriter { writer ->
-         String[] properties = new String[5]
-         properties = ['Id', 'Full Name', 'Email', 'Username', 'Active']
-         def csvWriter = new CSVWriter(writer)
-         csvWriter.writeNext(properties)
-         session.selectedUser?.each {
-         try {
-         userInstance = User.get(it)
-         } catch(Exception e) {userInstance = null }
-         if(userInstance) {
-         properties[0] = userInstance?.id
-         properties[1] = userInstance?.fullName
-         properties[2] = userInstance?.email
-         properties[3] = userInstance?.username
-         properties[4] = ""+userInstance?.enabled
-         csvWriter.writeNext(properties)
-         }
-         }
-         csvWriter.flush()
-         }*/
+        //saveSelectedIds()
+        response.setHeader("Content-disposition", "attachment; filename=user-report.csv");
+        def out = response.outputStream
+        out.withWriter { writer ->
+            String[] properties = new String[5]
+            properties = ['Id', 'Full Name', 'Email', 'Username', 'Active']
+            def csvWriter = new CSVWriter(writer)
+            csvWriter.writeNext(properties)
+            session.selectedUser?.each {
+                try {
+                    userInstance = User.get(it)
+                } catch(Exception e) {userInstance = null }
+                if(userInstance) {
+                    properties[0] = userInstance?.id
+                    properties[1] = userInstance?.fullName
+                    properties[2] = userInstance?.email
+                    properties[3] = userInstance?.username
+                    properties[4] = ""+userInstance?.enabled
+                    csvWriter.writeNext(properties)
+                }
+            }
+            csvWriter.flush()
+        }
     }
 }
