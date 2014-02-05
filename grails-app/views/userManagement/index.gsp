@@ -18,19 +18,17 @@
         <div class="row">
             <span class="col-sm-3">
                 <strong><small>Total Users:</small></strong><small>{{userInstanceTotal }}</small><br>
-                <g:if test="${session.selectedUser }">
-                    <span id="clear-selection">
-                        <small>
-                            <g:remoteLink action="clearSelection" onSuccess="clearSelectedUsers()" update="[success: 'clear-selection']"> 
-                                Clear selected users</g:remoteLink>
-                            <span title="Total selected user">
-                                <abbr title="Selected user id's:
-                                    ${session.selectedUser.size() == 1 ? session.seletedUser : session.selectedUser.sort{ a,b -> a.toLong() <=> b.toLong()} }">
-                                    ${session.selectedUser.size() }</abbr>
-                            </span>
-                        </small>
-                    </span>
-                </g:if>
+                <span id="clear-selection" ng-show="selectedUser">
+                    <small>
+                        <g:remoteLink action="clearSelection" onSuccess="clearSelectedUsers()" update="[success: 'clear-selection']"> 
+                            Clear selected users</g:remoteLink>
+                        <span title="Total selected user">
+                            <abbr title="Selected user id's:
+                                ${session.selectedUser.size() == 1 ? session.seletedUser : session.selectedUser.sort{ a,b -> a.toLong() <=> b.toLong()} }">
+                                ${session.selectedUser.size() }</abbr>
+                        </span>
+                    </small>
+                </span>
             </span>
             <g:if test="${params.letter }">
                 <span class="col-sm-3">
@@ -45,7 +43,7 @@
         <div class="row" style="margin-bottom:10px;">
             <span class="col-sm-3">
                 <g:select name="userAction" noSelection="${['null':'- User Action -']}" class="form-control"
-                    ng-change="userAction()"
+                    ng-model="action" ng-change="userAction(action)"
                     from="${['Make user in-active', 'Make user active', 'Send bulk message', 'Export email list'] }" />
             </span>
             <div class="col-sm-6">

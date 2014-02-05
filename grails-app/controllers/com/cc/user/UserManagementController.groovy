@@ -3,7 +3,6 @@ package com.cc.user
 import grails.converters.JSON
 import grails.plugins.springsecurity.Secured
 import liquibase.util.csv.CSVWriter
-import org.apache.solr.client.solrj.SolrServerException
 
 class UserManagementController {
 
@@ -11,8 +10,7 @@ class UserManagementController {
 
     private User userInstance
 
-    def index() {
-    }
+    def index() {}
 
     def list(Integer max, String roleType) {
         println "Params recived to fetch users :"+params
@@ -82,11 +80,8 @@ class UserManagementController {
     }
 
     def modifyRoles(String roleActionType) {
-        println params
         List userIds = params.list("userIds")
         List roles = params.list("roleIds")
-        render true
-        return
         List roleInstanceList = Role.getAll(roles)
 
         userIds.each { userId ->

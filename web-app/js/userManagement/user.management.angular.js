@@ -110,141 +110,53 @@ nucleusApp.controller('UserManagementCtrl',['$scope', '$rootScope', '$resource',
             $scope.currentUserInstance = data.currentUserInstance;
         })
     }
-    
-    $scope.userAction = function() {
-        console.log('user-action')
-    }
-}]);
 
-/*
-var App = window.App;
-
-$('select#userAction').on("change", function() {
-    var action = $(this).val()
-    console.log('ss');
-    console.log(action);
-    if (action.indexOf('null') == 0)
-        return false;
-
-    var check = $('input[name=selectedUser]:checked').size();
-    $(this).val($(this).prop('defaultSelected'));
-    if (check == 0) {
-        showAlertMessage('Please select at least one user at current page.')
-        return false
-    }
-
-    var confirmAction = confirm("Are you sure want to perform this action- " + action);
-    if(!confirmAction)  return false;
-    switch (action) {
+    $scope.userAction = function(action) {
+        console.log('user-action',action)
+        if (action.indexOf('null') == 0)
+            return false;
+        if ($scope.selectedUser) {
+            showAlertMessage('Please select at least one user at current page.');
+            return false
+        }
+        var confirmAction = confirm("Are you sure want to perform this action- " + action);
+        if(!confirmAction)  return false;
+        switch (action) {
         case 'Make user in-active':
-            makeUserActiveInactive('false')
+            $scope.makeUserActiveInactive('false');
             break;
         case 'Make user active':
-            makeUserActiveInactive('true')
+            $scope.makeUserActiveInactive('true');
             break;
         case 'Send bulk message':
-            var url = '/altruHelpDashboard/fetchEmails?' + $('#manage-user-form').serialize();
-            fetchEmails(url);
+            $scope.fetchEmails();
             break;
         case 'Export email list':
-            window.location.href = '/altruHelpDashboard/downloadEmails?' + $('#manage-user-form').serialize();
+            $scope.downloadEmails();
             break;
     }
-})
+    }
 
-var makeUserActiveInactive = function(type) {
-    showAlertMessage('Please wait ..', 'warning')
-    $.ajax({
-        type: 'POST',
-        url: '/altruHelpDashboard/makeUserActiveInactive?type=' + type + "&" + $('#manage-user-form').serialize(),
-        success: function(data, textStatus) {
+    $scope.makeUserActiveInactive = function(type) {
+        showAlertMessage('Please wait ..', 'warning')
+        var makeUserActiveInactive = $resource('/userManagement/makeUserActiveInactive?type='+type)
+        makeUserActiveInactive.get(null, function(data, textStatus) {
             showAlertMessage(data, 'success')
-            if(data.indexOf('in-active') != 0) {
-                $('input[name=selectedUser]:checked').each(function() {
-                    var id = $(this).val()
-                    $('.user'+id).removeClass('icon-ok-sign')
-                })
-            } else {
-                $('input[name=selectedUser]:checked').each(function() {
-                    var id = $(this).val()
-                    $('.user'+id).addClass('icon-ok-sign')
-                })
-            }
-        },
-        statusCode: {
-            401: function() {
-                showAlertMessage('Please <a href="/login/auth">sign in</a> to continue.', 'error')
-            }
-        },
-        error: function(jqXHR, textStatus, errorThrown) {
-            showAlertMessage(App.server.error.message, 'error')
-        }
-    });
-}
+        })
+    }
 
-$('a.step, a.nextLink, a.prevLink, a.letter-sort').on("click", function(){
-    var url = $(this).attr('href')
-    url += "&"+ $('#manage-user-form').serialize();
-    $(this).attr('href', url)
-})
+    $scope.fetchEmails = function() {
+        var fetchEmails = $resource('/userManagement/fetchEmails?')
+        fetchEmails.get(null, function() {
+            
+        })
+    }
 
-var clearSelectedUsers = function() {
-    $('input[name=selectedUser]:checked').each(function(index) {
-        $(this).attr('checked', false)
-    })
-}
+    $scope.downloadEmails = function() {
+        var downloadEmails = $resource('/userManagement/downloadEmails?')
+        downloadEmails.get(null, function() {
+            
+        })
+    }
 
-$('form[name=user-search]').on("submit", function() {
-    var url = $(this).attr('action')
-    url += "?"+ $('#manage-user-form').serialize()
-    $(this).attr('action', url)
-})
-
-$('input[name=selectedUser]:checked').click(function(){
-    $.ajax({
-        type: 'POST',
-        url: '/altruHelpDashboard/clearSelection/' + $(this).val(),
-        success: function(data, textStatus) {
-
-        },
-        statusCode: {
-            401: function() {
-                showAlertMessage('Please <a href="/login/auth">sign in</a> to continue.', 'error')
-            }
-        },
-        error: function(jqXHR, textStatus, errorThrown) {
-            showAlertMessage(App.server.error.message, 'error')
-        }
-    });
-})
-
-
-$(document).on("click", "ul.pagination a", function() {
-    var $this = $(this);
-    var url = $this.attr('href');
-    var queryString = url.substring(url.indexOf("?") + 1);
-    var result = {};
-    queryString.split("&").forEach(function(pair) {
-        pair = pair.split('=');
-        result[pair[0]] = decodeURIComponent(pair[1] || '');
-    });
-    max = result["max"];
-    offset = result["offset"];
-    fetchAndDisplayList();
-
-    return false;
-})
-
-$("a", "div#sort-list").click(function() {
-    sort = $(this).data("value");
-    $("div#sort-list button span.value").text($(this).text());
-    fetchAndDisplayList();
-})
-
-$("a", "div#order-list").click(function() {
-    order = $(this).data("value");
-    $("div#order-list button span.value").text($(this).text());
-    fetchAndDisplayList();
-})
-
-*/
+}]);
