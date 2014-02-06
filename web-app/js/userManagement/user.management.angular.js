@@ -69,6 +69,7 @@ nucleusApp.controller('UserManagementCtrl',['$scope', '$rootScope', '$resource',
                 $scope.selectedUser.push(user.id);
             }
         });
+        console.log($scope.selectedUser)
         return $scope.selectedUser
     }
 
@@ -113,23 +114,28 @@ nucleusApp.controller('UserManagementCtrl',['$scope', '$rootScope', '$resource',
 
     $scope.userAction = function(action) {
         console.log('user-action',action)
-        if (action.indexOf('null') == 0)
+        if (action.indexOf('null') == 0) {
             return false;
-        if ($scope.selectedUser) {
+            console.log('null action');
+        }
+        var selectedUserIdList = $scope.getSelectedUserList();
+        console.log(selectedUserIdList,'selectedUserIdList')
+        if (selectedUserIdList.length == 0 ) {
             showAlertMessage('Please select at least one user at current page.');
+            console.log('no selected user');
             return false
         }
         var confirmAction = confirm("Are you sure want to perform this action- " + action);
         if(!confirmAction)  return false;
         switch (action) {
         case 'Make user in-active':
-            $scope.makeUserActiveInactive('false');
+            $scope.makeUserActiveInactive('false', selectedUserIdList);
             break;
         case 'Make user active':
-            $scope.makeUserActiveInactive('true');
+            $scope.makeUserActiveInactive('true', selectedUserIdList);
             break;
         case 'Send bulk message':
-            $scope.fetchEmails();
+            $scope.fetchEmails(selectedUserIdList);
             break;
         case 'Export email list':
             $scope.downloadEmails();
@@ -137,26 +143,46 @@ nucleusApp.controller('UserManagementCtrl',['$scope', '$rootScope', '$resource',
     }
     }
 
-    $scope.makeUserActiveInactive = function(type) {
+    $scope.makeUserActiveInactive = function(type, selectedUserIdList) {
         showAlertMessage('Please wait ..', 'warning')
-        var makeUserActiveInactive = $resource('/userManagement/makeUserActiveInactive?type='+type)
-        makeUserActiveInactive.get(null, function(data, textStatus) {
-            showAlertMessage(data, 'success')
+        console.log(selectedUserIdList,'selectedUserIdList')
+        var makeUserActiveInactive = $resource('/userManagement/makeUserActiveInactive')
+        makeUserActiveInactive.get({type: type, selectedUser: selectedUserIdList}, function(data) {
+            console.log(data)
+            showAlertMessage(data.message, 'success')
+        });
+    }
+
+    $scope.fetchEmails = function(selectedUserIdList) {
+        var fetchEmails = $resource('/userManagement/fetchEmails?')
+        fetchEmails.get({selectedUser: selectedUserIdList}, function(data) {
+            if(data.emails) {
+                $('textArea[name=selectedEmail]', '#send-bulk-msg-overlay').val(data.emails);
+                $('#send-bulk-msg-overlay').modal('show');
+            } else {
+                showAlertMessage('Unable to fetch Message.', 'error')
+            }
         })
     }
 
-    $scope.fetchEmails = function() {
-        var fetchEmails = $resource('/userManagement/fetchEmails?')
-        fetchEmails.get(null, function() {
-            
+    $scope.sendMail = function() {
+        $scope.selectedEmail = $('textArea[name=selectedEmail]', '#send-bulk-msg-overlay').val();
+        $('#send-bulk-msg-overlay').modal('hide');
+        showAlertMessage('Please wait, performing your request ..', 'warn', {timeout: 'clear'})
+        var sendBulkEmail = $resource('/userManagement/sendBulkEmail')
+        sendBulkEmail.get({selectedEmail: $scope.selectedEmail, body: $scope.body, subject: $scope.subject}, function(data) {
+            if(data) {
+                showAlertMessage(data.message, 'info');
+            } else {
+                showAlertMessage('Unable to Send Bulk Message.', 'error')
+            }
         })
     }
 
     $scope.downloadEmails = function() {
         var downloadEmails = $resource('/userManagement/downloadEmails?')
         downloadEmails.get(null, function() {
-            
+            console.log('download')
         })
     }
-
 }]);

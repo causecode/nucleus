@@ -1,12 +1,12 @@
 package com.cc.user
 
 import grails.converters.JSON
-import grails.plugins.springsecurity.Secured
 import liquibase.util.csv.CSVWriter
 
 class UserManagementController {
 
     def springSecurityService
+    def asyncMailService
 
     private User userInstance
 
@@ -97,49 +97,22 @@ class UserManagementController {
         render true
     }
 
-    private void saveSelectedIds() {
-        List<Long> selectedUser = params.list('selectedUser')
-        if(!selectedUser) return;
-
-        if(session.selectedUser) {
-            List<Long> tempList = session.selectedUser.toList()
-            selectedUser.each {
-                if(!tempList.contains(it)) {
-                    tempList.add(it)
-                }
-            }
-            session.selectedUser = tempList
-        } else {
-            session.selectedUser = []
-            session.selectedUser = selectedUser
-        }
-        log.debug "Selected user at user management- " + session.selectedUser
-    }
-
-    def clearSelection() {
-        if(params.id && session.selectedUser) {
-            session.selectedUser.remove(params.id)
-            log.debug "Selected user at user management- " + session.selectedUser
-        } else {
-            session.selectedUser = null
-            render "Selection cleared."
-        }
-    }
-
     def fetchEmails() {
-        saveSelectedIds()
-        List emailList = User.getAll(session.selectedUser)*.email
+        List<Long> selectedUser = params.list('selectedUser')
+        List emailList = User.getAll(selectedUser)*.email
 
         String emails = emailList.unique().join(', ')
         if(!emails) response.status = 500;
-        render emails
+        render ([emails: emails] as JSON)
     }
 
-    @Secured(["ROLE_USER"])
     def sendBulkEmail() {
         List invalidEmail = []
-        List selectedEmail = params.selectedEmail?.tokenize(',')
+        String result
+        List<String> selectedEmail = Arrays.asList(params.selectedEmail.split("\\s*,\\s*"));
+
         if(selectedEmail && params.subject && params.body) {
+
             selectedEmail.each {
                 String emailAddress = it?.trim()
                 Map emailLayoutArgs = [title: "", body: params.body]
@@ -147,47 +120,39 @@ class UserManagementController {
                     asyncMailService.sendMail {
                         to emailAddress
                         subject params.subject;
-                        html g.render(template: "/layouts/email", model: [email: emailLayoutArgs]);
+                        html g.render(template: "/userManagement/templates/email", model: [email: emailLayoutArgs], plugin:"nucleus");
                     }
                 } catch(Exception e) {
                     log.error "Exception sending mail to ${emailAddress}- " + e?.dump()
                     invalidEmail.add(emailAddress)
                 }
             }
-            String result = "Message successfully sent."
+            result = "Message successfully sent."
             if(invalidEmail)
                 result += "<br>We're sorry, Email could not be delivered to: " + invalidEmail.join(", ")
-            render result
+            render ([message: result] as JSON)
             return
         }
-        response.status = 500
-        render "Missing something: Email(s)/subject/body"
+        result = "Missing something: Email(s)/subject/body"
+        render ([message: result] as JSON)
     }
 
-    def makeUserActiveInactive(Boolean type) {
-        saveSelectedIds()
-        session.selectedUser?.each {
+    def makeUserActiveInactive() {
+        params.list('selectedUser')?.each {
             try {
-                userInstance = User.findByIdAndEnabled(it, !type)
+                userInstance = User.findByIdAndEnabled(it, !params.type)
             } catch(Exception e){userInstance = null }
 
             if(userInstance) {
-                userInstance.enabled = type
+                userInstance.enabled = params.type
                 userInstance.save(flush: true)
-                /* try {
-                 if(type) userInstance?.index()
-                 else userInstance?.deleteSolr()
-                 } catch(SolrServerException e) {
-                 log.error "Error indexing/deleting for user $userInstance : $e.message"
-                 }*/
             }
         }
-
-        render "User's account set to ${type ? '' : 'in-'}active successfully."
+        String message = "User's account set to ${params.type ? '' : 'in-'}active successfully."
+        render ([message: message] as JSON)
     }
 
-    /*def downloadEmails() { return
-        //saveSelectedIds()
+    def downloadEmails() {
         response.setHeader("Content-disposition", "attachment; filename=user-report.csv");
         def out = response.outputStream
         out.withWriter { writer ->
@@ -195,7 +160,7 @@ class UserManagementController {
             properties = ['Id', 'Full Name', 'Email', 'Username', 'Active']
             def csvWriter = new CSVWriter(writer)
             csvWriter.writeNext(properties)
-            session.selectedUser?.each {
+            params.list('selectedUser')?.each {
                 try {
                     userInstance = User.get(it)
                 } catch(Exception e) {userInstance = null }
@@ -210,5 +175,5 @@ class UserManagementController {
             }
             csvWriter.flush()
         }
-    }*/
+    }
 }

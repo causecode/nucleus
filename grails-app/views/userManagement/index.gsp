@@ -59,7 +59,7 @@
                 <div class="pull-right col-sm-3">
                     <div class="input-group">
                         <g:textField name="query" ng-model="query" value="${params.query}" autofocus="autofocus" class="form-control"/>
-                        <span class="input-group-btn" ng-click="searchQuery(query)">
+                        <span class="input-group-addon" ng-click="searchQuery(query)">
                             <a class="btn btn-default" >
                                 <i class="icon-search"></i></a>
                         </span>
@@ -145,6 +145,7 @@
                 
             </div>
         </div>
+        <g:render template="/userManagement/templates/sendBulkMailOverlayAJ"></g:render>
         <g:render template="/userManagement/templates/modifyRoleOverlayAJ" />
         <r:script>
             var max = ${params.max?:10 },
