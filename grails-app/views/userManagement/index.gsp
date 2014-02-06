@@ -20,8 +20,7 @@
                 <strong><small>Total Users:</small></strong><small>{{userInstanceTotal }}</small><br>
                 <span id="clear-selection" ng-show="selectedUser">
                     <small>
-                        <g:remoteLink action="clearSelection" onSuccess="clearSelectedUsers()" update="[success: 'clear-selection']"> 
-                            Clear selected users</g:remoteLink>
+                        <a href="" ng-click="clearSelectedUsers()">Clear selected users</a>
                         <span title="Total selected user">
                             <abbr title="Selected user id's:">
                                 <span ng-repeat="user in selectedUser" > {{user.id}}</span>
@@ -30,15 +29,13 @@
                     </small>
                 </span>
             </span>
-            <g:if test="${params.letter }">
-                <span class="col-sm-3">
-                    <strong><small>Searched by letter:</small></strong><small>${params.letter }</small><br>
-                    <a href="${createLink(action: 'list', params: params+[clear: 'letter']) }"><small>Clear letter search</small></a>
-                </span>
-            </g:if>
-            <g:if test="${params.letter || params.query || params.selectedUser || params._selectedUser }">
-                <span class="col-sm-3"><a href="${createLink(action: 'list') }"><small>Reset search criteria</small></a></span>
-            </g:if>
+            <span class="col-sm-3" ng-show="letter">
+                <strong><small>Searched by letter:</small></strong><small>{{letter }}</small><br>
+                <a href="" ng-click="clearSelectedletter()"><small>Clear letter search</small></a>
+            </span>
+            <span class="col-sm-3" ng-show="query">
+                <a href="" ng-click="clearSelectedAll()"><small>Reset search criteria</small></a>
+            </span>
         </div>
         <div class="row" style="margin-bottom:10px;">
             <span class="col-sm-3">

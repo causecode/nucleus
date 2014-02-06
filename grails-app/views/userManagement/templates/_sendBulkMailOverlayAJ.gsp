@@ -25,7 +25,7 @@
                     <div class="form-group">
                         <label class="control-label col-sm-2" for="body">Body</label>
                         <div class="col-sm-10">
-                            <g:textArea name="body" ng-model="body" class="required form-control" />
+                            <g:textArea name="body" ng-model="body" class="required form-control" style="height:200px;"/>
                         </div>
                     </div>
                 </div>

@@ -73,6 +73,28 @@ nucleusApp.controller('UserManagementCtrl',['$scope', '$rootScope', '$resource',
         return $scope.selectedUser
     }
 
+    $scope.clearSelectedUsers = function() {
+        angular.forEach($scope.userInstanceList, function(user) {
+            user.selected = false;
+        });
+        $scope.selectedUser = [];
+        return false;
+    }
+    
+    $scope.clearSelectedletter = function() {
+        $scope.letter = "";
+        $scope.fetchAndDisplayList();
+        return false;
+    }
+    
+    $scope.clearSelectedAll = function() {
+        $scope.query = "";
+        $scope.letter = "";
+        $scope.clearSelectedUsers();
+        $scope.fetchAndDisplayList();
+        return false;
+    }
+
     $scope.getSelectedRoleList = function() {
         console.log('role select');
         $scope.selectedRole = [];
@@ -138,9 +160,9 @@ nucleusApp.controller('UserManagementCtrl',['$scope', '$rootScope', '$resource',
             $scope.fetchEmails(selectedUserIdList);
             break;
         case 'Export email list':
-            $scope.downloadEmails();
+            $scope.downloadEmails(selectedUserIdList);
             break;
-    }
+        }
     }
 
     $scope.makeUserActiveInactive = function(type, selectedUserIdList) {
@@ -179,9 +201,9 @@ nucleusApp.controller('UserManagementCtrl',['$scope', '$rootScope', '$resource',
         })
     }
 
-    $scope.downloadEmails = function() {
+    $scope.downloadEmails = function(selectedUserIdList) {
         var downloadEmails = $resource('/userManagement/downloadEmails?')
-        downloadEmails.get(null, function() {
+        downloadEmails.get({selectedUser: selectedUserIdList}, function() {
             console.log('download')
         })
     }

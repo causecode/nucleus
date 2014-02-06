@@ -153,6 +153,7 @@ class UserManagementController {
     }
 
     def downloadEmails() {
+        println "User List for download Emails: $params.selectedUser."
         response.setHeader("Content-disposition", "attachment; filename=user-report.csv");
         def out = response.outputStream
         out.withWriter { writer ->
