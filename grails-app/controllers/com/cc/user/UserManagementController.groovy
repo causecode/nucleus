@@ -66,7 +66,7 @@ class UserManagementController {
         userInstanceTotal = UserRole.executeQuery(countQuery, queryStringParams).size()
 
         render ([userInstanceList: userInstanceList, userInstanceTotal: userInstanceTotal, roleList: Role.list([sort: 'authority']),
-            currentUserInstance: springSecurityService.currentUser]  as JSON)
+            currentUserInstance: springSecurityService.currentUser, params: params]  as JSON)
     }
 
     private void makeQueryToCheckEachRole(StringBuilder query, roleFilterList) {

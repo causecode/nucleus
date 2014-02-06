@@ -83,7 +83,7 @@
                 <div class="list-group" id="role-filter">
                     <a href="#" class="list-group-item" ng-model="role.selected" value="{{role.id}}" 
                         ng-repeat="role in roleFilterList" ng-click="addOrRemoveFromRoleFilter(role.id)"
-                        ng-class="{active: role.roleFilter}">
+                        ng-class="{active: role.selected}">
                         <small>{{role.authority.substring(5).replace('_', ' ') }}</small>
                     </a>
                 </div>
@@ -144,14 +144,6 @@
         </div>
         <g:render template="/userManagement/templates/sendBulkMailOverlayAJ"></g:render>
         <g:render template="/userManagement/templates/modifyRoleOverlayAJ" />
-        <r:script>
-            var max = ${params.max?:10 },
-                sort = "${params.sort }",
-                order = "${params.order }",
-                offset = ${params.offset?:0 },
-                filterRoleList = new Array(),
-                roleType = "Any Granted";
-        </r:script>
         <i class="fa fa-spinner fa-spin" id="main-spinner" style="position: fixed;top: 14px;z-index: 10000;font-size: 22px;left: 50%;display: none;"></i>
     </div>
 </body>

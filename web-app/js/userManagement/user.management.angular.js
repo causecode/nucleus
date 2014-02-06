@@ -7,17 +7,20 @@ nucleusApp.controller('UserManagementCtrl',['$scope', '$rootScope', '$resource',
     $scope.selectedRole = [];
     $scope.selectedRoleFilter = [];
     $scope.roleType= 'Any Granted';
-    $scope.roleActionType = 'refresh'
+    $scope.roleActionType = 'refresh';
     $scope.letter = '';
     $scope.query = '';
 
     User.get(null, function(data) {
-        console.log(data,'data');
         $scope.userInstanceList = data.userInstanceList;
         $scope.userInstanceTotal = data.userInstanceTotal;
         $scope.roleList = data.roleList;
         $scope.roleFilterList = data.roleList;
         $scope.currentUserInstance = data.currentUserInstance;
+        $scope.max = data.params.max;
+        $scope.sort = data.params.sort;
+        $scope.order = data.params.order;
+        $scope.offset = data.params.offset;
     })
 
     $scope.modifyRole = function(data) {
@@ -25,7 +28,6 @@ nucleusApp.controller('UserManagementCtrl',['$scope', '$rootScope', '$resource',
         var selectedRoleIdList = $scope.getSelectedRoleList();
         var modifyRoles = $resource("/userManagement/modifyRoles?ajax=true");
         modifyRoles.get({userIds:selectedUserIdList, roles: selectedRoleIdList, roleActionType: $scope.roleActionType}, function(data){
-            console.log('roles Modified successfully');
             $("div#modify-role-overlay").modal("hide");
         })
     }
@@ -33,19 +35,18 @@ nucleusApp.controller('UserManagementCtrl',['$scope', '$rootScope', '$resource',
     $scope.addOrRemoveFromRoleFilter = function(roleId) {
         var index = $scope.selectedRoleFilter.indexOf(roleId);
         if(index > -1) {
-            //this.removeClass('active');
+            this.role.selected = false;
             $scope.selectedRoleFilter.splice(index, 1);
         } else {
-            //this.addClass('active');
+            this.role.selected = true;
             $scope.selectedRoleFilter.push(roleId);
         }
-        console.log(this)
-        $scope.fetchAndDisplayList()
+        $scope.fetchAndDisplayList();
         return false;
     }
 
     $scope.setRoleType = function(roleType) {
-        $scope.roleType = roleType
+        $scope.roleType = roleType;
         $scope.fetchAndDisplayList();
         return false;
     }
@@ -53,12 +54,11 @@ nucleusApp.controller('UserManagementCtrl',['$scope', '$rootScope', '$resource',
     $scope.selectAllUser = function() {
         angular.forEach($scope.userInstanceList, function(user) {
             if(user.selected) {
-                user.selected = false
+                user.selected = false;
             } else {
-                user.selected = true
+                user.selected = true;
             }
         });
-        console.log($scope.userInstanceList,'$scope.userInstanceList')
         return false;
     }
 
@@ -69,8 +69,7 @@ nucleusApp.controller('UserManagementCtrl',['$scope', '$rootScope', '$resource',
                 $scope.selectedUser.push(user.id);
             }
         });
-        console.log($scope.selectedUser)
-        return $scope.selectedUser
+        return $scope.selectedUser;
     }
 
     $scope.clearSelectedUsers = function() {
@@ -96,37 +95,32 @@ nucleusApp.controller('UserManagementCtrl',['$scope', '$rootScope', '$resource',
     }
 
     $scope.getSelectedRoleList = function() {
-        console.log('role select');
         $scope.selectedRole = [];
         angular.forEach($scope.roleList, function(role) {
             if(role.selected) {
-                console.log('role select',role);
                 $scope.selectedRole.push(role.id);
             }
         });
         return $scope.selectedRole
     }
     $scope.searchLetter = function(letter) {
-        console.log('search', letter);
         $scope.letter = letter;
         $scope.fetchAndDisplayList();
         return false
     }
 
     $scope.searchQuery = function(query) {
-        console.log('search', query);
         $scope.query = query;
         $scope.fetchAndDisplayList();
         return false
     }
 
     $scope.fetchAndDisplayList = function() {
-        console.log('fetchAndDisplayList');
-        var stateObj = {sort: sort, order: order, max: max, offset: offset, roleFilter: $scope.selectedRoleFilter, roleType: $scope.roleType,
+        var stateObj = {sort: $scope.sort, order: $scope.order, max: $scope.max, offset: $scope.offset, 
+                roleFilter: $scope.selectedRoleFilter, roleType: $scope.roleType,
                 letter: $scope.letter, query: $scope.query};
 
         User.get(stateObj, function(data) {
-            console.log(data,'data');
             $scope.userInstanceList = data.userInstanceList;
             $scope.userInstanceTotal = data.userInstanceTotal;
             $scope.roleList = data.roleList;
@@ -135,17 +129,13 @@ nucleusApp.controller('UserManagementCtrl',['$scope', '$rootScope', '$resource',
     }
 
     $scope.userAction = function(action) {
-        console.log('user-action',action)
         if (action.indexOf('null') == 0) {
             return false;
-            console.log('null action');
         }
         var selectedUserIdList = $scope.getSelectedUserList();
-        console.log(selectedUserIdList,'selectedUserIdList')
         if (selectedUserIdList.length == 0 ) {
             showAlertMessage('Please select at least one user at current page.');
-            console.log('no selected user');
-            return false
+            return false;
         }
         var confirmAction = confirm("Are you sure want to perform this action- " + action);
         if(!confirmAction)  return false;
@@ -166,23 +156,21 @@ nucleusApp.controller('UserManagementCtrl',['$scope', '$rootScope', '$resource',
     }
 
     $scope.makeUserActiveInactive = function(type, selectedUserIdList) {
-        showAlertMessage('Please wait ..', 'warning')
-        console.log(selectedUserIdList,'selectedUserIdList')
-        var makeUserActiveInactive = $resource('/userManagement/makeUserActiveInactive')
+        showAlertMessage('Please wait ..', 'warning');
+        var makeUserActiveInactive = $resource('/userManagement/makeUserActiveInactive');
         makeUserActiveInactive.get({type: type, selectedUser: selectedUserIdList}, function(data) {
-            console.log(data)
-            showAlertMessage(data.message, 'success')
+            showAlertMessage(data.message, 'success');
         });
     }
 
     $scope.fetchEmails = function(selectedUserIdList) {
-        var fetchEmails = $resource('/userManagement/fetchEmails?')
+        var fetchEmails = $resource('/userManagement/fetchEmails?');
         fetchEmails.get({selectedUser: selectedUserIdList}, function(data) {
             if(data.emails) {
                 $('textArea[name=selectedEmail]', '#send-bulk-msg-overlay').val(data.emails);
                 $('#send-bulk-msg-overlay').modal('show');
             } else {
-                showAlertMessage('Unable to fetch Message.', 'error')
+                showAlertMessage('Unable to fetch Message.', 'error');
             }
         })
     }
@@ -191,20 +179,19 @@ nucleusApp.controller('UserManagementCtrl',['$scope', '$rootScope', '$resource',
         $scope.selectedEmail = $('textArea[name=selectedEmail]', '#send-bulk-msg-overlay').val();
         $('#send-bulk-msg-overlay').modal('hide');
         showAlertMessage('Please wait, performing your request ..', 'warn', {timeout: 'clear'})
-        var sendBulkEmail = $resource('/userManagement/sendBulkEmail')
+        var sendBulkEmail = $resource('/userManagement/sendBulkEmail');
         sendBulkEmail.get({selectedEmail: $scope.selectedEmail, body: $scope.body, subject: $scope.subject}, function(data) {
             if(data) {
                 showAlertMessage(data.message, 'info');
             } else {
-                showAlertMessage('Unable to Send Bulk Message.', 'error')
+                showAlertMessage('Unable to Send Bulk Message.', 'error');
             }
         })
     }
 
     $scope.downloadEmails = function(selectedUserIdList) {
-        var downloadEmails = $resource('/userManagement/downloadEmails?')
+        var downloadEmails = $resource('/userManagement/downloadEmails?');
         downloadEmails.get({selectedUser: selectedUserIdList}, function() {
-            console.log('download')
         })
     }
 }]);
