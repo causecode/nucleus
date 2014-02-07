@@ -33,7 +33,8 @@ nucleusApp.controller('UserManagementCtrl',['$scope', '$rootScope', '$resource',
             $scope.userInstanceTotal = data.userInstanceTotal;
             $scope.roleList = data.roleList;
             $scope.currentUserInstance = data.currentUserInstance;
-            $scope.roleFilterList = data.roleList;
+            if(!$scope.roleFilterList ) 
+                $scope.roleFilterList = data.roleList;
             $scope.max = data.params.max;
             $scope.sort = data.params.sort;
             $scope.order = data.params.order;
@@ -66,13 +67,16 @@ nucleusApp.controller('UserManagementCtrl',['$scope', '$rootScope', '$resource',
 
     $scope.addOrRemoveFromRoleFilter = function(roleId) {
         var index = $scope.selectedRoleFilter.indexOf(roleId);
+        console.log(index, roleId)
         if(index > -1) {
             this.role.selected = false;
             $scope.selectedRoleFilter.splice(index, 1);
+            console.log('dd')
         } else {
             this.role.selected = true;
             $scope.selectedRoleFilter.push(roleId);
         }
+        console.log('dd js',$scope.selectedRoleFilter)
         $scope.fetchAndDisplayUserList();
         return false;
     }
@@ -136,7 +140,7 @@ nucleusApp.controller('UserManagementCtrl',['$scope', '$rootScope', '$resource',
 
     $scope.getSelectedRoleList = function() {
         $scope.selectedRole = [];
-        angular.forEach($scope.roleList, function(role) {
+        angular.forEach($scope.roleFilterList, function(role) {
             if(role.selected) {
                 $scope.selectedRole.push(role.id);
             }

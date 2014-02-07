@@ -15,23 +15,17 @@ class UserManagementController {
     def index() {}
 
     def list(Integer max, String roleType) {
-        println "Params recived to fetch users :"+params
+        log.info "Params recived to fetch users :"+params
         params.offset = params.offset ?: 0
         params.sort = params.sort ?: "id"
         params.max = Math.min(max ?: 10, 100)
         params.order = params.order ?: "asc"
-
-        if(params.clear)
-            params.remove(params.clear)
 
         Long userInstanceTotal = 0
         List<User> userInstanceList = []
 
         Map queryStringParams = [:]
         StringBuilder query = new StringBuilder("select distinct ur1.user from UserRole ur1")
-
-        params.remove("selectedUser"); params.remove("_selectedUser")
-        params.remove("check-uncheck"); params.remove("_check-uncheck")
 
         if(params.roleFilter) {
             List roleFilterList = params.list("roleFilter")*.toLong()
@@ -49,23 +43,22 @@ class UserManagementController {
                     ur1.user.id = ur_count.user.id group by ur_count.user having count(ur_count.role) = ${roleFilterList.size()})""")
             }
         }
-        if(params.letter && !params.roleFilter) {
-            query.append(" where")
+        if(params.letter) {
+            if(query.indexOf("where") == -1) query.append(" where")
             query.append(""" lower(ur1.user.firstName) like '${params.letter.toLowerCase()}%' """)
         }
-        if(params.query && !params.letter && !params.roleFilter) {
-            query.append(" where")
+        if(params.query && !params.letter) {
+            if(query.indexOf("where") == -1) query.append(" where")
             query.append(""" lower(ur1.user.firstName) like '%${params.query.toLowerCase()}%' """)
             query.append(""" or lower(ur1.user.lastName) like '${params.query.toLowerCase()}%' """)
             query.append(""" or lower(ur1.user.email) like '${params.query.toLowerCase()}%' """)
             query.append(""" or lower(ur1.user.username) like '${params.query.toLowerCase()}%' """)
         }
-        String countQuery = query.toString()
         query.append(" order by ur1.user.${params.sort} ${params.order}")
 
         userInstanceList = UserRole.executeQuery(query.toString(), queryStringParams, [max: params.max, offset: params.offset])
 
-        userInstanceTotal = UserRole.executeQuery(countQuery, queryStringParams).size()
+        userInstanceTotal = UserRole.executeQuery(query.toString(), queryStringParams).size()
 
         render ([userInstanceList: userInstanceList, userInstanceTotal: userInstanceTotal, roleList: Role.list([sort: 'authority']),
             currentUserInstance: springSecurityService.currentUser, params: params]  as JSON)
@@ -142,7 +135,7 @@ class UserManagementController {
     def makeUserActiveInactive() {
         String typeText = params.boolean('type')? 'active': 'in-active'
 
-        log.warn "Users ID recived to $typeText active User : $params.selectedUser $params"
+        log.info "Users ID recived to $typeText active User : $params.selectedUser $params"
         params.list('selectedUser')?.each {
             try {
                 userInstance = User.findByIdAndEnabled(it, !params.type)
@@ -158,7 +151,7 @@ class UserManagementController {
     }
 
     def downloadEmails() {
-        println "User List for download Emails: $params.selectedUser."
+        log.info "User List for download Emails: $params.selectedUser."
         List selectedUser = params.selectedUser.tokenize(',')
         response.setHeader("Content-disposition", "attachment; filename=user-report.csv");
         def out = response.outputStream
