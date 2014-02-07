@@ -88,31 +88,23 @@
             </div>
             <div class="col-sm-9">
                 <ul class="list-inline">
+                    <li><small>Sort: </small></li>
                     <li>
-                        <div class="btn-group" id="sort-list">
-                            <button type="button" class="btn btn-default dropdown-toggle btn-sm" data-toggle="dropdown">
-                                <span class="text-muted">Sort:</span> <span class="value">Id</span> <span class="caret"></span>
-                            </button>
-                            <ul class="dropdown-menu" role="menu">
-                                <li><a href="#" data-value="id">Id</a></li>
-                                <li><a href="#" data-value="email">Email</a></li>
-                                <li><a href="#" data-value="firstName">First Name</a></li>
-                                <li><a href="#" data-value="lastName">Last Name</a></li>
-                                <li><a href="#" data-value="accountLocked">Locked</a></li>
-                                <li><a href="#" data-value="username">Username</a></li>
-                            </ul>
-                        </div>
+                        <select name="sortAction" class="form-control" ng-model="sort" ng-change="sortList()">
+                            <option value="id"><small>ID</small></option>
+                            <option value="email"><small>Email</small></option>
+                            <option value="firstName"><small>First Name</small></option>
+                            <option value="lastName"><small>Last Name</small></option>
+                            <option value="accountLocked"><small>Locked</small></option>
+                            <option value="username"><small>Username</small></option>
+                        </select>
                     </li>
+                    <li><small>Order: </small></li>
                     <li>
-                        <div class="btn-group" id="order-list">
-                            <button type="button" class="btn btn-default dropdown-toggle btn-sm" data-toggle="dropdown">
-                                <span class="text-muted">Order:</span> <span class="value">Ascending</span> <span class="caret"></span>
-                            </button>
-                            <ul class="dropdown-menu" role="menu">
-                                <li><a href="#" data-value="asc">Ascending</a></li>
-                                <li><a href="#" data-value="desc">Descending</a></li>
-                            </ul>
-                        </div>
+                        <select name="orderAction" class="form-control" ng-model="order" ng-change="orderList()">
+                            <option value="asc"><small>Ascending</small></option>
+                            <option value="desc"><small>Descending</small></option>
+                        </select>
                     </li>
                 </ul>
                 <div class="panel panel-default">

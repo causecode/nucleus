@@ -88,6 +88,13 @@ nucleusApp.controller('UserManagementCtrl',['$scope', '$rootScope', '$resource',
         }
     }
 
+    $scope.sortList = function(data) {
+        $scope.fetchAndDisplayUserList($scope.currentPage);
+    }
+    $scope.orderList = function() {
+        $scope.fetchAndDisplayUserList($scope.currentPage);
+    }
+
     $scope.setRoleType = function(roleType) {
         $scope.roleType = roleType;
         $scope.fetchAndDisplayUserList();
