@@ -17,7 +17,7 @@
     <div ng-app="nucleus" ng-controller="UserManagementCtrl">
         <div class="row">
             <span class="col-sm-3">
-                <span id="clear-selection" ng-show="selectedUser">
+                <span id="clear-selection" ng-hide="selectedUser.length === 0">
                     <small>
                         <a href="" ng-click="clearSelectedUsers()">Clear selected users</a>
                         <span title="Total selected user">

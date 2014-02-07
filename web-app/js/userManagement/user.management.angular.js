@@ -18,7 +18,9 @@ nucleusApp.controller('UserManagementCtrl',['$scope', '$rootScope', '$resource',
     $scope.max = 10;
 
     $scope.fetchAndDisplayUserList = function(forPage) {
-        var stateObj = {sort: $scope.sort, order: $scope.order, max: $scope.max, offset: forPage+10, 
+        var offset = ( forPage > 1 )? ( (forPage-1) * $scope.max ): forPage;
+
+        var stateObj = {sort: $scope.sort, order: $scope.order, max: $scope.max, offset: offset, 
                 roleFilter: $scope.selectedRoleFilter, roleType: $scope.roleType,
                 letter: $scope.letter, query: $scope.query};
 
@@ -42,7 +44,7 @@ nucleusApp.controller('UserManagementCtrl',['$scope', '$rootScope', '$resource',
         })
     }
 
-    $scope.fetchAndDisplayUserList(0);
+    $scope.fetchAndDisplayUserList($scope.currentPage);
 
     $scope.changePage = function(toPage) {
         if(!$scope.pagedUserList[toPage]) {
@@ -76,8 +78,14 @@ nucleusApp.controller('UserManagementCtrl',['$scope', '$rootScope', '$resource',
     }
 
     $scope.addOrRemoveSelectedUser = function() {
-        $scope.selectedUser.push(this.userInstance.id);
-        console.log(this, $scope.selectedUser)
+        if(this.userInstance.selected) {
+            var index = $scope.selectedUser.indexOf(this.userInstance.id);
+            this.userInstance.selected = false;
+            $scope.selectedUser.splice(index, 1);
+        } else {
+            this.userInstance.selected = true;
+            $scope.selectedUser.push(this.userInstance.id);
+        }
     }
 
     $scope.setRoleType = function(roleType) {
@@ -97,16 +105,6 @@ nucleusApp.controller('UserManagementCtrl',['$scope', '$rootScope', '$resource',
         return false;
     }
 
-    $scope.getSelectedUserList = function() {
-        $scope.selectedUser = [];
-        angular.forEach($scope.userInstanceList, function(user) {
-            if(user.selected) {
-                $scope.selectedUser.push(user.id);
-            }
-        });
-        return $scope.selectedUser;
-    }
-
     $scope.clearSelectedUsers = function() {
         angular.forEach($scope.userInstanceList, function(user) {
             user.selected = false;
@@ -114,7 +112,7 @@ nucleusApp.controller('UserManagementCtrl',['$scope', '$rootScope', '$resource',
         $scope.selectedUser = [];
         return false;
     }
-    
+
     $scope.clearSelectedletter = function() {
         $scope.letter = '';
         $scope.fetchAndDisplayUserList();
@@ -154,7 +152,7 @@ nucleusApp.controller('UserManagementCtrl',['$scope', '$rootScope', '$resource',
         if (action.indexOf('null') == 0) {
             return false;
         }
-        var selectedUserIdList = $scope.getSelectedUserList();
+        var selectedUserIdList = $scope.selectedUser;
         if (selectedUserIdList.length == 0 ) {
             showAlertMessage('Please select at least one user at current page.');
             return false;

@@ -140,6 +140,9 @@ class UserManagementController {
     }
 
     def makeUserActiveInactive() {
+        String typeText = params.boolean('type')? 'active': 'in-active'
+
+        log.warn "Users ID recived to $typeText active User : $params.selectedUser $params"
         params.list('selectedUser')?.each {
             try {
                 userInstance = User.findByIdAndEnabled(it, !params.type)
@@ -150,7 +153,7 @@ class UserManagementController {
                 userInstance.save(flush: true)
             }
         }
-        String message = "User's account set to ${params.type ? '' : 'in-'}active successfully."
+        String message = "User's account set to $typeText successfully."
         render ([message: message] as JSON)
     }
 

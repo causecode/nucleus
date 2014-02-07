@@ -4,8 +4,8 @@
             <ul class="list-inline">
                 <li>
                     <h4 class="list-group-item-heading inline">
-                        <g:checkBox name="userId" checked="false" ng-model="userInstance.selected" ng-checked="userSelected" 
-                            ng-click="addOrRemoveSelectedUser()"/>
+                        <g:checkBox name="userId" checked="false" ng-checked="userSelected" 
+                            ng-click="addOrRemoveSelectedUser()" ng-model="userInstance.selected"/>
                         <a href="/userProfile/show/{{userInstance.id}}">{{userInstance.firstName }}&nbsp;{{userInstance.lastName }}</a>
                     </h4>
                 </li>
