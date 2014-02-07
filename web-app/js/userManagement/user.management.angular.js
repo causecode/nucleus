@@ -1,8 +1,8 @@
-var nucleusApp = angular.module("nucleus", ["ngCookies", "ngResource", "ngRoute"], 
+var nucleusApp = angular.module('nucleus', ['ngCookies', 'ngResource', 'ngRoute'], 
   function($routeProvider, $locationProvider, $httpProvider) {});
 
 nucleusApp.controller('UserManagementCtrl',['$scope', '$rootScope', '$resource', function ($scope, $rootScope, $resource) {
-    var User = $resource("/userManagement/list?ajax=true");
+    var User = $resource('/userManagement/list?ajax=true');
     $scope.selectedUser = [];
     $scope.selectedRole = [];
     $scope.selectedRoleFilter = [];
@@ -26,9 +26,9 @@ nucleusApp.controller('UserManagementCtrl',['$scope', '$rootScope', '$resource',
     $scope.modifyRole = function(data) {
         var selectedUserIdList = $scope.getSelectedUserList();
         var selectedRoleIdList = $scope.getSelectedRoleList();
-        var modifyRoles = $resource("/userManagement/modifyRoles?ajax=true");
+        var modifyRoles = $resource('/userManagement/modifyRoles?ajax=true');
         modifyRoles.get({userIds:selectedUserIdList, roles: selectedRoleIdList, roleActionType: $scope.roleActionType}, function(data){
-            $("div#modify-role-overlay").modal("hide");
+            $('div#modify-role-overlay').modal('hide');
         })
     }
 
@@ -81,14 +81,14 @@ nucleusApp.controller('UserManagementCtrl',['$scope', '$rootScope', '$resource',
     }
     
     $scope.clearSelectedletter = function() {
-        $scope.letter = "";
+        $scope.letter = '';
         $scope.fetchAndDisplayList();
         return false;
     }
     
     $scope.clearSelectedAll = function() {
-        $scope.query = "";
-        $scope.letter = "";
+        $scope.query = '';
+        $scope.letter = '';
         $scope.clearSelectedUsers();
         $scope.fetchAndDisplayList();
         return false;
@@ -137,7 +137,7 @@ nucleusApp.controller('UserManagementCtrl',['$scope', '$rootScope', '$resource',
             showAlertMessage('Please select at least one user at current page.');
             return false;
         }
-        var confirmAction = confirm("Are you sure want to perform this action- " + action);
+        var confirmAction = confirm('Are you sure want to perform this action- ' + action);
         if(!confirmAction)  return false;
         switch (action) {
         case 'Make user in-active':
@@ -190,8 +190,6 @@ nucleusApp.controller('UserManagementCtrl',['$scope', '$rootScope', '$resource',
     }
 
     $scope.downloadEmails = function(selectedUserIdList) {
-        var downloadEmails = $resource('/userManagement/downloadEmails?');
-        downloadEmails.get({selectedUser: selectedUserIdList}, function() {
-        })
+        window.location.href = '/userManagement/downloadEmails?selectedUser='+selectedUserIdList.toString();
     }
 }]);

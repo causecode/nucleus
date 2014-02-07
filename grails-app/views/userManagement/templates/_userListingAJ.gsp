@@ -5,10 +5,7 @@
                 <li>
                     <h4 class="list-group-item-heading inline">
                         <g:checkBox name="userId" checked="false" ng-model="userInstance.selected" ng-checked="userSelected" />
-                        <span class="btn-link">{{userInstance.firstName }}&nbsp;{{userInstance.lastName }} </span>
-                        <%--
-                        <g:link uri="${cc.searchLink([instance: user]) }">{{userInstance.fullName }}</g:link>
-                        --%>
+                        <a href="/userProfile/show/{{userInstance.id}}">{{userInstance.firstName }}&nbsp;{{userInstance.lastName }}</a>
                     </h4>
                 </li>
                 <g:if test="{{userInstance.accountLocked }}">
@@ -30,7 +27,7 @@
                 <ul class="list-inline">
                     <li><small><i class="fa fa-envelope"></i> &nbsp;{{userInstance.email }}</small></li>
                     <li><small><i class="fa fa-user"></i> &nbsp;{{userInstance.username }}</small></li>
-                    <li><small><i class="fa fa-calendar"></i> &nbsp;{{userInstance.dateCreated.format("MM/dd/yyyy") }}</small></li>
+                    <li><small><i class="fa fa-calendar"></i> &nbsp;{{userInstance.dateCreated | date:'MM/dd/yyyy'}}</small></li>
                 </ul>
             </div>
         </div>

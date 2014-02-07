@@ -154,6 +154,7 @@ class UserManagementController {
 
     def downloadEmails() {
         println "User List for download Emails: $params.selectedUser."
+        List selectedUser = params.selectedUser.tokenize(',')
         response.setHeader("Content-disposition", "attachment; filename=user-report.csv");
         def out = response.outputStream
         out.withWriter { writer ->
@@ -161,7 +162,7 @@ class UserManagementController {
             properties = ['Id', 'Full Name', 'Email', 'Username', 'Active']
             def csvWriter = new CSVWriter(writer)
             csvWriter.writeNext(properties)
-            params.list('selectedUser')?.each {
+            selectedUser?.each {
                 try {
                     userInstance = User.get(it)
                 } catch(Exception e) {userInstance = null }

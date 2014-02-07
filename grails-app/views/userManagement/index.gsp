@@ -17,7 +17,6 @@
     <div ng-app="nucleus" ng-controller="UserManagementCtrl">
         <div class="row">
             <span class="col-sm-3">
-                <strong><small>Total Users:</small></strong><small>{{userInstanceTotal }}</small><br>
                 <span id="clear-selection" ng-show="selectedUser">
                     <small>
                         <a href="" ng-click="clearSelectedUsers()">Clear selected users</a>
@@ -44,7 +43,7 @@
                     from="${['Make user in-active', 'Make user active', 'Send bulk message', 'Export email list'] }" />
             </span>
             <div class="col-sm-6">
-                <div style="padding: 5px 24px">
+                <div style="padding: 5px 0px">
                     <g:each var="alphabet" in="${65..90}">
                         <small><a class="letter-sort" ng-click="searchLetter('${(char)alphabet}')" href="">
                             ${Character.toString((char)alphabet)}
@@ -56,9 +55,8 @@
                 <div class="pull-right col-sm-3">
                     <div class="input-group">
                         <g:textField name="query" ng-model="query" value="${params.query}" autofocus="autofocus" class="form-control"/>
-                        <span class="input-group-addon" ng-click="searchQuery(query)">
-                            <a class="btn btn-default" >
-                                <i class="icon-search"></i></a>
+                        <span class="input-group-btn" ng-click="searchQuery(query)">
+                            <a class="btn btn-default" ><i class="fa fa-search"></i></a>
                         </span>
                     </div>
                 </div>
@@ -116,11 +114,6 @@
                             </ul>
                         </div>
                     </li>
-                    <li class="pull-right">
-                        <ul class="pagination pagination-sm" style="margin: 0">
-                            <g:paginate total="${userInstanceTotal?:0}" />
-                        </ul>
-                    </li>
                 </ul>
                 <div class="panel panel-default">
                     <div class="panel-heading">
@@ -145,6 +138,11 @@
         <g:render template="/userManagement/templates/sendBulkMailOverlayAJ"></g:render>
         <g:render template="/userManagement/templates/modifyRoleOverlayAJ" />
         <i class="fa fa-spinner fa-spin" id="main-spinner" style="position: fixed;top: 14px;z-index: 10000;font-size: 22px;left: 50%;display: none;"></i>
+        <div class="col-sm-offset-3">
+            <ul class="pagination pagination-sm" style="margin: 0">sadsadasdasdasd
+                <g:paginate total="{{userInstanceTotal}}" />
+            </ul>
+        </div>
     </div>
 </body>
 </html>
