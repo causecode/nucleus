@@ -1,4 +1,4 @@
-var nucleusApp = angular.module('nucleus', ['ngCookies', 'ngResource', 'ngRoute'], 
+var nucleusApp = angular.module('nucleus', ['ngCookies', 'ngResource', 'ngRoute', 'ui.bootstrap'], 
   function($routeProvider, $locationProvider, $httpProvider) {});
 
 nucleusApp.controller('UserManagementCtrl',['$scope', '$rootScope', '$resource', function ($scope, $rootScope, $resource) {
@@ -11,17 +11,47 @@ nucleusApp.controller('UserManagementCtrl',['$scope', '$rootScope', '$resource',
     $scope.letter = '';
     $scope.query = '';
 
-    User.get(null, function(data) {
-        $scope.userInstanceList = data.userInstanceList;
-        $scope.userInstanceTotal = data.userInstanceTotal;
-        $scope.roleList = data.roleList;
-        $scope.roleFilterList = data.roleList;
-        $scope.currentUserInstance = data.currentUserInstance;
-        $scope.max = data.params.max;
-        $scope.sort = data.params.sort;
-        $scope.order = data.params.order;
-        $scope.offset = data.params.offset;
-    })
+    $scope.currentPage = 1;
+    $scope.fetchingUsers = true;
+    $scope.itemsPerPage = 10;
+    $scope.pagedUserList = [];
+    $scope.max = 10;
+
+    $scope.fetchAndDisplayUserList = function(forPage) {
+        var stateObj = {sort: $scope.sort, order: $scope.order, max: $scope.max, offset: forPage+10, 
+                roleFilter: $scope.selectedRoleFilter, roleType: $scope.roleType,
+                letter: $scope.letter, query: $scope.query};
+
+        if(!forPage) {
+            forPage = $scope.currentPage;
+        }
+
+        User.get(stateObj, function(data) {
+            $scope.userInstanceList = data.userInstanceList;
+            $scope.userInstanceTotal = data.userInstanceTotal;
+            $scope.roleList = data.roleList;
+            $scope.currentUserInstance = data.currentUserInstance;
+            $scope.roleFilterList = data.roleList;
+            $scope.max = data.params.max;
+            $scope.sort = data.params.sort;
+            $scope.order = data.params.order;
+
+            $scope.pagedUserList[forPage] = data.userInstanceList;
+            $scope.currentPage = forPage;
+            $scope.fetchingUsers = false;
+        })
+    }
+
+    $scope.fetchAndDisplayUserList(0);
+
+    $scope.changePage = function(toPage) {
+        if(!$scope.pagedUserList[toPage]) {
+            $scope.fetchingUsers = true;
+            $scope.fetchAndDisplayUserList(toPage);
+        } else {
+            $scope.currentPage = toPage;
+        }
+    };
 
     $scope.modifyRole = function(data) {
         var selectedUserIdList = $scope.getSelectedUserList();
@@ -41,13 +71,18 @@ nucleusApp.controller('UserManagementCtrl',['$scope', '$rootScope', '$resource',
             this.role.selected = true;
             $scope.selectedRoleFilter.push(roleId);
         }
-        $scope.fetchAndDisplayList();
+        $scope.fetchAndDisplayUserList();
         return false;
+    }
+
+    $scope.addOrRemoveSelectedUser = function() {
+        $scope.selectedUser.push(this.userInstance.id);
+        console.log(this, $scope.selectedUser)
     }
 
     $scope.setRoleType = function(roleType) {
         $scope.roleType = roleType;
-        $scope.fetchAndDisplayList();
+        $scope.fetchAndDisplayUserList();
         return false;
     }
 
@@ -82,7 +117,7 @@ nucleusApp.controller('UserManagementCtrl',['$scope', '$rootScope', '$resource',
     
     $scope.clearSelectedletter = function() {
         $scope.letter = '';
-        $scope.fetchAndDisplayList();
+        $scope.fetchAndDisplayUserList();
         return false;
     }
     
@@ -90,7 +125,7 @@ nucleusApp.controller('UserManagementCtrl',['$scope', '$rootScope', '$resource',
         $scope.query = '';
         $scope.letter = '';
         $scope.clearSelectedUsers();
-        $scope.fetchAndDisplayList();
+        $scope.fetchAndDisplayUserList();
         return false;
     }
 
@@ -105,27 +140,14 @@ nucleusApp.controller('UserManagementCtrl',['$scope', '$rootScope', '$resource',
     }
     $scope.searchLetter = function(letter) {
         $scope.letter = letter;
-        $scope.fetchAndDisplayList();
+        $scope.fetchAndDisplayUserList();
         return false
     }
 
     $scope.searchQuery = function(query) {
         $scope.query = query;
-        $scope.fetchAndDisplayList();
+        $scope.fetchAndDisplayUserList();
         return false
-    }
-
-    $scope.fetchAndDisplayList = function() {
-        var stateObj = {sort: $scope.sort, order: $scope.order, max: $scope.max, offset: $scope.offset, 
-                roleFilter: $scope.selectedRoleFilter, roleType: $scope.roleType,
-                letter: $scope.letter, query: $scope.query};
-
-        User.get(stateObj, function(data) {
-            $scope.userInstanceList = data.userInstanceList;
-            $scope.userInstanceTotal = data.userInstanceTotal;
-            $scope.roleList = data.roleList;
-            $scope.currentUserInstance = data.currentUserInstance;
-        })
     }
 
     $scope.userAction = function(action) {

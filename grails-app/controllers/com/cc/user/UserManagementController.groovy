@@ -2,7 +2,9 @@ package com.cc.user
 
 import grails.converters.JSON
 import liquibase.util.csv.CSVWriter
+import grails.plugins.springsecurity.Secured
 
+@Secured(["ROLE_ADMIN"])
 class UserManagementController {
 
     def springSecurityService

@@ -1,10 +1,11 @@
-<div class="list-group-item" ng-repeat="userInstance in userInstanceList">
+<div class="list-group-item" ng-repeat="userInstance in pagedUserList[currentPage]">
     <div class="row">
         <div class="col-sm-11">
             <ul class="list-inline">
                 <li>
                     <h4 class="list-group-item-heading inline">
-                        <g:checkBox name="userId" checked="false" ng-model="userInstance.selected" ng-checked="userSelected" />
+                        <g:checkBox name="userId" checked="false" ng-model="userInstance.selected" ng-checked="userSelected" 
+                            ng-click="addOrRemoveSelectedUser()"/>
                         <a href="/userProfile/show/{{userInstance.id}}">{{userInstance.firstName }}&nbsp;{{userInstance.lastName }}</a>
                     </h4>
                 </li>
@@ -32,12 +33,11 @@
             </div>
         </div>
         <div class="col-sm-1">
-            <g:if test="{{currentUserInstance.id}} != {{userInstance.id }}">
-                <g:link uri="/j_spring_security_switch_user?j_username={{userInstance.username }}"
-                    data-container="body" rel="tooltip" title="Use Causecode as {{userInstance.username }}" class="pull-right">
-                    <small><i class="fa fa-exchange"></i></small>
-                </g:link>
-            </g:if>
+            <g:link uri="/j_spring_security_switch_user?j_username={{userInstance.username }}"
+                ng-hide="{{currentUserInstance.id  === userInstance.id }}"
+                data-container="body" rel="tooltip" title="Use Causecode as {{userInstance.username }}" class="pull-right">
+                <small><i class="fa fa-exchange"></i></small>
+            </g:link>
         </div>
     </div>
 </div>

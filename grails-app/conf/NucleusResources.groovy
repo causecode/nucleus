@@ -29,6 +29,8 @@ modules = {
         resource url: [dir: 'js/angular', file: "angular-cookies.min.js", plugin: "nucleus"]
         resource url: [dir: 'js/angular', file: "angular-resource.min.js", plugin: "nucleus"]
         resource url: [dir: 'js/angular', file: "angular-route.min.js", plugin: "nucleus"]
+        resource url: [dir: 'js/angular', file: "ui-bootstrap.min.js", plugin: "nucleus"]
+        resource url: [dir: 'js/angular', file: "ui-bootstrap-tpls.min.js", plugin: "nucleus"]
     }
 
     userManagementAJ {

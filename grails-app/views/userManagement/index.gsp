@@ -139,9 +139,8 @@
         <g:render template="/userManagement/templates/modifyRoleOverlayAJ" />
         <i class="fa fa-spinner fa-spin" id="main-spinner" style="position: fixed;top: 14px;z-index: 10000;font-size: 22px;left: 50%;display: none;"></i>
         <div class="col-sm-offset-3">
-            <ul class="pagination pagination-sm" style="margin: 0">sadsadasdasdasd
-                <g:paginate total="{{userInstanceTotal}}" />
-            </ul>
+             <pagination total-items="userInstanceTotal" page="currentPage" on-select-page="changePage(page)"
+                    items-per-page="itemsPerPage" max-size="10"></pagination>
         </div>
     </div>
 </body>
