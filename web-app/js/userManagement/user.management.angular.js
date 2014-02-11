@@ -1,4 +1,4 @@
-var nucleusApp = angular.module('nucleus', ['ngCookies', 'ngResource', 'ngRoute', 'ui.bootstrap'], 
+var nucleusApp = angular.module('nucleus', ['ngCookies', 'ngSanitize', 'ngResource', 'ngRoute', 'ui.bootstrap'], 
         function($routeProvider, $locationProvider, $httpProvider) {});
 
 nucleusApp.controller('UserManagementCtrl',['$scope', '$rootScope', '$resource', 'roleService',
@@ -81,7 +81,6 @@ nucleusApp.controller('UserManagementCtrl',['$scope', '$rootScope', '$resource',
         }
         console.log('dd js',$scope.selectedRoleFilter)
         $scope.fetchAndDisplayUserList();
-        return false;
     }
 
     $scope.addOrRemoveSelectedUser = function() {
@@ -105,7 +104,6 @@ nucleusApp.controller('UserManagementCtrl',['$scope', '$rootScope', '$resource',
     $scope.setRoleType = function(roleType) {
         $scope.roleType = roleType;
         $scope.fetchAndDisplayUserList();
-        return false;
     }
 
     $scope.selectAllUser = function() {
@@ -116,7 +114,6 @@ nucleusApp.controller('UserManagementCtrl',['$scope', '$rootScope', '$resource',
                 user.selected = true;
             }
         });
-        return false;
     }
 
     $scope.clearSelectedUsers = function() {
@@ -124,13 +121,11 @@ nucleusApp.controller('UserManagementCtrl',['$scope', '$rootScope', '$resource',
             user.selected = false;
         });
         $scope.selectedUser = [];
-        return false;
     }
 
     $scope.clearSelectedletter = function() {
         $scope.letter = '';
         $scope.fetchAndDisplayUserList();
-        return false;
     }
 
     $scope.clearSelectedAll = function() {
@@ -138,7 +133,6 @@ nucleusApp.controller('UserManagementCtrl',['$scope', '$rootScope', '$resource',
         $scope.letter = '';
         $scope.clearSelectedUsers();
         $scope.fetchAndDisplayUserList();
-        return false;
     }
 
     $scope.getSelectedRoleList = function() {
@@ -153,13 +147,10 @@ nucleusApp.controller('UserManagementCtrl',['$scope', '$rootScope', '$resource',
     $scope.searchLetter = function(letter) {
         $scope.letter = letter;
         $scope.fetchAndDisplayUserList();
-        return false
     }
 
-    $scope.searchQuery = function(query) {
-        $scope.query = query;
-        $scope.fetchAndDisplayUserList();
-        return false
+    $scope.searchQuery = function() {
+        $scope.fetchAndDisplayUserList(1);  // Setting page number to first.
     }
 
     $scope.userAction = function(action) {
@@ -263,4 +254,19 @@ nucleusApp.controller('UserManagementCtrl',['$scope', '$rootScope', '$resource',
             return get(roleId).authority.substring(5).replace('_', ' ');
         }
     }
+})
+.filter('highlight', function () {
+    return function(text, search, caseSensitive) {
+        if(search || angular.isNumber(search)) {
+            text = text.toString();
+            search = search.toString();
+            if (caseSensitive) {
+                return text.split(search).join('<strong class="ui-match">' + search + '</strong>');
+            } else {
+                return text.replace(new RegExp(search, 'gi'), '<strong class="ui-match">$&</strong>');
+            }
+        } else {
+            return text;
+        }
+    };
 });

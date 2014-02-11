@@ -17,17 +17,24 @@ class UserManagementService {
             if(params.letter) {
                 ilike("firstName", "${params.letter}%")
             }
+            if(params.query) {
+                or {
+                    ["firstName", "lastName", "username", "email"].each { userField ->
+                        ilike(userField, "%${params.query}%")
+                    }
+                }
+            }
             if(params.roleFilter) {
                 if(params.roleType == "Any Granted") {
                     or {
-                        roleFilterList.each {
-                            between("roleIds", it.toLong(), it.toLong())
+                        roleFilterList*.toLong().each { roleId ->
+                            between("roleIds", roleId, roleId)  // Using between as to match item in list.
                         }
                     }
                 } else if(params.roleType == "All Granted") {
                     and {
-                        roleFilterList.each {
-                            between("roleIds", it.toLong(), it.toLong())
+                        roleFilterList*.toLong().each { roleId ->
+                            between("roleIds", roleId, roleId)
                         }
                     }
                 } else {

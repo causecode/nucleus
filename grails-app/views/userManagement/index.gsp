@@ -62,16 +62,16 @@
                     </li>
                 </ul>
             </div>
-            <g:form name="user-search" action="list" class="form form-inline input-append">
+            <form name="user-search" class="form form-inline input-append" ng-submit="searchQuery()">
                 <div class="pull-right col-sm-3">
                     <div class="input-group">
-                        <g:textField name="query" ng-model="query" value="${params.query}" autofocus="autofocus" class="form-control"/>
-                        <span class="input-group-btn" ng-click="searchQuery(query)">
-                            <a class="btn btn-default" ><i class="fa fa-search"></i></a>
+                        <g:textField name="query" ng-model="query" autofocus="" class="form-control"/>
+                        <span class="input-group-btn">
+                            <button type="submit" class="btn btn-default" ><i class="fa fa-search"></i></button>
                         </span>
                     </div>
                 </div>
-            </g:form>
+            </form>
         </div>
         <div class="row">
             <div class="col-sm-3">

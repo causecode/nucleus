@@ -6,7 +6,10 @@
                     <h4 class="list-group-item-heading inline">
                         <g:checkBox name="userId" checked="false" ng-checked="userSelected" 
                             ng-click="addOrRemoveSelectedUser()" ng-model="userInstance.selected"/>
-                        <a href="/userProfile/show/{{userInstance.id}}">{{userInstance.firstName }}&nbsp;{{userInstance.lastName }}</a>
+                        <a href="/userProfile/show/{{userInstance.id}}">
+                            <span ng-bind-html="userInstance.firstName | highlight:query"></span>
+                            <span ng-bind-html="userInstance.lastName | highlight:query"></span>
+                        </a>
                     </h4>
                 </li>
                 <li class="text-warning" rel="tooltip" title="Locked" ng-show="{{userInstance.accountLocked }}">
