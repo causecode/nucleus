@@ -15,6 +15,10 @@ class UserManagementController {
 
     def index() {}
 
+    def roleList() {
+        render Role.list() as JSON
+    }
+
     /**
      * 
      * @param dbType Type of database support. Must be either "Mongo" or "Mysql"
@@ -31,7 +35,6 @@ class UserManagementController {
         Map result = userManagementService."listFor${dbType}"(params)
 
         result.roleList = Role.list([sort: 'authority'])
-        result.currentUserInstance = springSecurityService.currentUser
 
         render result as JSON
     }

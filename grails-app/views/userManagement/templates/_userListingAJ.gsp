@@ -18,8 +18,8 @@
                 <li>
                     <small>
                         <span class="label label-default assigned-role {{authority.replace('_', '-').toLowerCase() }}" 
-                            ng-repeat="authority in userInstance.authorities">
-                            {{authority.substring(5).replace('_', ' ') }}
+                            ng-repeat="roleId in userInstance.roleIds">
+                            {{roleId | roleName}}
                         </span>
                     </small>
                 </li>
@@ -41,6 +41,6 @@
         </div>
     </div>
 </div>
-<div ng-hide="{{!userInstanceList}}" class="list-group-item">
+<div ng-show="!pagedUserList[currentPage] || pagedUserList[currentPage].length == 0" class="list-group-item">
     <i class="fa fa-meh-o"></i> No matching records found.
 </div>

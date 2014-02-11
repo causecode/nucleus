@@ -6,9 +6,33 @@ import grails.transaction.Transactional
 class UserManagementService {
 
     Map listForMongo(Map params) {
+        List roleFilterList = params.roleFilter as List
+        
         List userInstanceList = User.withCriteria {
             if(params.letter) {
                 ilike("firstName", "${params.letter}%")
+            }
+            if(params.roleFilter) {
+                if(params.roleType == "Any Granted") {
+                    or {
+                        roleFilterList.each {
+                            between("roleIds", it.toLong(), it.toLong())
+                        }
+                    }
+                } else if(params.roleType == "All Granted") {
+                    and {
+                        roleFilterList.each {
+                            between("roleIds", it.toLong(), it.toLong())
+                        }
+                    }
+                } else {
+                    and {
+                        roleFilterList.each {
+                            between("roleIds", it, it)
+                        }
+                        sizeEq("roleIds", roleFilterList.size())
+                    }
+                }
             }
             firstResult(params.offset.toInteger())
             maxResults(params.max.toInteger())
@@ -27,7 +51,7 @@ class UserManagementService {
         StringBuilder query = new StringBuilder("select distinct ur1.user from UserRole ur1")
 
         if(params.roleFilter) {
-            List roleFilterList = params.list("roleFilter")*.toLong()
+            List roleFilterList = params.roleFilter as List
 
             if(roleType == "Any Granted") {
                 queryStringParams.roles = roleFilterList
