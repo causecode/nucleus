@@ -126,6 +126,11 @@ nucleusApp.controller('UserManagementCtrl',['$scope', '$rootScope', '$resource',
         $scope.fetchAndDisplayUserList();
     };
 
+    $scope.clearQueryFilter = function() {
+        $scope.query = '';
+        $scope.fetchAndDisplayUserList();
+    };
+
     $scope.clearSelectedAll = function() {
         $scope.query = '';
         $scope.letter = '';

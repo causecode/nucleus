@@ -12,27 +12,25 @@
                 &nbsp;<i class="fa fa-spinner fa-spin icon-1x" ng-show="ajaxLoading"></i>
             </h1>
         </div>
-        <div class="row">
-            <span class="col-sm-3">
-                <span id="clear-selection" ng-hide="selectedUser.length === 0">
-                    <small>
-                        <a href="" ng-click="clearSelectedUsers()">Clear selected users</a>
-                        <span title="Total selected user">
-                            <abbr title="Selected user id's:">
-                                <span ng-repeat="user in selectedUser" > {{user.id}}</span>
-                                </abbr>
-                        </span>
-                    </small>
-                </span>
-            </span>
-            <span class="col-sm-3" ng-show="letter">
-                <strong><small>Searched by letter:</small></strong><small>{{letter}}</small><br>
-                <a href="" ng-click="clearSelectedletter()"><small>Clear letter search</small></a>
-            </span>
-            <span class="col-sm-3" ng-show="query">
-                <a href="" ng-click="clearSelectedAll()"><small>Reset search criteria</small></a>
-            </span>
-        </div>
+        <ul class="list-inline">
+            <li ng-show="selectedUser.length !== 0">
+                <a class="btn btn-warning btn-xs" ng-click="clearSelectedUsers()">
+                    <strong>Total {{selectedUser.length}} selected
+                        <ng-pluralize count="selectedUser.length" when="{'1': 'user', 'other': 'users'}"></ng-pluralize>
+                        <i class="fa fa-fw fa-times-circle"></i></strong>
+                </a>
+            </li>
+            <li ng-show="letter">
+                <a class="btn btn-warning btn-xs" ng-click="clearSelectedletter()">
+                    <strong>Letter filter by {{letter}} <i class="fa fa-fw fa-times-circle"></i></strong>
+                </a>
+            </li>
+            <li ng-show="query">
+                <a class="btn btn-warning btn-xs" ng-click="clearQueryFilter()">
+                    <strong>Reset query filter <i class="fa fa-fw fa-times-circle"></i></strong>
+                </a>
+            </li>
+        </ul>
         <div class="row">
             <span class="col-sm-3">
                 <g:select name="userAction" noSelection="${['':'- User Action -']}" class="form-control input-sm"
