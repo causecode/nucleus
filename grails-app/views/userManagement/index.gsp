@@ -1,15 +1,14 @@
 <html>
 <head>
     <meta name="layout" content="main">
-    <g:set var="entityName" value="${message(code: 'user.label')}" />
-    <title><g:message code="default.list.label" args="[entityName]" /> Management</title>
+    <title>User Management</title>
     <r:require modules="angular, userManagementAJ" />
 </head>
 <body class="wide-screen user-list">
     <div ng-app="nucleus" ng-controller="UserManagementCtrl">
         <div class="custom-header well">
             <h1>
-                <g:message code="user.management.label" default="User Management" />
+                User Management
                 &nbsp;<i class="fa fa-spinner fa-spin icon-1x" ng-show="ajaxLoading"></i>
             </h1>
         </div>

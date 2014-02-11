@@ -5,7 +5,6 @@
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                 <h4 class="modal-title">Modify Role</h4>
             </div>
-            <g:form class="form-horizontal">
                 <div class="modal-body">
                     <div class="row">
                         <div class="col-sm-6 role-error-container">
@@ -13,8 +12,7 @@
                             <div class="checkbox" ng-repeat="role in roleList">
                                 <label>
                                     <g:checkBox name="roleIds" value="{{role.id }}" checked="false" 
-                                        ng-model="role.selected" 
-                                        data-error-placement="" title="Please select atleast one role" />
+                                        ng-model="role.selected" />
                                     {{role.authority.substring(5).replace('_', ' ') }}
                                 </label>
                             </div>
@@ -42,7 +40,6 @@
                     <button type="button" class="btn btn-primary" ng-click="modifyRole()">Modify</button>
                     <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                 </div>
-            </g:form>
         </div>
     </div>
 </div>

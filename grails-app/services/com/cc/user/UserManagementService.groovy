@@ -39,9 +39,7 @@ class UserManagementService {
                     }
                 } else {
                     and {
-                        eq("roleIds", roleFilterList)
-                        roleFilterList.each {
-                        }
+                        eq("roleIds", roleFilterList*.toLong().sort())
                     }
                 }
             }
