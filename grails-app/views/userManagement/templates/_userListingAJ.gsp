@@ -29,8 +29,8 @@
             </ul>
             <div class="list-group-item-text text-muted user-info">
                 <ul class="list-inline">
-                    <li><small><i class="fa fa-envelope"></i> &nbsp;{{userInstance.email }}</small></li>
-                    <li><small><i class="fa fa-user"></i> &nbsp;{{userInstance.username }}</small></li>
+                    <li><small><i class="fa fa-envelope"></i> &nbsp;<span ng-bind-html="userInstance.email | highlight:query"></span></small></li>
+                    <li><small><i class="fa fa-user"></i> &nbsp;<span ng-bind-html="userInstance.username | highlight:query"></span></small></li>
                     <li><small><i class="fa fa-calendar"></i> &nbsp;{{userInstance.dateCreated | date:'MM/dd/yyyy'}}</small></li>
                 </ul>
             </div>

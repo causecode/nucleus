@@ -39,10 +39,9 @@ class UserManagementService {
                     }
                 } else {
                     and {
+                        eq("roleIds", roleFilterList)
                         roleFilterList.each {
-                            between("roleIds", it, it)
                         }
-                        sizeEq("roleIds", roleFilterList.size())
                     }
                 }
             }

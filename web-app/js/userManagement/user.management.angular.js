@@ -5,7 +5,6 @@ nucleusApp.controller('UserManagementCtrl',['$scope', '$rootScope', '$resource',
     function ($scope, $rootScope, $resource, roleService) {
     var User = $resource('/userManagement/list?dbType=Mongo');
 
-    roleService.getRoleList()
     $scope.ajaxLoading = false;
     $scope.selectedUser = [];
     $scope.selectedRole = [];
@@ -24,7 +23,7 @@ nucleusApp.controller('UserManagementCtrl',['$scope', '$rootScope', '$resource',
     $scope.max = 10;
 
     $scope.fetchAndDisplayUserList = function(forPage) {
-        var offset = (forPage - 1) * $scope.max;
+        var offset = forPage ? (forPage - 1) * $scope.max : 0;
 
         var stateObj = {sort: $scope.sort, order: $scope.order, max: $scope.max, offset: offset, 
                 roleFilter: $scope.selectedRoleFilter, roleType: $scope.roleType,
@@ -39,10 +38,7 @@ nucleusApp.controller('UserManagementCtrl',['$scope', '$rootScope', '$resource',
             console.log(data.userInstanceList)
             $scope.userInstanceList = data.userInstanceList;
             $scope.userInstanceTotal = data.userInstanceTotal;
-            $scope.roleList = data.roleList;
             $scope.currentUserInstance = data.currentUserInstance;
-            if(!$scope.roleFilterList ) 
-                $scope.roleFilterList = data.roleList;
 
             $scope.pagedUserList[forPage] = data.userInstanceList;
             $scope.currentPage = forPage;
@@ -66,7 +62,7 @@ nucleusApp.controller('UserManagementCtrl',['$scope', '$rootScope', '$resource',
         modifyRoles.get({userIds:selectedUserIdList, roles: selectedRoleIdList, roleActionType: $scope.roleActionType}, function(data) {
             $('div#modify-role-overlay').modal('hide');
         })
-    }
+    };
 
     $scope.addOrRemoveFromRoleFilter = function(roleId) {
         var index = $scope.selectedRoleFilter.indexOf(roleId);
@@ -114,26 +110,26 @@ nucleusApp.controller('UserManagementCtrl',['$scope', '$rootScope', '$resource',
                 user.selected = true;
             }
         });
-    }
+    };
 
     $scope.clearSelectedUsers = function() {
         angular.forEach($scope.userInstanceList, function(user) {
             user.selected = false;
         });
         $scope.selectedUser = [];
-    }
+    };
 
     $scope.clearSelectedletter = function() {
         $scope.letter = '';
         $scope.fetchAndDisplayUserList();
-    }
+    };
 
     $scope.clearSelectedAll = function() {
         $scope.query = '';
         $scope.letter = '';
         $scope.clearSelectedUsers();
         $scope.fetchAndDisplayUserList();
-    }
+    };
 
     $scope.getSelectedRoleList = function() {
         $scope.selectedRole = [];
@@ -143,15 +139,25 @@ nucleusApp.controller('UserManagementCtrl',['$scope', '$rootScope', '$resource',
             }
         });
         return $scope.selectedRole
-    }
-    $scope.searchLetter = function(letter) {
-        $scope.letter = letter;
+    };
+
+    $scope.getSelectedUserList = function() {
+        var selectedUserId = [];
+        angular.forEach($scope.selectedUser, function(user) {
+            selectedUserId.push(user.id);
+        });
+        console.log(selectedUserId)
+        return selectedUserId;
+    };
+
+    $scope.filterByLetter = function() {
+        $scope.letter = this.char;
         $scope.fetchAndDisplayUserList();
-    }
+    };
 
     $scope.searchQuery = function() {
-        $scope.fetchAndDisplayUserList(1);  // Setting page number to first.
-    }
+        $scope.fetchAndDisplayUserList();
+    };
 
     $scope.userAction = function(action) {
         if (action.indexOf('null') == 0) {
@@ -178,7 +184,7 @@ nucleusApp.controller('UserManagementCtrl',['$scope', '$rootScope', '$resource',
             $scope.downloadEmails(selectedUserIdList);
             break;
         }
-    }
+    };
 
     $scope.makeUserActiveInactive = function(type, selectedUserIdList) {
         showAlertMessage('Please wait ..', 'warning');
@@ -186,7 +192,7 @@ nucleusApp.controller('UserManagementCtrl',['$scope', '$rootScope', '$resource',
         makeUserActiveInactive.get({type: type, selectedUser: selectedUserIdList}, function(data) {
             showAlertMessage(data.message, 'success');
         });
-    }
+    };
 
     $scope.fetchEmails = function(selectedUserIdList) {
         var fetchEmails = $resource('/userManagement/fetchEmails?');
@@ -198,7 +204,7 @@ nucleusApp.controller('UserManagementCtrl',['$scope', '$rootScope', '$resource',
                 showAlertMessage('Unable to fetch Message.', 'error');
             }
         })
-    }
+    };
 
     $scope.sendMail = function() {
         $scope.selectedEmail = $('textArea[name=selectedEmail]', '#send-bulk-msg-overlay').val();
@@ -212,13 +218,23 @@ nucleusApp.controller('UserManagementCtrl',['$scope', '$rootScope', '$resource',
                 showAlertMessage('Unable to Send Bulk Message.', 'error');
             }
         })
-    }
+    };
 
     $scope.downloadEmails = function(selectedUserIdList) {
         window.location.href = '/userManagement/downloadEmails?selectedUser='+selectedUserIdList.toString();
-    }
+    };
 
     $scope.fetchAndDisplayUserList($scope.currentPage);
+
+    $scope.letterArray = [];
+    for(var i = 0; i < 26; i++) {
+        $scope.letterArray.push(String.fromCharCode(65 + i));
+    }
+
+    roleService.getPromise().then(function(resp) {
+        $scope.roleList = resp.data;
+        $scope.roleFilterList = angular.copy(resp.data);
+    });
 }])
 .filter("roleName", function(roleService) {
     return function(roleId) {
@@ -227,9 +243,8 @@ nucleusApp.controller('UserManagementCtrl',['$scope', '$rootScope', '$resource',
 })
 .factory('roleService', function($http) {
     var roleList = [];
-
-    $http.get('/userManagement/roleList')
-    .then(function(response) {
+    var promise = $http.get('/userManagement/roleList')
+    promise.then(function(response) {
         roleList = response.data;
     });
 
@@ -246,6 +261,9 @@ nucleusApp.controller('UserManagementCtrl',['$scope', '$rootScope', '$resource',
     return {
         get: function(roleId) {
             return get(roleId)
+        },
+        getPromise: function() {
+            return promise;
         },
         getRoleList: function() {
             return roleList

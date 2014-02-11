@@ -27,16 +27,16 @@
                 </span>
             </span>
             <span class="col-sm-3" ng-show="letter">
-                <strong><small>Searched by letter:</small></strong><small>{{letter }}</small><br>
+                <strong><small>Searched by letter:</small></strong><small>{{letter}}</small><br>
                 <a href="" ng-click="clearSelectedletter()"><small>Clear letter search</small></a>
             </span>
             <span class="col-sm-3" ng-show="query">
                 <a href="" ng-click="clearSelectedAll()"><small>Reset search criteria</small></a>
             </span>
         </div>
-        <div class="row" style="margin-bottom:10px;">
+        <div class="row">
             <span class="col-sm-3">
-                <g:select name="userAction" noSelection="${['':'- User Action -']}" class="form-control"
+                <g:select name="userAction" noSelection="${['':'- User Action -']}" class="form-control input-sm"
                     ng-model="action" ng-change="userAction(action)"
                     from="${['Make user in-active', 'Make user active', 'Send bulk message', 'Export email list'] }" />
             </span>
@@ -44,7 +44,7 @@
                 <ul class="list-inline">
                     <li><small>Sort: </small></li>
                     <li>
-                        <select name="sortAction" class="form-control" ng-model="sort" ng-change="sortList()">
+                        <select name="sortAction" class="form-control input-sm" ng-model="sort" ng-change="sortList()">
                             <option value="id">ID</option>
                             <option value="email">Email</option>
                             <option value="firstName">First Name</option>
@@ -55,7 +55,7 @@
                     </li>
                     <li><small>Order: </small></li>
                     <li>
-                        <select name="orderAction" class="form-control" ng-model="order" ng-change="orderList()">
+                        <select name="orderAction" class="form-control input-sm" ng-model="order" ng-change="orderList()">
                             <option value="asc">Ascending</option>
                             <option value="desc">Descending</option>
                         </select>
@@ -65,9 +65,9 @@
             <form name="user-search" class="form form-inline input-append" ng-submit="searchQuery()">
                 <div class="pull-right col-sm-3">
                     <div class="input-group">
-                        <g:textField name="query" ng-model="query" autofocus="" class="form-control"/>
+                        <g:textField name="query" ng-model="query" autofocus="" class="form-control input-sm"/>
                         <span class="input-group-btn">
-                            <button type="submit" class="btn btn-default" ><i class="fa fa-search"></i></button>
+                            <button type="submit" class="btn btn-default btn-sm" ><i class="fa fa-search"></i></button>
                         </span>
                     </div>
                 </div>
@@ -98,12 +98,13 @@
                 </div>
             </div>
             <div class="col-sm-9">
-                <div style="padding: 5px 0px">
-                    <g:each var="alphabet" in="${65..90}">
-                        <small><a class="letter-sort" ng-click="searchLetter('${(char)alphabet}')" href="">
-                            ${Character.toString((char)alphabet)}
-                        </a></small>
-                    </g:each>
+                <div class="btn-toolbar" role="toolbar" style="margin-bottom: 10px;">
+                    <div class="btn-group">
+                        <a class="btn btn-default btn-sm" ng-repeat="char in letterArray" 
+                            ng-click="filterByLetter()" href="" ng-class="{active: char == letter}">
+                            {{char}}
+                        </a>
+                    </div>
                 </div>
                 <div class="panel panel-default">
                     <div class="panel-heading">
