@@ -35,7 +35,6 @@ nucleusApp.controller('UserManagementCtrl',['$scope', '$rootScope', '$resource',
         $scope.ajaxLoading = true;
 
         User.get(stateObj, function(data) {
-            console.log(data.userInstanceList)
             $scope.userInstanceList = data.userInstanceList;
             $scope.userInstanceTotal = data.userInstanceTotal;
             $scope.currentUserInstance = data.currentUserInstance;
@@ -56,7 +55,7 @@ nucleusApp.controller('UserManagementCtrl',['$scope', '$rootScope', '$resource',
     };
 
     $scope.modifyRole = function(data) {
-        var selectedUserIdList = $scope.getSelectedUserList();
+        var selectedUserIdList = $scope.getSelectedUserIdList();
         var selectedRoleIdList = $scope.getSelectedRoleList();
         var modifyRoles = $resource('/userManagement/modifyRoles');
         modifyRoles.get({userIds:selectedUserIdList, roles: selectedRoleIdList, roleActionType: $scope.roleActionType}, function(data) {
@@ -66,27 +65,28 @@ nucleusApp.controller('UserManagementCtrl',['$scope', '$rootScope', '$resource',
 
     $scope.addOrRemoveFromRoleFilter = function(roleId) {
         var index = $scope.selectedRoleFilter.indexOf(roleId);
-        console.log(index, roleId)
         if(index > -1) {
             this.role.selected = false;
             $scope.selectedRoleFilter.splice(index, 1);
-            console.log('dd')
         } else {
             this.role.selected = true;
             $scope.selectedRoleFilter.push(roleId);
         }
-        console.log('dd js',$scope.selectedRoleFilter)
         $scope.fetchAndDisplayUserList();
     }
 
     $scope.addOrRemoveSelectedUser = function() {
-        if(this.userInstance.selected) {
-            var index = $scope.selectedUser.indexOf(this.userInstance.id);
-            this.userInstance.selected = false;
+        var currentUser = this.userInstance;
+        if(currentUser.selected) { // Reverse selection value. Means unselecting.
+            var index = -1;
+            angular.forEach($scope.selectedUser, function(selectedUser, i) {
+                if(selectedUser.id === currentUser.id) {
+                    index = i;
+                }
+            });
             $scope.selectedUser.splice(index, 1);
         } else {
-            this.userInstance.selected = true;
-            $scope.selectedUser.push(this.userInstance.id);
+            $scope.selectedUser.push(currentUser);
         }
     }
 
@@ -141,12 +141,11 @@ nucleusApp.controller('UserManagementCtrl',['$scope', '$rootScope', '$resource',
         return $scope.selectedRole
     };
 
-    $scope.getSelectedUserList = function() {
+    $scope.getSelectedUserIdList = function() {
         var selectedUserId = [];
         angular.forEach($scope.selectedUser, function(user) {
             selectedUserId.push(user.id);
         });
-        console.log(selectedUserId)
         return selectedUserId;
     };
 
@@ -160,50 +159,45 @@ nucleusApp.controller('UserManagementCtrl',['$scope', '$rootScope', '$resource',
     };
 
     $scope.userAction = function(action) {
-        if (action.indexOf('null') == 0) {
-            return false;
-        }
-        var selectedUserIdList = $scope.selectedUser;
-        if (selectedUserIdList.length == 0 ) {
-            showAlertMessage('Please select at least one user at current page.');
+        if(action === '') {
             return false;
         }
         var confirmAction = confirm('Are you sure want to perform this action- ' + action);
         if(!confirmAction)  return false;
         switch (action) {
-        case 'Make user in-active':
-            $scope.makeUserActiveInactive('false', selectedUserIdList);
-            break;
-        case 'Make user active':
-            $scope.makeUserActiveInactive('true', selectedUserIdList);
-            break;
-        case 'Send bulk message':
-            $scope.fetchEmails(selectedUserIdList);
-            break;
-        case 'Export email list':
-            $scope.downloadEmails(selectedUserIdList);
-            break;
+            case 'Make user in-active':
+                $scope.makeUserActiveInactive(false);
+                break;
+            case 'Make user active':
+                $scope.makeUserActiveInactive(true);
+                break;
+            case 'Send bulk message':
+                $scope.fetchEmails();
+                break;
+            case 'Export email list':
+                $scope.downloadEmails();
+                break;
         }
     };
 
-    $scope.makeUserActiveInactive = function(type, selectedUserIdList) {
+    $scope.makeUserActiveInactive = function(activate) {
         showAlertMessage('Please wait ..', 'warning');
+        var selectedUserIdList = $scope.getSelectedUserIdList();
         var makeUserActiveInactive = $resource('/userManagement/makeUserActiveInactive');
-        makeUserActiveInactive.get({type: type, selectedUser: selectedUserIdList}, function(data) {
+
+        makeUserActiveInactive.get({type: activate, selectedUser: selectedUserIdList}, function(data) {
             showAlertMessage(data.message, 'success');
+            $scope.fetchAndDisplayUserList($scope.currentPage);
         });
     };
 
-    $scope.fetchEmails = function(selectedUserIdList) {
-        var fetchEmails = $resource('/userManagement/fetchEmails?');
-        fetchEmails.get({selectedUser: selectedUserIdList}, function(data) {
-            if(data.emails) {
-                $('textArea[name=selectedEmail]', '#send-bulk-msg-overlay').val(data.emails);
-                $('#send-bulk-msg-overlay').modal('show');
-            } else {
-                showAlertMessage('Unable to fetch Message.', 'error');
-            }
+    $scope.fetchEmails = function() {
+        var selectedUserEmailList = [];
+        angular.forEach($scope.selectedUser, function(user) {
+            selectedUserEmailList.push(user.email);
         })
+        $('textArea[name=selectedEmail]', '#send-bulk-msg-overlay').val(selectedUserEmailList);
+        $('#send-bulk-msg-overlay').modal('show');
     };
 
     $scope.sendMail = function() {
@@ -220,8 +214,9 @@ nucleusApp.controller('UserManagementCtrl',['$scope', '$rootScope', '$resource',
         })
     };
 
-    $scope.downloadEmails = function(selectedUserIdList) {
-        window.location.href = '/userManagement/downloadEmails?selectedUser='+selectedUserIdList.toString();
+    $scope.downloadEmails = function() {
+        var selectedUserIdList = $scope.getSelectedUserIdList();
+        window.location.href = '/userManagement/downloadEmails?selectedUser=' + selectedUserIdList.toString();
     };
 
     $scope.fetchAndDisplayUserList($scope.currentPage);

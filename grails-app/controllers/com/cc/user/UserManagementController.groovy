@@ -57,15 +57,6 @@ class UserManagementController {
         render true
     }
 
-    def fetchEmails() {
-        List<Long> selectedUser = params.list('selectedUser')
-        List emailList = User.getAll(selectedUser)*.email
-
-        String emails = emailList.unique().join(', ')
-        if(!emails) response.status = 500;
-        render ([emails: emails] as JSON)
-    }
-
     def sendBulkEmail() {
         List invalidEmail = []
         String result
@@ -101,13 +92,12 @@ class UserManagementController {
         String typeText = params.boolean('type') ? 'active': 'in-active'
 
         log.info "Users ID recived to $typeText active User : $params.selectedUser $params"
+
         params.list('selectedUser')?.each {
-            try {
-                userInstance = User.findByIdAndEnabled(it, !params.type)
-            } catch(Exception e){userInstance = null }
+            userInstance = User.findByIdAndEnabled(it, !params.boolean("type"))
 
             if(userInstance) {
-                userInstance.enabled = params.type
+                userInstance.enabled = params.boolean("type")
                 userInstance.save(flush: true)
             }
         }

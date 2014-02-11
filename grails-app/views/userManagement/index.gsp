@@ -37,7 +37,7 @@
         <div class="row">
             <span class="col-sm-3">
                 <g:select name="userAction" noSelection="${['':'- User Action -']}" class="form-control input-sm"
-                    ng-model="action" ng-change="userAction(action)"
+                    ng-model="action" ng-change="userAction(action)" ng-disabled="selectedUser.length == 0"
                     from="${['Make user in-active', 'Make user active', 'Send bulk message', 'Export email list'] }" />
             </span>
             <div class="col-sm-6">
@@ -114,7 +114,7 @@
                                     data-checkbox-name="userId" style="vertical-align: text-bottom;" />
                             </li>
                             <li>
-                                <a href="#" class="btn btn-xs btn-default" id="modify-role"
+                                <a href="" class="btn btn-xs btn-default" ng-disabled="selectedUser.length == 0"
                                     data-toggle="modal" data-target="#modify-role-overlay" >Modify Role</a>
                             </li>
                         </ul>
