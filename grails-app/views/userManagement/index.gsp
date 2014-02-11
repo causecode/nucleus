@@ -120,15 +120,12 @@
                         <g:render template="/userManagement/templates/userListingAJ" />
                     </div>
                 </div>
-                
+                <pagination total-items="userInstanceTotal" page="currentPage" on-select-page="changePage(page)"
+                    items-per-page="itemsPerPage" max-size="10"></pagination>
             </div>
         </div>
         <g:render template="/userManagement/templates/sendBulkMailOverlayAJ"></g:render>
         <g:render template="/userManagement/templates/modifyRoleOverlayAJ" />
-        <div class="col-sm-offset-3">
-             <pagination total-items="userInstanceTotal" page="currentPage" on-select-page="changePage(page)"
-                    items-per-page="itemsPerPage" max-size="10"></pagination>
-        </div>
     </div>
 </body>
 </html>
