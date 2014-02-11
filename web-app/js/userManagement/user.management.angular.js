@@ -58,8 +58,10 @@ nucleusApp.controller('UserManagementCtrl',['$scope', '$rootScope', '$resource',
         var selectedUserIdList = $scope.getSelectedUserIdList();
         var selectedRoleIdList = $scope.getSelectedRoleList();
         var modifyRoles = $resource('/userManagement/modifyRoles');
-        modifyRoles.get({userIds:selectedUserIdList, roles: selectedRoleIdList, roleActionType: $scope.roleActionType}, function(data) {
+
+        modifyRoles.get({userIds:selectedUserIdList, roleIds: selectedRoleIdList, roleActionType: $scope.roleActionType}, function(data) {
             $('div#modify-role-overlay').modal('hide');
+            $scope.fetchAndDisplayUserList($scope.currentPage);
         })
     };
 
@@ -133,7 +135,7 @@ nucleusApp.controller('UserManagementCtrl',['$scope', '$rootScope', '$resource',
 
     $scope.getSelectedRoleList = function() {
         $scope.selectedRole = [];
-        angular.forEach($scope.roleFilterList, function(role) {
+        angular.forEach($scope.roleList, function(role) {
             if(role.selected) {
                 $scope.selectedRole.push(role.id);
             }

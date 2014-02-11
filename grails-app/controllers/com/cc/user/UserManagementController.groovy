@@ -42,16 +42,16 @@ class UserManagementController {
     def modifyRoles(String roleActionType) {
         List userIds = params.list("userIds")
         List roles = params.list("roleIds")
-        List roleInstanceList = Role.getAll(roles)
+        List roleInstanceList = Role.getAll(roles*.toLong())
 
         userIds.each { userId ->
             User userInstance = User.get(userId)
 
             if(roleActionType == "refresh") {
-                UserRole.findAllByUser(userInstance)*.delete(flush: true)
+                UserRole.removeAll(userInstance)
             }
             roleInstanceList.each { roleInstance ->
-                UserRole.findOrSaveByUserAndRole(userInstance, roleInstance)
+                UserRole.create(userInstance, roleInstance, true)
             }
         }
         render true
