@@ -1,10 +1,11 @@
 var nucleusApp = angular.module('nucleus', ['ngCookies', 'ngResource', 'ngRoute', 'ui.bootstrap'], 
-  function($routeProvider, $locationProvider, $httpProvider) {});
+        function($routeProvider, $locationProvider, $httpProvider) {});
 
 nucleusApp.controller('UserManagementCtrl',['$scope', '$rootScope', '$resource', 'roleService',
     function ($scope, $rootScope, $resource, roleService) {
-    roleService.getRoleList()
     var User = $resource('/userManagement/list?dbType=Mongo');
+
+    roleService.getRoleList()
     $scope.ajaxLoading = false;
     $scope.selectedUser = [];
     $scope.selectedRole = [];
@@ -13,15 +14,17 @@ nucleusApp.controller('UserManagementCtrl',['$scope', '$rootScope', '$resource',
     $scope.roleActionType = 'refresh';
     $scope.letter = '';
     $scope.query = '';
+    $scope.sort = 'id';
+    $scope.order = 'asc';
 
     $scope.currentPage = 1;
-    $scope.fetchingUsers = true;
+    $scope.ajaxLoading = true;
     $scope.itemsPerPage = 10;
     $scope.pagedUserList = [];
     $scope.max = 10;
 
     $scope.fetchAndDisplayUserList = function(forPage) {
-        var offset = ( forPage > 1 )? ( (forPage-1) * $scope.max ): forPage;
+        var offset = (forPage - 1) * $scope.max;
 
         var stateObj = {sort: $scope.sort, order: $scope.order, max: $scope.max, offset: offset, 
                 roleFilter: $scope.selectedRoleFilter, roleType: $scope.roleType,
@@ -43,16 +46,13 @@ nucleusApp.controller('UserManagementCtrl',['$scope', '$rootScope', '$resource',
 
             $scope.pagedUserList[forPage] = data.userInstanceList;
             $scope.currentPage = forPage;
-            $scope.fetchingUsers = false;
             $scope.ajaxLoading = false;
         })
     }
 
-    $scope.fetchAndDisplayUserList($scope.currentPage);
-
     $scope.changePage = function(toPage) {
         if(!$scope.pagedUserList[toPage]) {
-            $scope.fetchingUsers = true;
+            $scope.ajaxLoading = true;
             $scope.fetchAndDisplayUserList(toPage);
         } else {
             $scope.currentPage = toPage;
@@ -132,7 +132,7 @@ nucleusApp.controller('UserManagementCtrl',['$scope', '$rootScope', '$resource',
         $scope.fetchAndDisplayUserList();
         return false;
     }
-    
+
     $scope.clearSelectedAll = function() {
         $scope.query = '';
         $scope.letter = '';
@@ -226,6 +226,8 @@ nucleusApp.controller('UserManagementCtrl',['$scope', '$rootScope', '$resource',
     $scope.downloadEmails = function(selectedUserIdList) {
         window.location.href = '/userManagement/downloadEmails?selectedUser='+selectedUserIdList.toString();
     }
+
+    $scope.fetchAndDisplayUserList($scope.currentPage);
 }])
 .filter("roleName", function(roleService) {
     return function(roleId) {
@@ -234,12 +236,12 @@ nucleusApp.controller('UserManagementCtrl',['$scope', '$rootScope', '$resource',
 })
 .factory('roleService', function($http) {
     var roleList = [];
-    
+
     $http.get('/userManagement/roleList')
     .then(function(response) {
         roleList = response.data;
     });
-    
+
     function get(roleId) {
         var roleInstance;
         angular.forEach(roleList, function(role) {

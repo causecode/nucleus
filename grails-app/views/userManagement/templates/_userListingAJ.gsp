@@ -9,12 +9,12 @@
                         <a href="/userProfile/show/{{userInstance.id}}">{{userInstance.firstName }}&nbsp;{{userInstance.lastName }}</a>
                     </h4>
                 </li>
-                <g:if test="{{userInstance.accountLocked }}">
-                    <li class="text-warning" rel="tooltip" title="Locked"><i class="fa fa-exclamation-circle"></i></li>
-                </g:if>
-                <g:if test="{{!userInstance.enabled }}">
-                    <li class="text-danger" rel="tooltip" title="Disabled"><i class="fa fa-lock"></i></li>
-                </g:if>
+                <li class="text-warning" rel="tooltip" title="Locked" ng-show="{{userInstance.accountLocked }}">
+                    <i class="fa fa-exclamation-circle"></i>
+                </li>
+                <li class="text-danger" rel="tooltip" title="Disabled" ng-show="{{!userInstance.enabled }}">
+                    <i class="fa fa-lock"></i>
+                </li>
                 <li>
                     <small>
                         <span class="label label-default assigned-role {{authority.replace('_', '-').toLowerCase() }}" 

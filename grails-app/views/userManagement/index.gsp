@@ -113,7 +113,7 @@
                                     data-checkbox-name="userId" style="vertical-align: text-bottom;" />
                             </li>
                             <li>
-                                <a href="#" class="btn btn-xs btn-default " id="modify-role"
+                                <a href="#" class="btn btn-xs btn-default" id="modify-role"
                                     data-toggle="modal" data-target="#modify-role-overlay" >Modify Role</a>
                             </li>
                         </ul>

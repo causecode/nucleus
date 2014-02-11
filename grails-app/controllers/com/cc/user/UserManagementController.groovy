@@ -25,7 +25,7 @@ class UserManagementController {
      * @return
      */
     def list(Integer max, String dbType) {
-        log.info "Params recived to fetch users :"+params
+        log.info "Params recived to fetch users :" + params
 
         params.offset = params.offset ?: 0
         params.sort = params.sort ?: "id"

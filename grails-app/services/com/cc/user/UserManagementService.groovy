@@ -5,10 +5,15 @@ import grails.transaction.Transactional
 @Transactional
 class UserManagementService {
 
-    Map listForMongo(Map params) {
+    List fetchListForMongo(Map params, boolean paginate) {
         List roleFilterList = params.roleFilter as List
-        
-        List userInstanceList = User.withCriteria {
+
+        List result = User.withCriteria {
+            if(!paginate) {
+                projections {
+                    countDistinct "email"
+                }
+            }
             if(params.letter) {
                 ilike("firstName", "${params.letter}%")
             }
@@ -34,11 +39,17 @@ class UserManagementService {
                     }
                 }
             }
-            firstResult(params.offset.toInteger())
-            maxResults(params.max.toInteger())
+            if(paginate) {
+                firstResult(params.offset.toInteger())
+                maxResults(params.max.toInteger())
+                order(params.sort, params.order)
+            }
         }
+        result
+    }
 
-        [userInstanceList: userInstanceList]
+    Map listForMongo(Map params) {
+        [userInstanceList: fetchListForMongo(params, true), userInstanceTotal: fetchListForMongo(params, false)[0]]
     }
 
     Map listForMysql(Map params) {
