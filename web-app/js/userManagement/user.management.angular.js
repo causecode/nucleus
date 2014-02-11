@@ -2,7 +2,7 @@ var nucleusApp = angular.module('nucleus', ['ngCookies', 'ngResource', 'ngRoute'
   function($routeProvider, $locationProvider, $httpProvider) {});
 
 nucleusApp.controller('UserManagementCtrl',['$scope', '$rootScope', '$resource', function ($scope, $rootScope, $resource) {
-    var User = $resource('/userManagement/list?ajax=true');
+    var User = $resource('/userManagement/list?dbType=Mongo');
     $scope.selectedUser = [];
     $scope.selectedRole = [];
     $scope.selectedRoleFilter = [];
@@ -35,9 +35,6 @@ nucleusApp.controller('UserManagementCtrl',['$scope', '$rootScope', '$resource',
             $scope.currentUserInstance = data.currentUserInstance;
             if(!$scope.roleFilterList ) 
                 $scope.roleFilterList = data.roleList;
-            $scope.max = data.params.max;
-            $scope.sort = data.params.sort;
-            $scope.order = data.params.order;
 
             $scope.pagedUserList[forPage] = data.userInstanceList;
             $scope.currentPage = forPage;
@@ -59,7 +56,7 @@ nucleusApp.controller('UserManagementCtrl',['$scope', '$rootScope', '$resource',
     $scope.modifyRole = function(data) {
         var selectedUserIdList = $scope.getSelectedUserList();
         var selectedRoleIdList = $scope.getSelectedRoleList();
-        var modifyRoles = $resource('/userManagement/modifyRoles?ajax=true');
+        var modifyRoles = $resource('/userManagement/modifyRoles');
         modifyRoles.get({userIds:selectedUserIdList, roles: selectedRoleIdList, roleActionType: $scope.roleActionType}, function(data){
             $('div#modify-role-overlay').modal('hide');
         })

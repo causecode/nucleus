@@ -35,6 +35,5 @@ modules = {
 
     userManagementAJ {
         resource url: [dir: 'js/userManagement', file: "user.management.angular.js", plugin: "nucleus"]
-        resource url: [dir: 'js/userManagement', file: "user.management.service.angular.js", plugin: "nucleus"]
     }
 }

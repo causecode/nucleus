@@ -7,71 +7,33 @@ import grails.plugins.springsecurity.Secured
 @Secured(["ROLE_ADMIN"])
 class UserManagementController {
 
-    def springSecurityService
     def asyncMailService
+    def springSecurityService
+    def userManagementService
 
     private User userInstance
 
     def index() {}
 
-    def list(Integer max, String roleType) {
+    /**
+     * 
+     * @param dbType Type of database support. Must be either "Mongo" or "Mysql"
+     * @return
+     */
+    def list(Integer max, String dbType) {
         log.info "Params recived to fetch users :"+params
+
         params.offset = params.offset ?: 0
         params.sort = params.sort ?: "id"
         params.max = Math.min(max ?: 10, 100)
         params.order = params.order ?: "asc"
 
-        Long userInstanceTotal = 0
-        List<User> userInstanceList = []
+        Map result = userManagementService."listFor${dbType}"(params)
 
-        Map queryStringParams = [:]
-        StringBuilder query = new StringBuilder("select distinct ur1.user from UserRole ur1")
+        result.roleList = Role.list([sort: 'authority'])
+        result.currentUserInstance = springSecurityService.currentUser
 
-        if(params.roleFilter) {
-            List roleFilterList = params.list("roleFilter")*.toLong()
-
-            if(roleType == "Any Granted") {
-                queryStringParams.roles = roleFilterList
-                query.append(" where ur1.role.id in (:roles)")
-            } else if(roleType == "All Granted") {
-                query.append(" where")
-                makeQueryToCheckEachRole(query, roleFilterList)
-            } else {
-                query.append(" where")
-                makeQueryToCheckEachRole(query, roleFilterList)
-                query.append(""" and exists ( select ur_count.user from UserRole ur_count where
-                    ur1.user.id = ur_count.user.id group by ur_count.user having count(ur_count.role) = ${roleFilterList.size()})""")
-            }
-        }
-        if(params.letter) {
-            if(query.indexOf("where") == -1) query.append(" where")
-            query.append(""" lower(ur1.user.firstName) like '${params.letter.toLowerCase()}%' """)
-        }
-        if(params.query && !params.letter) {
-            if(query.indexOf("where") == -1) query.append(" where")
-            query.append(""" lower(ur1.user.firstName) like '%${params.query.toLowerCase()}%' """)
-            query.append(""" or lower(ur1.user.lastName) like '${params.query.toLowerCase()}%' """)
-            query.append(""" or lower(ur1.user.email) like '${params.query.toLowerCase()}%' """)
-            query.append(""" or lower(ur1.user.username) like '${params.query.toLowerCase()}%' """)
-        }
-        query.append(" order by ur1.user.${params.sort} ${params.order}")
-
-        userInstanceList = UserRole.executeQuery(query.toString(), queryStringParams, [max: params.max, offset: params.offset])
-
-        userInstanceTotal = UserRole.executeQuery(query.toString(), queryStringParams).size()
-
-        render ([userInstanceList: userInstanceList, userInstanceTotal: userInstanceTotal, roleList: Role.list([sort: 'authority']),
-            currentUserInstance: springSecurityService.currentUser, params: params]  as JSON)
-    }
-
-    private void makeQueryToCheckEachRole(StringBuilder query, roleFilterList) {
-        roleFilterList.eachWithIndex { role, index ->
-            String alias = "ur${index+2}"
-            query.append(" exists ( select ${alias}.user from UserRole $alias where ${alias}.user.id = ur1.user.id and ${alias}.role.id = $role )")
-            if(index < roleFilterList.size() - 1) {
-                query.append(" and")
-            }
-        }
+        render result as JSON
     }
 
     def modifyRoles(String roleActionType) {
@@ -133,7 +95,7 @@ class UserManagementController {
     }
 
     def makeUserActiveInactive() {
-        String typeText = params.boolean('type')? 'active': 'in-active'
+        String typeText = params.boolean('type') ? 'active': 'in-active'
 
         log.info "Users ID recived to $typeText active User : $params.selectedUser $params"
         params.list('selectedUser')?.each {
@@ -158,7 +120,7 @@ class UserManagementController {
         out.withWriter { writer ->
             String[] properties = new String[5]
             properties = ['Id', 'Full Name', 'Email', 'Username', 'Active']
-            def csvWriter = new CSVWriter(writer)
+            CSVWriter csvWriter = new CSVWriter(writer)
             csvWriter.writeNext(properties)
             selectedUser?.each {
                 try {

@@ -6,10 +6,7 @@
     <r:require modules="angular, userManagementAJ" />
 </head>
 <body class="wide-screen user-list">
-    <content tag="breadcrumb">
-        <cc:breadcrumb map="['/dashboard': 'Causecode Dashboard', 'active': 'User Management']" />
-    </content>
-    <div class="page-header custom">
+    <div class="custom-header well">
         <h1>
             <g:message code="user.management.label" default="User Management" />
         </h1>
@@ -38,7 +35,7 @@
         </div>
         <div class="row" style="margin-bottom:10px;">
             <span class="col-sm-3">
-                <g:select name="userAction" noSelection="${['null':'- User Action -']}" class="form-control"
+                <g:select name="userAction" noSelection="${['':'- User Action -']}" class="form-control"
                     ng-model="action" ng-change="userAction(action)"
                     from="${['Make user in-active', 'Make user active', 'Send bulk message', 'Export email list'] }" />
             </span>
@@ -91,19 +88,19 @@
                     <li><small>Sort: </small></li>
                     <li>
                         <select name="sortAction" class="form-control" ng-model="sort" ng-change="sortList()">
-                            <option value="id"><small>ID</small></option>
-                            <option value="email"><small>Email</small></option>
-                            <option value="firstName"><small>First Name</small></option>
-                            <option value="lastName"><small>Last Name</small></option>
-                            <option value="accountLocked"><small>Locked</small></option>
-                            <option value="username"><small>Username</small></option>
+                            <option value="id">ID</option>
+                            <option value="email">Email</option>
+                            <option value="firstName">First Name</option>
+                            <option value="lastName">Last Name</option>
+                            <option value="accountLocked">Locked</option>
+                            <option value="username">Username</option>
                         </select>
                     </li>
                     <li><small>Order: </small></li>
                     <li>
                         <select name="orderAction" class="form-control" ng-model="order" ng-change="orderList()">
-                            <option value="asc"><small>Ascending</small></option>
-                            <option value="desc"><small>Descending</small></option>
+                            <option value="asc">Ascending</option>
+                            <option value="desc">Descending</option>
                         </select>
                     </li>
                 </ul>
