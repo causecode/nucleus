@@ -14,7 +14,7 @@ import grails.plugins.springsecurity.Secured
 @Secured(["ROLE_ADMIN"])
 class SitemapController {
 
-    private static Sitemap EMPTY_SITEMAP = new Sitemap()
+    private static final Sitemap EMPTY_SITEMAP = new Sitemap()
 
     def sitemapService
 

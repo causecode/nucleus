@@ -23,4 +23,8 @@ modules = {
     prettyprint {
         resource url: 'js/core.js', linkOverride: "https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js"
     }
+
+    userManagementAJ {
+        resource url: [dir: 'js/userManagement', file: "user.management.angular.js", plugin: "nucleus"]
+    }
 }
