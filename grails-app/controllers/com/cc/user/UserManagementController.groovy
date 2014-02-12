@@ -1,3 +1,11 @@
+/*
+ * Copyright (c) 2011, CauseCode Technologies Pvt Ltd, India.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or
+ * without modification, are not permitted.
+ */
+
 package com.cc.user
 
 import grails.converters.JSON
@@ -108,8 +116,8 @@ class UserManagementController {
     def downloadEmails() {
         log.info "User List for download Emails: $params.selectedUser."
 
-        Map labels = [:]
-        List parameters, fields = [], columnWidthList = []
+        Map parameters, labels = [:]
+        List fields = [], columnWidthList = []
         List selectedUser = params.selectedUser.tokenize(",")*.trim()*.toLong()
 
         fields << "id"; labels."id" = "User Id"; columnWidthList << 0.1
@@ -122,8 +130,10 @@ class UserManagementController {
         fields << "enabled"; labels."enabled" = "Active"; columnWidthList << 0.1
         fields << "accountLocked"; labels."accountLocked" = "Locked"; columnWidthList << 0.1
 
+        parameters = ["column.widths": columnWidthList]
+
         response.contentType = "application/vnd.ms-excel"
-        response.setHeader("Content-disposition", "attachment; filename=user-report.csv");
+        response.setHeader("Content-disposition", "attachment; filename=user-report.xls");
 
         exportService.export("excel", response.outputStream, User.getAll(selectedUser), fields, labels, [:], parameters)
     }
