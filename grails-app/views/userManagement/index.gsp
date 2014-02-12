@@ -15,7 +15,7 @@
         <ul class="list-inline">
             <li ng-show="selectedUser.length !== 0">
                 <a class="btn btn-warning btn-xs" ng-click="clearSelectedUsers()">
-                    <strong>Total {{selectedUser.length}} selected
+                    <strong>Total <abbr title="{{getSelectedUserIdList().join(', ')}}">{{selectedUser.length}}</abbr> selected
                         <ng-pluralize count="selectedUser.length" when="{'1': 'user', 'other': 'users'}"></ng-pluralize>
                         <i class="fa fa-fw fa-times-circle"></i></strong>
                 </a>
@@ -97,6 +97,9 @@
             <div class="col-sm-9">
                 <div class="btn-toolbar" role="toolbar" style="margin-bottom: 10px;">
                     <div class="btn-group">
+                        <a class="btn btn-default btn-sm disabled" href="" disabled>
+                            Letter Filter:
+                        </a>
                         <a class="btn btn-default btn-sm" ng-repeat="char in letterArray" 
                             ng-click="filterByLetter()" href="" ng-class="{active: char == letter}">
                             {{char}}

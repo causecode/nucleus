@@ -7,7 +7,6 @@ import grails.plugins.springsecurity.Secured
 @Secured(["ROLE_ADMIN"])
 class UserManagementController {
 
-    def asyncMailService
     def springSecurityService
     def userManagementService
 
@@ -68,7 +67,7 @@ class UserManagementController {
                 String emailAddress = it?.trim()
                 Map emailLayoutArgs = [title: "", body: params.body]
                 try {
-                    asyncMailService.sendMail {
+                    sendMail {
                         to emailAddress
                         subject params.subject;
                         html g.render(template: "/userManagement/templates/email", model: [email: emailLayoutArgs], plugin:"nucleus");

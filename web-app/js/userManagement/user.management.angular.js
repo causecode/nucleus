@@ -169,6 +169,7 @@ nucleusApp.controller('UserManagementCtrl',['$scope', '$rootScope', '$resource',
         if(action === '') {
             return false;
         }
+        $scope.action = '';
         var confirmAction = confirm('Are you sure want to perform this action- ' + action);
         if(!confirmAction)  return false;
         switch (action) {
@@ -188,7 +189,7 @@ nucleusApp.controller('UserManagementCtrl',['$scope', '$rootScope', '$resource',
     };
 
     $scope.makeUserActiveInactive = function(activate) {
-        showAlertMessage('Please wait ..', 'warning');
+        showAlertMessage('Please wait ..', 'warn');
         var selectedUserIdList = $scope.getSelectedUserIdList();
         var makeUserActiveInactive = $resource('/userManagement/makeUserActiveInactive');
 
@@ -208,6 +209,7 @@ nucleusApp.controller('UserManagementCtrl',['$scope', '$rootScope', '$resource',
     };
 
     $scope.sendMail = function() {
+        // TODO Use scope & data binding instead of jquery method.
         $scope.selectedEmail = $('textArea[name=selectedEmail]', '#send-bulk-msg-overlay').val();
         $('#send-bulk-msg-overlay').modal('hide');
         showAlertMessage('Please wait, performing your request ..', 'warn', {timeout: 'clear'})
@@ -216,7 +218,7 @@ nucleusApp.controller('UserManagementCtrl',['$scope', '$rootScope', '$resource',
             if(data) {
                 showAlertMessage(data.message, 'info');
             } else {
-                showAlertMessage('Unable to Send Bulk Message.', 'error');
+                showAlertMessage('Unable to Send Bulk Message.', 'danger');
             }
         })
     };
