@@ -1,4 +1,4 @@
-# Nucleus Plugin (Latest 0.1.9.2)
+# Nucleus Plugin (Latest 0.2)
 
 ## By CauseCode Technologies Pvt. Ltd.
 

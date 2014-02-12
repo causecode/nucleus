@@ -21,7 +21,7 @@ grails.project.dependency.resolution = {
     }
 
     plugins {
-        compile("com.cc.plugins:content:2.1.2", "com.cc.plugins:file-uploader:2.4-SNAPSHOT") {
+        compile("com.cc.plugins:content:2.1.2", /*"com.cc.plugins:file-uploader:2.4-SNAPSHOT"*/) {
             export = false
         }
         compile ":export:1.5"

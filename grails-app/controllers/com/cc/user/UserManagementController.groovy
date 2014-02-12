@@ -13,7 +13,7 @@ class UserManagementController {
 
     private User userInstance
 
-    def index() { }
+    def index() {}
 
     def roleList() {
         render Role.list() as JSON
