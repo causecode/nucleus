@@ -1,5 +1,11 @@
 # ChangeLog
 
+## Version 0.2
+
+### New Feature
+
+1. Added user management screen.
+
 ## Version 0.1.9 - 0.1.9.2
 
 ### Database changes
@@ -9,5 +15,5 @@
 
 ### Fixes
 
-1. Fixed support for multiple error classses on jquery validation,
+1. Fixed support for multiple error classes on jquery validation,
 2. Some fixes for showing alert messages.

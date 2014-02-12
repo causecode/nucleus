@@ -13,3 +13,7 @@ beans = {
     userDetailsService(CustomUserDetailsService)
 }
 ```
+
+## Required Modules
+
+1. A module named **angular** is required in order to user user management screen.

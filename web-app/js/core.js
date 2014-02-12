@@ -43,7 +43,6 @@ $(document).ajaxStart(function() {
     $("[rel=popover]").popover();
 })
 
-//(function($) {
 $.fn.disable = function(action) {
     this.each(function() {
         var $this = $(this).toggleClass("disabled", action);
@@ -61,7 +60,6 @@ $.fn.disable = function(action) {
         return $(this);
     })
 }
-//}(jQuery));
 
 /**
  * A script to select/un-select same all same name of checkbox
@@ -255,6 +253,7 @@ function showAlertMessage(message, type, params) {
     }
 }
 
+// TODO Add comments.
 function resetSection(element) {
     var cc = cc || {}
     if (element.is("form")) {
@@ -341,6 +340,7 @@ function spinner(show, selector) {
     }
 }
 
+// TODO Add comments.
 function setDefaultValues(container) {
     var cc = cc || {};
     if (!container)

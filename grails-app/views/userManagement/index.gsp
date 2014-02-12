@@ -9,7 +9,7 @@
         <div class="custom-header well">
             <h1>
                 User Management
-                &nbsp;<i class="fa fa-spinner fa-spin icon-1x" ng-show="ajaxLoading"></i>
+                &nbsp;<i class="fa fa-spinner fa-spin" ng-show="ajaxLoading"></i>
             </h1>
         </div>
         <ul class="list-inline">
