@@ -24,8 +24,7 @@ grails.project.dependency.resolution = {
         compile("com.cc.plugins:content:2.1.2", "com.cc.plugins:file-uploader:2.4-SNAPSHOT") {
             export = false
         }
-        compile ":joda-time:1.4"
-        compile ":excel-import:1.0.0"
+        compile ":export:1.5"
         build(":tomcat:7.0.42", ":release:3.0.1", ":rest-client-builder:1.0.3") {
             export = false
         }

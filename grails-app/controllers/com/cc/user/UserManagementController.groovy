@@ -1,18 +1,19 @@
 package com.cc.user
 
 import grails.converters.JSON
-import liquibase.util.csv.CSVWriter
 import grails.plugins.springsecurity.Secured
 
 @Secured(["ROLE_ADMIN"])
 class UserManagementController {
 
+    // Arranged by name
+    def exportService
     def springSecurityService
     def userManagementService
 
     private User userInstance
 
-    def index() {}
+    def index() { }
 
     def roleList() {
         render Role.list() as JSON
@@ -106,28 +107,24 @@ class UserManagementController {
 
     def downloadEmails() {
         log.info "User List for download Emails: $params.selectedUser."
-        List selectedUser = params.selectedUser.tokenize(',')
+
+        Map labels = [:]
+        List parameters, fields = [], columnWidthList = []
+        List selectedUser = params.selectedUser.tokenize(",")*.trim()*.toLong()
+
+        fields << "id"; labels."id" = "User Id"; columnWidthList << 0.1
+        fields << "email"; labels."email" = "Email"; columnWidthList << 0.3
+        fields << "firstName"; labels."firstName" = "First Name"; columnWidthList << 0.2
+        fields << "lastName"; labels."lastName" = "Last Name"; columnWidthList << 0.2
+        fields << "gender"; labels."gender" = "Gender"; columnWidthList << 0.1
+        fields << "birthdate"; labels."birthdate" = "Birthdate"; columnWidthList << 0.2
+        fields << "dateCreated"; labels."dateCreated" = "Date Joined"; columnWidthList << 0.2
+        fields << "enabled"; labels."enabled" = "Active"; columnWidthList << 0.1
+        fields << "accountLocked"; labels."accountLocked" = "Locked"; columnWidthList << 0.1
+
+        response.contentType = "application/vnd.ms-excel"
         response.setHeader("Content-disposition", "attachment; filename=user-report.csv");
-        def out = response.outputStream
-        out.withWriter { writer ->
-            String[] properties = new String[5]
-            properties = ['Id', 'Full Name', 'Email', 'Username', 'Active']
-            CSVWriter csvWriter = new CSVWriter(writer)
-            csvWriter.writeNext(properties)
-            selectedUser?.each {
-                try {
-                    userInstance = User.get(it)
-                } catch(Exception e) {userInstance = null }
-                if(userInstance) {
-                    properties[0] = userInstance?.id
-                    properties[1] = userInstance?.fullName
-                    properties[2] = userInstance?.email
-                    properties[3] = userInstance?.username
-                    properties[4] = ""+userInstance?.enabled
-                    csvWriter.writeNext(properties)
-                }
-            }
-            csvWriter.flush()
-        }
+
+        exportService.export("excel", response.outputStream, User.getAll(selectedUser), fields, labels, [:], parameters)
     }
 }

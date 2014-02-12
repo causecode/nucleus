@@ -98,7 +98,7 @@
                 <div class="btn-toolbar" role="toolbar" style="margin-bottom: 10px;">
                     <div class="btn-group">
                         <a class="btn btn-default btn-sm disabled" href="" disabled>
-                            Letter Filter:
+                            Letter Filter
                         </a>
                         <a class="btn btn-default btn-sm" ng-repeat="char in letterArray" 
                             ng-click="filterByLetter()" href="" ng-class="{active: char == letter}">
