@@ -35,6 +35,12 @@ nucleusApp.controller('UserManagementCtrl',['$scope', '$rootScope', '$resource',
         $scope.ajaxLoading = true;
 
         User.get(stateObj, function(data) {
+            var selectedUserIdList = $scope.getSelectedUserIdList();
+            angular.forEach(data.userInstanceList, function(userInstance) {
+                if(selectedUserIdList.indexOf(userInstance.id) > -1) {
+                    userInstance.selected = true;
+                }
+            });
             $scope.userInstanceList = data.userInstanceList;
             $scope.userInstanceTotal = data.userInstanceTotal;
             $scope.currentUserInstance = data.currentUserInstance;
