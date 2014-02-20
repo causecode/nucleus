@@ -11,6 +11,7 @@ nucleusApp.controller('UserManagementCtrl',['$scope', '$rootScope', '$resource',
     $scope.selectedRoleFilter = [];
     $scope.roleType= 'Any Granted';
     $scope.roleActionType = 'refresh';
+    $scope.action = '';
     $scope.letter = '';
     $scope.query = '';
     $scope.sort = 'id';
@@ -65,8 +66,9 @@ nucleusApp.controller('UserManagementCtrl',['$scope', '$rootScope', '$resource',
         var selectedRoleIdList = $scope.getSelectedRoleList();
         var modifyRoles = $resource('/userManagement/modifyRoles');
 
+        $('div#modify-role-overlay').modal('hide');
         modifyRoles.get({userIds:selectedUserIdList, roleIds: selectedRoleIdList, roleActionType: $scope.roleActionType}, function(data) {
-            $('div#modify-role-overlay').modal('hide');
+            showAlertMessage("Role modified successfully.", 'success');
             $scope.fetchAndDisplayUserList($scope.currentPage);
         })
     };
@@ -171,7 +173,8 @@ nucleusApp.controller('UserManagementCtrl',['$scope', '$rootScope', '$resource',
         $scope.fetchAndDisplayUserList();
     };
 
-    $scope.userAction = function(action) {
+    $scope.performUserAction = function() {
+        var action = $scope.action;
         if(action === '') {
             return false;
         }
@@ -188,8 +191,8 @@ nucleusApp.controller('UserManagementCtrl',['$scope', '$rootScope', '$resource',
             case 'Send bulk message':
                 $scope.fetchEmails();
                 break;
-            case 'Export email list':
-                $scope.downloadEmails();
+            case 'Modify Role':
+                $("#modify-role-overlay").modal("show");
                 break;
         }
     };
