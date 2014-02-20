@@ -65,37 +65,6 @@ class UserManagementController {
         render true
     }
 
-    def sendBulkEmail() {
-        List invalidEmail = []
-        String result
-        List<String> selectedEmail = Arrays.asList(params.selectedEmail.split("\\s*,\\s*"));
-
-        if(selectedEmail && params.subject && params.body) {
-
-            selectedEmail.each {
-                String emailAddress = it?.trim()
-                Map emailLayoutArgs = [title: "", body: params.body]
-                try {
-                    sendMail {
-                        to emailAddress
-                        subject params.subject;
-                        html g.render(template: "/userManagement/templates/email", model: [email: emailLayoutArgs], plugin:"nucleus");
-                    }
-                } catch(Exception e) {
-                    log.error "Exception sending mail to ${emailAddress}- " + e?.dump()
-                    invalidEmail.add(emailAddress)
-                }
-            }
-            result = "Message successfully sent."
-            if(invalidEmail)
-                result += "<br>We're sorry, Email could not be delivered to: " + invalidEmail.join(", ")
-            render ([message: result] as JSON)
-            return
-        }
-        result = "Missing something: Email(s)/subject/body"
-        render ([message: result] as JSON)
-    }
-
     def makeUserActiveInactive() {
         String typeText = params.boolean('type') ? 'active': 'in-active'
 
@@ -113,7 +82,7 @@ class UserManagementController {
         render ([message: message] as JSON)
     }
 
-    def downloadEmails() {
+    def exportUserReport() {
         log.info "User List for download Emails: $params.selectedUser."
 
         Map parameters, labels = [:]

@@ -113,11 +113,13 @@ nucleusApp.controller('UserManagementCtrl',['$scope', '$rootScope', '$resource',
     }
 
     $scope.selectAllUser = function() {
+        var selectAll = this.selectUnselectAll;
+        console.log(selectAll)
         angular.forEach($scope.userInstanceList, function(user) {
-            if(user.selected) {
-                user.selected = false;
-            } else {
+            if(selectAll) {
                 user.selected = true;
+            } else {
+                user.selected = false;
             }
         });
     };
@@ -182,14 +184,14 @@ nucleusApp.controller('UserManagementCtrl',['$scope', '$rootScope', '$resource',
         var confirmAction = confirm('Are you sure want to perform this action- ' + action);
         if(!confirmAction)  return false;
         switch (action) {
+            case 'Export User Report':
+                $scope.exportUserReport();
+                break;
             case 'Make user in-active':
                 $scope.makeUserActiveInactive(false);
                 break;
             case 'Make user active':
                 $scope.makeUserActiveInactive(true);
-                break;
-            case 'Send bulk message':
-                $scope.fetchEmails();
                 break;
             case 'Modify Role':
                 $("#modify-role-overlay").modal("show");
@@ -208,33 +210,9 @@ nucleusApp.controller('UserManagementCtrl',['$scope', '$rootScope', '$resource',
         });
     };
 
-    $scope.fetchEmails = function() {
-        var selectedUserEmailList = [];
-        angular.forEach($scope.selectedUser, function(user) {
-            selectedUserEmailList.push(user.email);
-        })
-        $('textArea[name=selectedEmail]', '#send-bulk-msg-overlay').val(selectedUserEmailList);
-        $('#send-bulk-msg-overlay').modal('show');
-    };
-
-    $scope.sendMail = function() {
-        // TODO Use scope & data binding instead of jquery method.
-        $scope.selectedEmail = $('textArea[name=selectedEmail]', '#send-bulk-msg-overlay').val();
-        $('#send-bulk-msg-overlay').modal('hide');
-        showAlertMessage('Please wait, performing your request ..', 'warn', {timeout: 'clear'})
-        var sendBulkEmail = $resource('/userManagement/sendBulkEmail');
-        sendBulkEmail.get({selectedEmail: $scope.selectedEmail, body: $scope.body, subject: $scope.subject}, function(data) {
-            if(data) {
-                showAlertMessage(data.message, 'info');
-            } else {
-                showAlertMessage('Unable to Send Bulk Message.', 'danger');
-            }
-        })
-    };
-
-    $scope.downloadEmails = function() {
+    $scope.exportUserReport = function() {
         var selectedUserIdList = $scope.getSelectedUserIdList();
-        window.location.href = '/userManagement/downloadEmails?selectedUser=' + selectedUserIdList.toString();
+        window.location.href = '/userManagement/exportUserReport?selectedUser=' + selectedUserIdList.toString();
     };
 
     $scope.fetchAndDisplayUserList($scope.currentPage);

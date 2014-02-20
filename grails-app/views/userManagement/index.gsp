@@ -109,7 +109,7 @@
                     <div class="panel-heading">
                         <ul class="list-inline" style="margin-bottom: 0">
                             <li>
-                                <g:checkBox name="dummy"  ng-change="selectAllUser()" ng-model="userSelected"
+                                <g:checkBox name="dummy" ng-change="selectAllUser()" ng-model="selectUnselectAll"
                                     data-checkbox-name="userId" style="vertical-align: text-bottom;" />
                             </li>
                             <li>
@@ -132,7 +132,6 @@
                     items-per-page="itemsPerPage" max-size="10"></pagination>
             </div>
         </div>
-        <g:render template="/userManagement/templates/sendBulkMailOverlayAJ"></g:render>
         <g:render template="/userManagement/templates/modifyRoleOverlayAJ" />
     </div>
 </body>
