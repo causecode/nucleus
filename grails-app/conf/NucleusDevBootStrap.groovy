@@ -9,7 +9,7 @@ class NucleusDevBootStrap {
     def grailsApplication
 
     def init = { servletContext  ->
-        if(Environment.current == Environment.DEVELOPMENT) {
+        if(Environment.isDevelopmentMode()) {
             def executeBootstrap = grailsApplication.config.app.executeDevBootstrap
             if(executeBootstrap instanceof Boolean && !executeBootstrap.toBoolean()) {
                 log.debug "Not executing Nucleus Development bootstap."
@@ -22,22 +22,22 @@ class NucleusDevBootStrap {
             Role adminRole = Role.findOrSaveByAuthority("ROLE_ADMIN")
 
             User adminUser = User.findByUsernameAndEnabled("admin", true)
-            User shashank = User.findByEmail("shashank.agrawal@causecode.com")
+            User normalUser = User.findByUsername("jane")
 
             if(!adminUser) {
-                adminUser = new User([username: "admin", password: "admin@13", email:"vishesh@causecode.com", enabled: true,
-                    firstName: "Vishesh", lastName: "Duggar", gender: "male"])
+                adminUser = new User([username: "admin", password: "admin@13", email: "bootstrap@causecode.com",
+                    firstName: "CauseCode", lastName: "Technologies", gender: "male", enabled: true,])
                 adminUser.save(failOnError: true)
             }
 
-            if(!shashank) {
-                shashank = new User([username: "shashank.agrawal", password: "causecode.11", gender: "male",
-                    email:"shashank.agrawal@causecode.com", enabled: true, firstName: "Shashank", lastName: "Agrawal"])
-                shashank.save(failOnError: true)
+            if(!normalUser) {
+                normalUser = new User([username: "jane", password: "admin@13", email:"jane@causecode.com",
+                    firstName: "Jane", lastName: "Doe", gender: "female", enabled: true])
+                normalUser.save(failOnError: true)
             }
             UserRole.findOrSaveByUserAndRole(adminUser, adminRole)
             UserRole.findOrSaveByUserAndRole(adminUser, userRole)
-            UserRole.findOrSaveByUserAndRole(shashank, userRole)
+            UserRole.findOrSaveByUserAndRole(normalUser, userRole)
 
             log.debug "Nucleus Development bootstrap finished executing."
         }
