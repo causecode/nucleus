@@ -8,14 +8,14 @@
 
 package com.cc.geo.location
 
-import com.lucastex.grails.fileuploader.UFile
 
 class Country {
 
     String code
     String name
 
-    UFile flag
+	//TODO CDN Google inject issue on build
+    //UFile flag
 
     Date dateCreated
     Date lastUpdated
