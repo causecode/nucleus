@@ -28,13 +28,13 @@ class UserManagementService {
                 if(params.roleType == "Any Granted") {
                     or {
                         roleFilterList*.toLong().each { roleId ->
-                            between("roleIds", roleId, roleId)  // Using between as to match item in list.
+                            'in'("roleIds", [roleId])
                         }
                     }
                 } else if(params.roleType == "All Granted") {
                     and {
                         roleFilterList*.toLong().each { roleId ->
-                            between("roleIds", roleId, roleId)
+                            'in'("roleIds", [roleId])
                         }
                     }
                 } else {
