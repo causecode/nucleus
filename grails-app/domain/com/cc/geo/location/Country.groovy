@@ -23,7 +23,7 @@ class Country {
     static constraints = {
         code nullable: true
         dateCreated bindable: false
-        flag nullable: true
+        //flag nullable: true
         lastUpdated bindable: false
         name blank: false, unique: true
     }
