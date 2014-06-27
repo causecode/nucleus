@@ -76,7 +76,7 @@ class UserManagementService {
     }
 
     Map listForMongo(Map params) {
-        [userInstanceList: fetchListForMongo(params, true), userInstanceTotal: fetchListForMongo(params, false)[0]]
+        [instanceList: fetchListForMongo(params, true), totalCount: fetchListForMongo(params, false)[0]]
     }
 
     Map listForMysql(Map params) {

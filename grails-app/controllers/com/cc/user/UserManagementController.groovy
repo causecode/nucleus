@@ -21,7 +21,9 @@ class UserManagementController {
 
     private User userInstance
 
-    def index() {}
+    def index() {
+        redirect(action: "list", params: params)
+    }
 
     def roleList() {
         render Role.list() as JSON
@@ -42,7 +44,7 @@ class UserManagementController {
 
         Map result = userManagementService."listFor${dbType}"(params)
 
-        result.roleList = Role.list([sort: 'authority'])
+        //result.roleList = Role.list([sort: 'authority'])
 
         render result as JSON
     }
@@ -82,12 +84,19 @@ class UserManagementController {
         render ([message: message] as JSON)
     }
 
-    def exportUserReport() {
-        log.info "User List for download Emails: $params.selectedUser."
-
+    def export(boolean selectAll) {
+        List selectedIds = params.selectedIds.tokenize(",")*.trim()*.toLong()
         Map parameters, labels = [:]
         List fields = [], columnWidthList = []
-        List selectedUser = params.selectedUser.tokenize(",")*.trim()*.toLong()
+        List<User> userList = []
+
+        if (selectAll) {
+            log.info "Downloading all User List report."
+            userList = User.list()
+        } else {
+            log.info "User List for download report: $selectedIds."
+            userList = User.getAll(selectedIds)
+        }
 
         fields << "id"; labels."id" = "User Id"; columnWidthList << 0.1
         fields << "email"; labels."email" = "Email"; columnWidthList << 0.3
@@ -102,8 +111,8 @@ class UserManagementController {
         parameters = ["column.widths": columnWidthList]
 
         response.contentType = "application/vnd.ms-excel"
-        response.setHeader("Content-disposition", "attachment; filename=user-report.xls");
+        response.setHeader("Content-disposition", "attachment; filename=user-report.csv");
 
-        exportService.export("excel", response.outputStream, User.getAll(selectedUser), fields, labels, [:], parameters)
+        exportService.export("csv", response.outputStream, userList, fields, labels, [:], parameters)
     }
 }
