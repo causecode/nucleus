@@ -26,7 +26,7 @@ class UserManagementController {
     }
 
     def roleList() {
-        render Role.list() as JSON
+        render ([roleList: Role.list()] as JSON)
     }
 
     /**
@@ -44,39 +44,42 @@ class UserManagementController {
 
         Map result = userManagementService."listFor${dbType}"(params)
 
-        //result.roleList = Role.list([sort: 'authority'])
-
         render result as JSON
     }
 
-    def modifyRoles(String roleActionType) {
-        List userIds = params.list("userIds")
-        List roles = params.list("roleIds")
+    def modifyRoles() {
+        Map requestData = request.JSON
+        log.info "Parameters recevied to modify roles: $requestData"
+
+        List userIds = requestData.userIds
+        List roles = requestData.roleIds
         List roleInstanceList = Role.getAll(roles*.toLong())
 
-        userIds.each { userId ->
+        requestData.userIds.each { userId ->
             User userInstance = User.get(userId)
 
-            if(roleActionType == "refresh") {
+            if(requestData.roleActionType == "refresh") {
                 UserRole.removeAll(userInstance)
             }
             roleInstanceList.each { roleInstance ->
                 UserRole.create(userInstance, roleInstance, true)
             }
         }
-        render true
+        render ([success: true] as JSON)
     }
 
     def makeUserActiveInactive() {
-        String typeText = params.boolean('type') ? 'active': 'in-active'
+        Map requestData = request.JSON
+        String typeText = requestData.type ? 'active': 'in-active'
+        List selectedUser = requestData.selectedUser.tokenize(',')*.toLong()
 
-        log.info "Users ID recived to $typeText active User : $params.selectedUser $params"
+        log.info "Users ID recived to $typeText User : $requestData.selectedUser "
 
-        params.list('selectedUser')?.each {
-            userInstance = User.findByIdAndEnabled(it, !params.boolean("type"))
+        selectedUser?.each {
+            userInstance = User.findByIdAndEnabled(it, !requestData.type)
 
             if(userInstance) {
-                userInstance.enabled = params.boolean("type")
+                userInstance.enabled = requestData.type
                 userInstance.save(flush: true)
             }
         }
