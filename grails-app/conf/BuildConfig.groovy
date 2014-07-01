@@ -10,7 +10,6 @@ grails.project.dependency.resolution = {
     log "warn"
 
     repositories {
-        mavenRepo "http://maven.causecode.com"
         grailsCentral()
         mavenLocal()
         mavenCentral()
@@ -21,14 +20,10 @@ grails.project.dependency.resolution = {
     }
 
     plugins {
-        compile("com.cc.plugins:content:2.1.4") {
-            export = false
-        }
-        compile ":export:1.5"
         build(":tomcat:7.0.42", ":release:3.0.1", ":rest-client-builder:2.0.1") {
             export = false
         }
-        compile (":spring-security-core:2.0-RC3", ":taggable:1.0.1") {
+        compile (":spring-security-core:2.0-RC3") {
             export = false
         }
     }

@@ -10,8 +10,6 @@ package com.cc.user
 
 import org.grails.databinding.BindingFormat
 
-import com.cc.annotation.sanitizedTitle.SanitizedTitle
-
 class User {
 
     transient springSecurityService
@@ -28,7 +26,6 @@ class User {
 
     String email
     String firstName
-    @SanitizedTitle
     String fullName
     String gender
     String lastName
