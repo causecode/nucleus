@@ -9,9 +9,10 @@
 package com.cc.user
 
 import grails.converters.JSON
+import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
 
-@Secured(["ROLE_ADMIN"])
+@Secured(["ROLE_CONTENT_MANAGER"])
 class UserManagementController {
 
     // Arranged by name
@@ -48,12 +49,26 @@ class UserManagementController {
     }
 
     def modifyRoles(String roleActionType) {
+        log.info "Parameters received to change roles of User: $params.userIds with roleIds: $params.roleIds"
+
         List userIds = params.list("userIds")
         List roles = params.list("roleIds")
+
+        User currentUserInstance = springSecurityService.currentUser
+        if (!SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
+            Role adminRole = Role.findByAuthority("ROLE_ADMIN")
+            User adminUserInstance = User.findByRoleIds(adminRole.id)
+
+            userIds = userIds.minus(adminUserInstance.id.toString())
+            roles = roles.minus(adminRole.id.toString())
+
+            log.info "Removed Admin User and admin autority Parameters from received list of" +
+                    " user: $userIds and roleIds: $roles"
+        }
         List roleInstanceList = Role.getAll(roles*.toLong())
 
         userIds.each { userId ->
-            User userInstance = User.get(userId)
+            User userInstance = User.get(userId as long)
 
             if(roleActionType == "refresh") {
                 UserRole.removeAll(userInstance)
@@ -87,7 +102,16 @@ class UserManagementController {
 
         Map parameters, labels = [:]
         List fields = [], columnWidthList = []
-        List selectedUser = params.selectedUser.tokenize(",")*.trim()*.toLong()
+
+        List<User> userList = []
+        if (params.boolean('selectAllPageUsers')) {
+            log.info "Params received to download all User List report."
+            userList = User.list()
+        } else {
+            log.info "User List for download report: $params.selectedUser."
+            List selectedUser = params.selectedUser.tokenize(",")*.trim()*.toLong()
+            userList = User.getAll(selectedUser)
+        }
 
         fields << "id"; labels."id" = "User Id"; columnWidthList << 0.1
         fields << "email"; labels."email" = "Email"; columnWidthList << 0.3
@@ -104,6 +128,6 @@ class UserManagementController {
         response.contentType = "application/vnd.ms-excel"
         response.setHeader("Content-disposition", "attachment; filename=user-report.xls");
 
-        exportService.export("excel", response.outputStream, User.getAll(selectedUser), fields, labels, [:], parameters)
+        exportService.export("excel", response.outputStream, userList, fields, labels, [:], parameters)
     }
 }
