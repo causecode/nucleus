@@ -85,8 +85,20 @@ class UserManagementController {
 
         log.info "Users ID recived to $typeText active User : $params.selectedUser $params"
 
-        params.list('selectedUser')?.each {
-            userInstance = User.findByIdAndEnabled(it, !params.boolean("type"))
+        List userIds = params.list("selectedUser")
+
+        User currentUserInstance = springSecurityService.currentUser
+        if (!SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
+            Role adminRole = Role.findByAuthority("ROLE_ADMIN")
+            User adminUserInstance = User.findByRoleIds(adminRole.id)
+
+            userIds = userIds.minus(adminUserInstance.id.toString())
+
+            log.info "Removed Admin User Parameter from received list of user: $userIds"
+        }
+
+        userIds.each { userId ->
+            userInstance = User.findByIdAndEnabled(userId as long, !params.boolean("type"))
 
             if(userInstance) {
                 userInstance.enabled = params.boolean("type")
