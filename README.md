@@ -6,7 +6,7 @@
 
 ## ChangeLog
 
-See ChangeLog.md file.
+See [ChangeLog.md](https://bitbucket.org/causecode/nucleus/src/d9be8242b8cc37260eac82ea157d1eebe49b71be/ChangeLog.md?at=master) file.
 
 ## Architecture Overview
 
@@ -79,8 +79,7 @@ Generic tagLib used to render pagination information for list pages.
 
 ```
     <pagerInfo total="{total}" max="{max}" offset="{offset}"></pagerInfo>
-
-    total: (REQUIRED) total number of instances
-    max: (OPTIONAL) max number of instances
-    offset: (OPTIONAL) actual number of instances rendered
 ```
+> total: (REQUIRED) total number of instances
+> max: (OPTIONAL) max number of instances
+> offset: (OPTIONAL) actual number of instances rendered
