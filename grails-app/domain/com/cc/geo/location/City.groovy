@@ -10,6 +10,10 @@ package com.cc.geo.location
 
 import com.cc.geo.location.Country
 
+/**
+ * Used to store city, state and stateCode information.
+ *
+ */
 class City {
 
     Date dateCreated

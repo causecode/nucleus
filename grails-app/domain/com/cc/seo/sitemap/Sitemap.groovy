@@ -10,9 +10,12 @@ package com.cc.seo.sitemap
 
 import grails.rest.Resource
 
+/**
+ * Sitemap groovy class used to specify has many URL relationship .
+ */
 @Resource(uri = "/sitemap", formats = ["xml"])
 class Sitemap {
-
+ 
     static hasMany = [urlset: Url]
 
 }

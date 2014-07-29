@@ -2,9 +2,20 @@ package com.cc.user
 
 import grails.transaction.Transactional
 
+/**
+ * UserManagementService provides database specific methods to fetch list of users with filters and pagination applied.
+ * @author Shashank Agrawal
+ *
+ */
 @Transactional
 class UserManagementService {
 
+    /**
+     * Used to fetch list of user for Mongo database with filters and pagination applied. 
+     * @param params List of parameters contains pagination, filter parameters.
+     * @param paginate Boolean value to specify whether to use pagination parameters or not.
+     * @return Filtered list of user's with distinct email.
+     */
     List fetchListForMongo(Map params, boolean paginate) {
         List roleFilterList = params.roleFilter as List
 
@@ -52,10 +63,20 @@ class UserManagementService {
         result
     }
 
+    /**
+     * Used to fetch users list for Mongo Database with total count.
+     * @param params List of filter parameters.
+     * @return Map containing users list with pagination applied and total count of matched users.
+     */
     Map listForMongo(Map params) {
         [userInstanceList: fetchListForMongo(params, true), userInstanceTotal: fetchListForMongo(params, false)[0]]
     }
 
+    /**
+     * Used to fetch list of user for MySql database with filters and pagination applied using HQL Query.
+     * @param params List of parameters contains pagination, filter parameters.
+     * @return Filtered list of user's with pagination applied.
+     */
     Map listForMysql(Map params) {
         String roleType = params.roleType
 
@@ -103,6 +124,11 @@ class UserManagementService {
         [userInstanceList: userInstanceList, userInstanceTotal: userInstanceTotal]
     }
 
+    /**
+     * Appends HQL query string to query parameter on basis of role filters list provided.
+     * @param query HQL query string to be appended.
+     * @param roleFilterList List of role filters.
+     */
     void makeQueryToCheckEachRole(StringBuilder query, roleFilterList) {
         roleFilterList.eachWithIndex { role, index ->
             String alias = "ur${index+2}"

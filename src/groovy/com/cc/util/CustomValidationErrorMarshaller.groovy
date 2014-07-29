@@ -1,5 +1,7 @@
 package com.cc.util
 
+import java.lang.reflect.Constructor;
+
 import grails.converters.JSON
 
 import org.codehaus.groovy.grails.web.converters.exceptions.ConverterException
@@ -11,21 +13,48 @@ import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.validation.Errors
 import org.springframework.validation.FieldError
 
+/**
+ * A generic Marshaller for custom validation error.
+ * @author Shashank Agrawal
+ *
+ */
 class CustomValidationErrorMarshaller implements ObjectMarshaller<JSON>, ApplicationContextAware {
 
+    /**
+     * Dependency injection for the {@link ApplicationContext}
+     */
     private ApplicationContext applicationContext
 
+    /**
+     * Constructor
+     */
     CustomValidationErrorMarshaller() {
     }
 
+    /**
+     * Constructor
+     * 
+     * Set current scope application context.
+     * @param applicationContext Interface provides configuration for an application.
+     */
     CustomValidationErrorMarshaller(ApplicationContext applicationContext) {
         this.applicationContext = applicationContext
     }
 
+    /**
+     * Checks Object instance is Error or not.
+     * @param object Instance to be checked for errors
+     * @return Boolean value checking object accepted is instance of Errors or not.
+     */
     boolean supports(Object object) {
         return object instanceof Errors
     }
 
+    /**
+     * This method used to marshal object errors into JSON Object with customized messages.
+     * @param object Instance containing errors passed to marshal.
+     * @throws ConverterException
+     */
     void marshalObject(Object object, JSON json) throws ConverterException {
         Errors errors = (Errors) object
         JSONWriter writer = json.getWriter()
@@ -62,6 +91,10 @@ class CustomValidationErrorMarshaller implements ObjectMarshaller<JSON>, Applica
         }
     }
 
+    /**
+     * This method used to set current scope application context.
+     * @param applicationContext Interface provides configuration for an application.
+     */
     void setApplicationContext(ApplicationContext applicationContext) {
         this.applicationContext = applicationContext
     }

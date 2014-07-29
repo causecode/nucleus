@@ -8,7 +8,10 @@
 
 package com.cc.geo.location
 
-
+/**
+ * Used to store country code and name information.
+ *
+ */
 class Country {
 
     String code

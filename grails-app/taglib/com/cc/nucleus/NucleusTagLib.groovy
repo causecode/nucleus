@@ -1,5 +1,10 @@
 package com.cc.nucleus
 
+/**
+ * This taglib includes generic tags.
+ * @author Shashank Agrawal
+ *
+ */
 class NucleusTagLib {
 
     static namespace = "nucleus"
@@ -7,6 +12,7 @@ class NucleusTagLib {
     static defaultEncodeAs = "raw"
 
     /**
+     * This renders HTML block for showing more detailed information about Pagination.
      * @attr total REQUIRED total number of instances
      */
     def pagerInfo = { attrs, body ->

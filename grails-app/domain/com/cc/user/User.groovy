@@ -10,6 +10,9 @@ package com.cc.user
 
 import org.grails.databinding.BindingFormat
 
+/**
+ * User groovy class used to specify person entity with default information.
+ */
 class User {
 
     transient springSecurityService

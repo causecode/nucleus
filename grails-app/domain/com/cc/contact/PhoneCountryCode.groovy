@@ -10,6 +10,10 @@ package com.cc.contact
 
 import com.cc.geo.location.Country
 
+/**
+ * Used to store code and country information.
+ *
+ */
 class PhoneCountryCode {
 
     Date dateCreated

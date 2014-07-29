@@ -8,6 +8,11 @@
 
 package com.cc.currency
 
+/**
+ * Used to store currency code and name information.
+ *
+ */
+
 class Currency {
 
     Date dateCreated

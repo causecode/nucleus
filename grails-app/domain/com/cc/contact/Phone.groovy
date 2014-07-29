@@ -8,7 +8,10 @@
 
 package com.cc.contact
 
-
+/**
+ * Used to store phone number and phone country code information.
+ *
+ */
 class Phone {
 
     String number

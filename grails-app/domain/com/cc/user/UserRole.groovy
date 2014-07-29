@@ -10,6 +10,9 @@ package com.cc.user
 
 import org.apache.commons.lang.builder.HashCodeBuilder
 
+/**
+ * UserRole join groovy class specifies authority for user.
+ */
 class UserRole implements Serializable {
 
     private static final long serialVersionUID = 1

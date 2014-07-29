@@ -10,6 +10,10 @@ package com.cc.contact
 
 import com.cc.geo.location.Location
 
+/**
+ * Used to store location and contact information.
+ *
+ */
 class Contact {
 
     Date dateCreated

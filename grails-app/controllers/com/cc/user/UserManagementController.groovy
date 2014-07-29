@@ -11,26 +11,50 @@ package com.cc.user
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 
+/**
+ * @author Vishesh Duggar
+ * @author Shashank Agrawal
+ * @author Laxmi Salunkhe
+ */
 @Secured(["ROLE_ADMIN"])
 class UserManagementController {
 
-    // Arranged by name
+    /**
+     * Dependency Injection for the exportService.
+     */
     def exportService
+    
+    /**
+     * Dependency Injection for the springSecurityService.
+     */
     def springSecurityService
+    
+    /**
+     * Dependency Injection for the userManagementService.
+     */
     def userManagementService
 
     private User userInstance
 
+    /**
+     * Default action
+     * @return
+     */
     def index() {}
 
+    /**
+     * Renders role list in JSON format.
+     * @return All {@link Role} list.
+     */
     def roleList() {
         render Role.list() as JSON
     }
 
     /**
-     * 
-     * @param dbType Type of database support. Must be either "Mongo" or "Mysql"
-     * @return
+     * List action used to fetch Role list and User's list with filters and pagination applied.
+     * @param max Integer parameter used to set number of records to be returned.
+     * @param dbType Type of database support. Must be either "Mongo" or "Mysql".
+     * @return Result in JSON format.
      */
     def list(Integer max, String dbType) {
         log.info "Params recived to fetch users :" + params
@@ -47,6 +71,15 @@ class UserManagementController {
         render result as JSON
     }
 
+    /**
+     * Modifies Roles of users with help of given roles and type.
+     * @param userIds List of users ID
+     * @param roleIds List of role ID
+     * @param roleActionType String value which specifies two conditions.
+     * 1. "refresh" - Remove existing roles and apply new roles.
+     * 2. other role type - Update existing roles. i.e. append roles.
+     * @return Renders boolean response True.
+     */
     def modifyRoles(String roleActionType) {
         List userIds = params.list("userIds")
         List roles = params.list("roleIds")
@@ -65,6 +98,14 @@ class UserManagementController {
         render true
     }
 
+    /**
+     * Marks users ACTIVE/INACTIVE with help of given type.
+     * @param selectedUser List of users ID
+     * @param type String value which specifies two conditions.
+     * 1. "active" - Set User field enabled to true.
+     * 2. "in-active" - Set User field enabled to false.
+     * @return Renders message response in JSON format.
+     */
     def makeUserActiveInactive() {
         String typeText = params.boolean('type') ? 'active': 'in-active'
 
@@ -82,6 +123,10 @@ class UserManagementController {
         render ([message: message] as JSON)
     }
 
+    /**
+     * This action provides excel report for given listed users.
+     * @param selectedUser List of users ID
+     */
     def exportUserReport() {
         log.info "User List for download Emails: $params.selectedUser."
 

@@ -16,8 +16,14 @@ class SitemapController {
 
     private static final Sitemap EMPTY_SITEMAP = new Sitemap()
 
+    /**
+     * Dependency injection for the sitemapService.
+     */
     def sitemapService
 
+    /**
+     * Generate Sitemap object and redirects to dashboard.
+     */
     def generate() {
         sitemapService.generate()
         flash.message = "Site map generated."
@@ -25,6 +31,9 @@ class SitemapController {
         redirect uri: "/dashboard"
     }
 
+    /**
+     * Default action : Responds Sitemap first object or new sitemap Object.
+     */
     @Secured(["permitAll"])
     def index() {
         respond Sitemap.first() ?: EMPTY_SITEMAP
