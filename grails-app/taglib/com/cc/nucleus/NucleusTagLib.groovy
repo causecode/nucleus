@@ -12,7 +12,7 @@ class NucleusTagLib {
     static defaultEncodeAs = "raw"
 
     /**
-     * This renders HTML block for showing more detailed information about Pagination.
+     * Renders HTML block for showing more detailed information about Pagination.
      * @attr total REQUIRED total number of instances
      */
     def pagerInfo = { attrs, body ->

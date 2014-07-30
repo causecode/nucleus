@@ -274,7 +274,7 @@ class DateUtil {
      * parsed with defaul time zone.
      * @param date Date to be parsed.
      * @param timezone Sting value containing time zone.
-     * @param format Format in which date is being parsed. Default set to ["MM/dd/yyyy"].
+     * @param format Format in which date is being parsed.
      * @return Parsed string Date with given time zone and format.
      */
     static String formatDate(Date date, String timezone, String format) {
