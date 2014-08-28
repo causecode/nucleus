@@ -6,7 +6,12 @@ import grails.transaction.Transactional
 class UserManagementService {
 
     List fetchListForMongo(Map params, boolean paginate) {
-        List roleFilterList = params.roleFilter as List
+        List roleFilterList = []
+        if (params.roleFilter instanceof String) {
+            roleFilterList = params.roleFilter.tokenize(",")
+        } else {
+            roleFilterList = params.roleFilter as List
+        }
 
         List result = User.withCriteria {
             if(!paginate) {
@@ -27,19 +32,19 @@ class UserManagementService {
             if(params.roleFilter) {
                 if(params.roleType == "Any Granted") {
                     or {
-                        roleFilterList*.toLong().each { roleId ->
+                        getAppropiateIdList(roleFilterList).each { roleId ->
                             'in'("roleIds", [roleId])
                         }
                     }
                 } else if(params.roleType == "All Granted") {
                     and {
-                        roleFilterList*.toLong().each { roleId ->
+                        getAppropiateIdList(roleFilterList).each { roleId ->
                             'in'("roleIds", [roleId])
                         }
                     }
                 } else {
                     and {
-                        eq("roleIds", roleFilterList*.toLong().sort())
+                        eq("roleIds", getAppropiateIdList(roleFilterList).sort())
                     }
                 }
             }
@@ -50,6 +55,24 @@ class UserManagementService {
             }
         }
         result
+    }
+
+    List getAppropiateIdList(List ids) {
+        if (!ids) {
+            return []
+        }
+
+        // Check type of id, either Long or mongo's ObjectId
+        if (ids[0].isNumber()) {
+            // If domain id is of type Long
+            ids = ids*.toLong()
+        } else {
+            // If domain id in mongo's ObjectId. Dynamic loading to avoid import error
+            Class ObjectIdClazz = Class.forName("org.bson.types.ObjectId")
+            ids = ids.collect { ObjectIdClazz.newInstance(it) }
+        }
+
+        return ids
     }
 
     Map listForMongo(Map params) {
