@@ -11,7 +11,7 @@ package com.cc.user
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 
-@Secured(["ROLE_ADMIN"])
+@Secured(["ROLE_CONTENT_MANAGER"])
 class UserManagementController {
 
     // Arranged by name
@@ -21,28 +21,23 @@ class UserManagementController {
 
     private User userInstance
 
-    def index() {
-        redirect(action: "list", params: params)
-    }
-
-    def roleList() {
-        render ([roleList: Role.list()] as JSON)
-    }
+    static responseFormats = ["json"]
 
     /**
      * 
      * @param dbType Type of database support. Must be either "Mongo" or "Mysql"
      * @return
      */
-    def list(Integer max, String dbType) {
+    def index(Integer max, int offset, String dbType) {
         log.info "Params recived to fetch users :" + params
 
-        params.offset = params.offset ?: 0
-        params.sort = params.sort ?: "id"
+        params.offset = offset ?: 0
         params.max = Math.min(max ?: 10, 100)
-        params.order = params.order ?: "asc"
 
         Map result = userManagementService."listFor${dbType}"(params)
+        if (offset == 0) {
+            result["roleList"] = Role.list()
+        }
 
         render result as JSON
     }
@@ -52,13 +47,12 @@ class UserManagementController {
         log.info "Parameters recevied to modify roles: $requestData"
 
         List userIds = requestData.userIds
-        List roles = requestData.roleIds
-        List roleInstanceList = Role.getAll(roles*.toLong())
+        List roleInstanceList = Role.getAll(userManagementService.getAppropiateIdList(requestData.roleIds))
 
         requestData.userIds.each { userId ->
             User userInstance = User.get(userId)
 
-            if(requestData.roleActionType == "refresh") {
+            if (requestData.roleActionType == "refresh") {
                 UserRole.removeAll(userInstance)
             }
             roleInstanceList.each { roleInstance ->
@@ -70,36 +64,29 @@ class UserManagementController {
 
     def makeUserActiveInactive() {
         Map requestData = request.JSON
-        String typeText = requestData.type ? 'active': 'in-active'
-        List selectedUser = requestData.selectedUser.tokenize(',')*.toLong()
+        String typeText = requestData.type ? 'active': 'inactive'
 
-        log.info "Users ID recived to $typeText User : $requestData.selectedUser "
+        log.info "Users ID recived to $typeText User: $requestData.selectedIds"
 
-        selectedUser?.each {
-            userInstance = User.findByIdAndEnabled(it, !requestData.type)
+        requestData.selectedIds.each { userId ->
+            User userInstance = User.get(userId)
 
-            if(userInstance) {
+            if (userInstance) {
                 userInstance.enabled = requestData.type
                 userInstance.save(flush: true)
+            } else {
+                log.warn "User not found with id: $userId"
             }
         }
+
         String message = "User's account set to $typeText successfully."
-        render ([message: message] as JSON)
+        respond ([message: message])
     }
 
     def export(boolean selectAll) {
-        List selectedIds = params.selectedIds.tokenize(",")*.trim()*.toLong()
         Map parameters, labels = [:]
         List fields = [], columnWidthList = []
-        List<User> userList = []
-
-        if (selectAll) {
-            log.info "Downloading all User List report."
-            userList = User.list()
-        } else {
-            log.info "User List for download report: $selectedIds."
-            userList = User.getAll(selectedIds)
-        }
+        List<User> userList = userManagementService.getSelectedItemList(selectAll, params.selectedIds, params)
 
         fields << "id"; labels."id" = "User Id"; columnWidthList << 0.1
         fields << "email"; labels."email" = "Email"; columnWidthList << 0.3
