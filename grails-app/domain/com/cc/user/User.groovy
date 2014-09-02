@@ -53,10 +53,12 @@ class User {
     }
 
     def beforeInsert() {
+        this.email = this.email.toLowerCase()
         encodePassword()
     }
 
     def beforeUpdate() {
+        this.email = this.email.toLowerCase()
         if (isDirty('password')) {
             encodePassword()
         }

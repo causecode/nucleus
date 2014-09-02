@@ -8,6 +8,7 @@
 
 package com.cc.user
 
+import static org.springframework.http.HttpStatus.*
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 
@@ -132,5 +133,51 @@ class UserManagementController {
         response.setHeader("Content-disposition", "attachment; filename=user-report.csv");
 
         exportService.export("csv", response.outputStream, userList, fields, labels, [:], parameters)
+    }
+
+    def updateEmail() {
+        params.putAll(request.JSON as Map)
+        log.debug "Params reveived to update email $params"
+
+        if (!params.id || !params.newEmail || !params.confirmNewEmail) {
+            response.setStatus(NOT_ACCEPTABLE)
+            respond ([message: "Please select a user and enter new & confirmation email."])
+            return
+        }
+
+        params.email = params.email.toLowerCase()
+        params.confirmNewEmail = params.confirmNewEmail.toLowerCase()
+
+        if (params.newEmail != params.confirmNewEmail) {
+            response.setStatus(NOT_ACCEPTABLE)
+            respond ([message: "Email dose not match the Confirm Email."])
+            return
+        }
+
+        if (User.countByEmail(params.newEmail)) {
+            response.setStatus(NOT_ACCEPTABLE)
+            respond ([message: "User already exist with Email: $params.newEmail"])
+            return
+        }
+
+        User userInstance = User.get(params.id)
+        if (!userInstance) {
+            response.setStatus(NOT_ACCEPTABLE)
+            respond ([message: "User not found with id: $params.id."])
+            return
+        }
+
+        userInstance.email = params.newEmail
+        userInstance.save()
+        if (userInstance.hasErrors()) {
+            response.setStatus(NOT_ACCEPTABLE)
+
+            log.warn "Error saving $userInstance $userInstance.errors"
+
+            respond ([message: "Unable to update user's email.", error: userInstance.errors])
+            return
+        }
+
+        respond ([message: "Email updated Successfully."])
     }
 }
