@@ -68,17 +68,17 @@ class UserManagementController {
         log.info "Parameters recevied to modify roles: $requestData"
 
         Set failedUsersForRoleModification = []
-        List userIds = requestData.userIds
+        List userIds = userManagementService.getAppropiateIdList(requestData.userIds)
         List roleIds = userManagementService.getAppropiateIdList(requestData.roleIds)
 
         if (!SpringSecurityUtils.ifAnyGranted("ROLE_ADMIN")) {
             Role adminRole = Role.findByAuthority("ROLE_ADMIN")
             List adminUsersIds = UserRole.findAllByRole(adminRole)*.user*.id
+            log.debug "Removing admin user ids: $adminUsersIds."
 
             userIds = userIds - adminUsersIds
-            roleIds = roleIds.remove(adminRole.id)
 
-            log.info "Removed admin users and admin roles. $userIds, $roleIds"
+            log.info "Removed admin users: $userIds"
         }
 
         List roleInstanceList = Role.getAll(roleIds)
@@ -119,16 +119,12 @@ class UserManagementController {
         Map requestData = request.JSON
         String typeText = requestData.type ? 'active': 'inactive'
 
-        log.info "Users ID recived to $typeText User: $requestData.selectedIds"
+        log.info "Params received to $typeText users: $requestData"
 
         boolean useMongo = grailsApplication.config.cc.plugins.crm.persistence.provider == "mongodb"
 
         List selectedUserIds = userManagementService.getAppropiateIdList(requestData.selectedIds)
 
-        if (!selectedUserIds) {
-            respond([success: false, message: "Please select atleast one user."])
-            return
-        }
 
         if (!SpringSecurityUtils.ifAnyGranted("ROLE_ADMIN")) {
             Role adminRole = Role.findByAuthority("ROLE_ADMIN")
@@ -139,11 +135,22 @@ class UserManagementController {
             log.info "Removed admin users. $selectedUserIds"
         }
 
+        if (!selectedUserIds) {
+            String message = "Please select atleast one user."
+            if (!SpringSecurityUtils.ifAnyGranted("ROLE_ADMIN")) {
+                message += " (Users with role Admin are excluded from selected list.)"
+            }
+
+            respond([success: false, message: "Please select atleast one user."])
+            return
+        }
+        println selectedUserIds*.dump()
+
         try {
             if (useMongo) {
                 // Returns http://api.mongodb.org/java/current/com/mongodb/WriteResult.html
-                def writeResult = User.collection.update([_id: [$in: requestData.selectedIds]], [$set:
-                    [enabled: requestData.type]], false, true)
+                def writeResult = User.collection.update([_id: [$in: selectedUserIds]], [$set:
+                    [enabled: requestData.type.toBoolean()]], false, true)
 
                 int updatedFields = writeResult.getN()
                 respond ([message: "Total $updatedFields user's account set to $typeText successfully.", success: true])
@@ -198,29 +205,29 @@ class UserManagementController {
         log.debug "Params reveived to update email $params"
 
         if (!params.id || !params.newEmail || !params.confirmNewEmail) {
-            response.setStatus(NOT_ACCEPTABLE)
+            response.setStatus(NOT_ACCEPTABLE.value())
             respond ([message: "Please select a user and enter new & confirmation email."])
             return
         }
 
-        params.email = params.email.toLowerCase()
+        params.newEmail = params.newEmail.toLowerCase()
         params.confirmNewEmail = params.confirmNewEmail.toLowerCase()
 
         if (params.newEmail != params.confirmNewEmail) {
-            response.setStatus(NOT_ACCEPTABLE)
+            response.setStatus(NOT_ACCEPTABLE.value())
             respond ([message: "Email dose not match the Confirm Email."])
             return
         }
 
         if (User.countByEmail(params.newEmail)) {
-            response.setStatus(NOT_ACCEPTABLE)
+            response.setStatus(NOT_ACCEPTABLE.value())
             respond ([message: "User already exist with Email: $params.newEmail"])
             return
         }
 
         User userInstance = User.get(params.id)
         if (!userInstance) {
-            response.setStatus(NOT_ACCEPTABLE)
+            response.setStatus(NOT_ACCEPTABLE.value())
             respond ([message: "User not found with id: $params.id."])
             return
         }
@@ -228,7 +235,7 @@ class UserManagementController {
         userInstance.email = params.newEmail
         userInstance.save()
         if (userInstance.hasErrors()) {
-            response.setStatus(NOT_ACCEPTABLE)
+            response.setStatus(NOT_ACCEPTABLE.value())
 
             log.warn "Error saving $userInstance $userInstance.errors"
 

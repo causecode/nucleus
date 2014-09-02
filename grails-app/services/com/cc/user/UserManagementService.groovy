@@ -74,7 +74,7 @@ class UserManagementService {
             ids = ids.collect { ObjectIdClazz.newInstance(it) }
         }
 
-        return ids
+        return ids.unique()
     }
 
     Map getList(params) {
