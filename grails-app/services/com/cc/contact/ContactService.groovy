@@ -14,10 +14,24 @@ import com.cc.geo.location.City
 import com.cc.geo.location.Country
 import com.cc.user.User
 
+/**
+ * ContactService resolves location and contact information parameters and validates instances.
+ * @author Shashank Agrawal
+ *
+ */
 class ContactService {
 
+    /**
+     * Dependency injection for the springSecurityService.
+     */
     def springSecurityService
 
+    /**
+     * Resolves location and contact information and save user instance with resolved parameter.
+     * @param args list of location and contact parameters
+     * @param request HttpServletRequest object used to get Locale for country parameter.
+     * @return Boolean field specifying successfully saved current user instance with given parameters.
+     */
     boolean resolveParameters(Map args, HttpServletRequest request, String fieldName = "contact") {
         Country countryInstance
         String city = args["city"]
@@ -84,6 +98,13 @@ class ContactService {
         return true
     }
 
+    /**
+     * Checks whether instance validated without any errors or not for given field name.
+     * @param instance Object to be validated
+     * @param fieldName Name of embedded field.
+     * @return True when instance for given field validated with no errors. Returns False if it throws errors in
+     * validation.
+     */
     boolean hasErrors(def instance, String fieldName = "contact") {
         List validationResult = []
         validationResult << instance[fieldName]?.validate()

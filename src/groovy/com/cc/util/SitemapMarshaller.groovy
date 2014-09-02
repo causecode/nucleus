@@ -16,12 +16,27 @@ import org.codehaus.groovy.grails.web.converters.marshaller.ObjectMarshaller
 
 import com.cc.seo.sitemap.Sitemap
 
+/**
+ * A generic Marshaller for {@link Sitemap}.
+ * @author Shashank Agrawal
+ *
+ */
 class SitemapMarshaller implements ObjectMarshaller, NameAwareMarshaller {
 
+    /**
+     * Checks Object is instance of Sitemap or not.
+     * @param object The {@link Object}
+     * @return Boolean value checking object accepted is instance of Sitemap or not.
+     */
     public boolean supports(Object object) {
         return object instanceof Sitemap
     }
 
+    /**
+     * This method used to marshal object into XML.
+     * @param object The {@link Object}
+     * @param converter {@link Converter} instance used to convert object.
+     */
     public void marshalObject(Object object, Converter<XML> converter) {
         Sitemap sitemap = object as Sitemap
         converter.attribute 'xmlns', "http://www.sitemaps.org/schemas/sitemap/0.9"
@@ -45,6 +60,11 @@ class SitemapMarshaller implements ObjectMarshaller, NameAwareMarshaller {
         }
     }
 
+    /**
+     * Return tag name for the Object.
+     * @param o The {@link Object}
+     * @return Return tag name for the Object.
+     */
     String getElementName(Object o) {
         return 'urlset'
     }

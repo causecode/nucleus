@@ -8,6 +8,9 @@
 
 package com.cc.user
 
+/**
+ * Role groovy class used to specify authority information.
+ */
 class Role {
 
     String authority

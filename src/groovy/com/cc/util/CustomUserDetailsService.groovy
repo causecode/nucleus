@@ -19,10 +19,23 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException
 import com.cc.user.Role
 import com.cc.user.User
 
+/**
+ * This service provides methods to get UserDetails by different fields.
+ * @author Vishesh Duggar
+ * @author Shashank Agrawal
+ *
+ */
 class CustomUserDetailsService implements GrailsUserDetailsService {
 
     static final List NO_ROLES = [new GrantedAuthorityImpl(SpringSecurityUtils.NO_ROLE)]
 
+    /**
+     * Override method search user by username parameter passed and return user details.
+     * @param username String value used to get user instance
+     * @throws UsernameNotFoundException
+     * @throws {@link DataAccessException}
+     * @return GrailsUser for searched user instance. Throws exceptions if user not found or data access exception error occurs.
+     */
     @Override
     UserDetails loadUserByUsername(String username) throws UsernameNotFoundException, DataAccessException {
         User.withTransaction {
@@ -38,6 +51,14 @@ class CustomUserDetailsService implements GrailsUserDetailsService {
         }
     }
 
+    /**
+     * Override method search user by username parameter passed and return user details.
+     * @param username String value used to get user instance
+     * @param loadRoles Boolean field
+     * @throws UsernameNotFoundException
+     * @throws {@link DataAccessException}
+     * @return GrailsUser for searched user instance. Throws exceptions if user not found or data access exception error occurs.
+     */
     @Override
     UserDetails loadUserByUsername(String username, boolean loadRoles) throws UsernameNotFoundException, DataAccessException {
         loadUserByUsername(username)

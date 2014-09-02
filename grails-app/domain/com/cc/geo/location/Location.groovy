@@ -10,6 +10,10 @@ package com.cc.geo.location
 
 import com.cc.geo.location.City
 
+/**
+ * Used to stores all location information.
+ *
+ */
 class Location {
 
     Date dateCreated

@@ -8,6 +8,9 @@
 
 package com.cc.seo.sitemap
 
+/**
+ * Url groovy class used to specify information related to URL's.
+ */
 class Url {
 
     float priority = 0.0

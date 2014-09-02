@@ -12,12 +12,27 @@ import static org.springframework.http.HttpStatus.*
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 
+/**
+ * @author Vishesh Duggar
+ * @author Shashank Agrawal
+ * @author Laxmi Salunkhe
+ */
 @Secured(["ROLE_USER_MANAGER"])
 class UserManagementController {
 
-    // Arranged by name
+    /**
+     * Dependency Injection for the exportService.
+     */
     def exportService
+    
+    /**
+     * Dependency Injection for the springSecurityService.
+     */
     def springSecurityService
+    
+    /**
+     * Dependency Injection for the userManagementService.
+     */
     def userManagementService
 
     private User userInstance
@@ -25,9 +40,10 @@ class UserManagementController {
     static responseFormats = ["json"]
 
     /**
-     * 
-     * @param dbType Type of database support. Must be either "Mongo" or "Mysql"
-     * @return
+     * List action used to fetch Role list and User's list with filters and pagination applied.
+     * @param max Integer parameter used to set number of records to be returned.
+     * @param dbType Type of database support. Must be either "Mongo" or "Mysql".
+     * @return Result in JSON format.
      */
     def index(Integer max, int offset, String dbType) {
         log.info "Params recived to fetch users :" + params
@@ -44,10 +60,19 @@ class UserManagementController {
         render result as JSON
     }
 
+    /**
+     * Modifies Roles of users with help of given roles and type.
+     * @param userIds List of users ID
+     * @param roleIds List of role ID
+     * @param roleActionType String value which specifies two conditions.
+     * 1. "refresh" - Remove existing roles and apply new roles.
+     * 2. other role type - Update existing roles. i.e. append roles.
+     * @return Renders boolean response True.
+     */
     def modifyRoles() {
         Map requestData = request.JSON
         log.info "Parameters recevied to modify roles: $requestData"
-
+    
         Set failedUsersForRoleModification = []
         List userIds = requestData.userIds
         List roleInstanceList = Role.getAll(userManagementService.getAppropiateIdList(requestData.roleIds))
@@ -76,6 +101,14 @@ class UserManagementController {
         respond(result)
     }
 
+    /**
+     * Marks users ACTIVE/INACTIVE with help of given type.
+     * @param selectedUser List of users ID
+     * @param type String value which specifies two conditions.
+     * 1. "active" - Set User field enabled to true.
+     * 2. "in-active" - Set User field enabled to false.
+     * @return Renders message response in JSON format.
+     */
     def makeUserActiveInactive() {
         Map requestData = request.JSON
         String typeText = requestData.type ? 'active': 'inactive'
@@ -109,9 +142,12 @@ class UserManagementController {
             log.error "Error enable/disable user.", e
             respond ([message: "Unable to enable/disable the user. Please try again.", success: false])
         }
-
     }
 
+    /**
+     * This action provides excel report for given listed users.
+     * @param selectedUser List of users ID
+     */
     def export(boolean selectAll) {
         Map parameters, labels = [:]
         List fields = [], columnWidthList = []
