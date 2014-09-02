@@ -11,7 +11,7 @@ package com.cc.user
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 
-@Secured(["ROLE_CONTENT_MANAGER"])
+@Secured(["ROLE_USER_MANAGER"])
 class UserManagementController {
 
     // Arranged by name
@@ -33,6 +33,7 @@ class UserManagementController {
 
         params.offset = offset ?: 0
         params.max = Math.min(max ?: 10, 100)
+        params.order = params.order ?: "desc"
 
         Map result = userManagementService."listFor${dbType}"(params)
         if (offset == 0) {
@@ -68,19 +69,23 @@ class UserManagementController {
 
         log.info "Users ID recived to $typeText User: $requestData.selectedIds"
 
-        requestData.selectedIds.each { userId ->
-            User userInstance = User.get(userId)
+        boolean useMongo = grailsApplication.config.cc.plugins.crm.persistence.provider == "mongodb"
 
-            if (userInstance) {
-                userInstance.enabled = requestData.type
-                userInstance.save(flush: true)
-            } else {
-                log.warn "User not found with id: $userId"
-            }
+        List selectedUserIds = userManagementService.getAppropiateIdList(requestData.selectedIds)
+
+        if (!selectedUserIds) {
+            respond([success: false, message: "Please select atleast one user."])
+            return
         }
 
-        String message = "User's account set to $typeText successfully."
-        respond ([message: message])
+        if (useMongo) {
+            User.collection.update([_id: [$in: requestData.selectedIds]], [$set: [enabled: requestData.type]], false, true)
+        } else {
+            User.executeUpdate("UPDATE User SET enabled = :actionType WHERE id IN :userIds", [
+                actionType: requestData.type, userIds: requestData.selectedIds])
+        }
+
+        respond ([message: "User's account set to $typeText successfully."])
     }
 
     def export(boolean selectAll) {
