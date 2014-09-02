@@ -5,38 +5,34 @@ import grails.transaction.Transactional
 @Transactional
 class UserManagementService {
 
-    List fetchListForMongo(Map params, boolean paginate) {
+    List fetchListForMongo(Map params) {
         List roleFilterList = []
+
         if (params.roleFilter instanceof String) {
             roleFilterList = params.roleFilter.tokenize(",")
         } else {
             roleFilterList = params.roleFilter as List
         }
 
-        List result = User.withCriteria {
-            if(!paginate) {
-                projections {
-                    countDistinct "email"
-                }
-            }
-            if(params.letter) {
+        List result = User.createCriteria().list(params) {
+            if (params.letter) {
                 ilike("firstName", "${params.letter}%")
             }
-            if(params.query) {
+            if (params.query) {
                 or {
                     ["firstName", "lastName", "username", "email"].each { userField ->
                         ilike(userField, "%${params.query}%")
                     }
                 }
             }
-            if(params.roleFilter) {
-                if(params.roleType == "Any Granted") {
+            if (params.roleFilter) {
+                if (params.roleType == "Any Granted") {
                     or {
                         getAppropiateIdList(roleFilterList).each { roleId ->
                             'in'("roleIds", [roleId])
                         }
                     }
-                } else if(params.roleType == "All Granted") {
+                } else if (params.roleType == "All Granted") {
                     and {
                         getAppropiateIdList(roleFilterList).each { roleId ->
                             'in'("roleIds", [roleId])
@@ -47,11 +43,6 @@ class UserManagementService {
                         eq("roleIds", getAppropiateIdList(roleFilterList).sort())
                     }
                 }
-            }
-            if(paginate) {
-                firstResult(params.offset.toInteger())
-                maxResults(params.max.toInteger())
-                order(params.sort, params.order)
             }
         }
         result
@@ -75,8 +66,17 @@ class UserManagementService {
         return ids
     }
 
+    Map getList(params) {
+        if (params.dbType == "Mongo") {
+            return listForMongo(params)
+        }
+
+        return listForMysql(params)
+    }
+
     Map listForMongo(Map params) {
-        [userInstanceList: fetchListForMongo(params, true), userInstanceTotal: fetchListForMongo(params, false)[0]]
+        List result = fetchListForMongo(params)
+        [instanceList: result, totalCount: result.totalCount]
     }
 
     Map listForMysql(Map params) {
@@ -88,13 +88,13 @@ class UserManagementService {
         Map queryStringParams = [:]
         StringBuilder query = new StringBuilder("select distinct ur1.user from UserRole ur1")
 
-        if(params.roleFilter) {
+        if (params.roleFilter) {
             List roleFilterList = params.roleFilter as List
 
-            if(roleType == "Any Granted") {
+            if (roleType == "Any Granted") {
                 queryStringParams.roles = roleFilterList
                 query.append(" where ur1.role.id in (:roles)")
-            } else if(roleType == "All Granted") {
+            } else if (roleType == "All Granted") {
                 query.append(" where")
                 makeQueryToCheckEachRole(query, roleFilterList)
             } else {
@@ -105,13 +105,13 @@ class UserManagementService {
             }
         }
 
-        if(params.letter) {
-            if(query.indexOf("where") == -1) query.append(" where")
+        if (params.letter) {
+            if (query.indexOf("where") == -1) query.append(" where")
             query.append(""" lower(ur1.user.firstName) like '${params.letter.toLowerCase()}%' """)
         }
 
-        if(params.query && !params.letter) {
-            if(query.indexOf("where") == -1) query.append(" where")
+        if (params.query && !params.letter) {
+            if (query.indexOf("where") == -1) query.append(" where")
             query.append(""" lower(ur1.user.firstName) like '%${params.query.toLowerCase()}%' """)
             query.append(""" or lower(ur1.user.lastName) like '${params.query.toLowerCase()}%' """)
             query.append(""" or lower(ur1.user.email) like '${params.query.toLowerCase()}%' """)
@@ -130,9 +130,19 @@ class UserManagementService {
         roleFilterList.eachWithIndex { role, index ->
             String alias = "ur${index+2}"
             query.append(" exists ( select ${alias}.user from UserRole $alias where ${alias}.user.id = ur1.user.id and ${alias}.role.id = $role )")
-            if(index < roleFilterList.size() - 1) {
+            if (index < roleFilterList.size() - 1) {
                 query.append(" and")
             }
         }
+    }
+
+    List getSelectedItemList(boolean selectAll, String selectedIds, Map args) {
+        if (selectAll) {
+            return getList(args)["instanceList"]
+        } else if (selectedIds) {
+            return User.getAll(getAppropiateIdList(selectedIds.tokenize(",")))
+        }
+
+        return []
     }
 }

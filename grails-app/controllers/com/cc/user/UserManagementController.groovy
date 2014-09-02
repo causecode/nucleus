@@ -8,10 +8,11 @@
 
 package com.cc.user
 
+import static org.springframework.http.HttpStatus.*
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 
-@Secured(["ROLE_ADMIN"])
+@Secured(["ROLE_USER_MANAGER"])
 class UserManagementController {
 
     // Arranged by name
@@ -21,73 +22,100 @@ class UserManagementController {
 
     private User userInstance
 
-    def index() {}
-
-    def roleList() {
-        render Role.list() as JSON
-    }
+    static responseFormats = ["json"]
 
     /**
      * 
      * @param dbType Type of database support. Must be either "Mongo" or "Mysql"
      * @return
      */
-    def list(Integer max, String dbType) {
+    def index(Integer max, int offset, String dbType) {
         log.info "Params recived to fetch users :" + params
 
-        params.offset = params.offset ?: 0
-        params.sort = params.sort ?: "id"
+        params.offset = offset ?: 0
         params.max = Math.min(max ?: 10, 100)
-        params.order = params.order ?: "asc"
+        params.order = params.order ?: "desc"
 
         Map result = userManagementService."listFor${dbType}"(params)
-
-        result.roleList = Role.list([sort: 'authority'])
+        if (offset == 0) {
+            result["roleList"] = Role.list()
+        }
 
         render result as JSON
     }
 
-    def modifyRoles(String roleActionType) {
-        List userIds = params.list("userIds")
-        List roles = params.list("roleIds")
-        List roleInstanceList = Role.getAll(roles*.toLong())
+    def modifyRoles() {
+        Map requestData = request.JSON
+        log.info "Parameters recevied to modify roles: $requestData"
 
-        userIds.each { userId ->
+        Set failedUsersForRoleModification = []
+        List userIds = requestData.userIds
+        List roleInstanceList = Role.getAll(userManagementService.getAppropiateIdList(requestData.roleIds))
+
+        requestData.userIds.each { userId ->
             User userInstance = User.get(userId)
 
-            if(roleActionType == "refresh") {
+            if (requestData.roleActionType == "refresh") {
                 UserRole.removeAll(userInstance)
             }
             roleInstanceList.each { roleInstance ->
-                UserRole.create(userInstance, roleInstance, true)
+                UserRole userRoleInstance = UserRole.create(userInstance, roleInstance, true)
+                if (!userRoleInstance) {
+                    failedUsersForRoleModification << userInstance.email
+                }
             }
         }
-        render true
+
+        Map result = [success: true, message: "Roles updated succesfully."]
+
+        if (failedUsersForRoleModification) {
+            result["success"] = true
+            result["message"] = "Unable to grant role for users with email(s) ${failedUsersForRoleModification.join(', ')}."
+        }
+
+        respond(result)
     }
 
     def makeUserActiveInactive() {
-        String typeText = params.boolean('type') ? 'active': 'in-active'
+        Map requestData = request.JSON
+        String typeText = requestData.type ? 'active': 'inactive'
 
-        log.info "Users ID recived to $typeText active User : $params.selectedUser $params"
+        log.info "Users ID recived to $typeText User: $requestData.selectedIds"
 
-        params.list('selectedUser')?.each {
-            userInstance = User.findByIdAndEnabled(it, !params.boolean("type"))
+        boolean useMongo = grailsApplication.config.cc.plugins.crm.persistence.provider == "mongodb"
 
-            if(userInstance) {
-                userInstance.enabled = params.boolean("type")
-                userInstance.save(flush: true)
-            }
+        List selectedUserIds = userManagementService.getAppropiateIdList(requestData.selectedIds)
+
+        if (!selectedUserIds) {
+            respond([success: false, message: "Please select atleast one user."])
+            return
         }
-        String message = "User's account set to $typeText successfully."
-        render ([message: message] as JSON)
+
+        try {
+            if (useMongo) {
+                // Returns http://api.mongodb.org/java/current/com/mongodb/WriteResult.html
+                def writeResult = User.collection.update([_id: [$in: requestData.selectedIds]], [$set:
+                    [enabled: requestData.type]], false, true)
+
+                int updatedFields = writeResult.getN()
+                respond ([message: "Total $updatedFields user's account set to $typeText successfully.", success: true])
+            } else {
+                User.executeUpdate("UPDATE User SET enabled = :actionType WHERE id IN :userIds", [
+                    actionType: requestData.type, userIds: requestData.selectedIds])
+
+                respond ([message: "User's account set to $typeText successfully."])
+            }
+        } catch (Exception e) {
+            log.error "Error enable/disable user.", e
+            respond ([message: "Unable to enable/disable the user. Please try again.", success: false])
+        }
+
     }
 
-    def exportUserReport() {
-        log.info "User List for download Emails: $params.selectedUser."
-
+    def export(boolean selectAll) {
         Map parameters, labels = [:]
         List fields = [], columnWidthList = []
-        List selectedUser = params.selectedUser.tokenize(",")*.trim()*.toLong()
+        List<User> userList = userManagementService.getSelectedItemList(selectAll, params.selectedIds, params)
 
         fields << "id"; labels."id" = "User Id"; columnWidthList << 0.1
         fields << "email"; labels."email" = "Email"; columnWidthList << 0.3
@@ -102,8 +130,54 @@ class UserManagementController {
         parameters = ["column.widths": columnWidthList]
 
         response.contentType = "application/vnd.ms-excel"
-        response.setHeader("Content-disposition", "attachment; filename=user-report.xls");
+        response.setHeader("Content-disposition", "attachment; filename=user-report.csv");
 
-        exportService.export("excel", response.outputStream, User.getAll(selectedUser), fields, labels, [:], parameters)
+        exportService.export("csv", response.outputStream, userList, fields, labels, [:], parameters)
+    }
+
+    def updateEmail() {
+        params.putAll(request.JSON as Map)
+        log.debug "Params reveived to update email $params"
+
+        if (!params.id || !params.newEmail || !params.confirmNewEmail) {
+            response.setStatus(NOT_ACCEPTABLE)
+            respond ([message: "Please select a user and enter new & confirmation email."])
+            return
+        }
+
+        params.email = params.email.toLowerCase()
+        params.confirmNewEmail = params.confirmNewEmail.toLowerCase()
+
+        if (params.newEmail != params.confirmNewEmail) {
+            response.setStatus(NOT_ACCEPTABLE)
+            respond ([message: "Email dose not match the Confirm Email."])
+            return
+        }
+
+        if (User.countByEmail(params.newEmail)) {
+            response.setStatus(NOT_ACCEPTABLE)
+            respond ([message: "User already exist with Email: $params.newEmail"])
+            return
+        }
+
+        User userInstance = User.get(params.id)
+        if (!userInstance) {
+            response.setStatus(NOT_ACCEPTABLE)
+            respond ([message: "User not found with id: $params.id."])
+            return
+        }
+
+        userInstance.email = params.newEmail
+        userInstance.save()
+        if (userInstance.hasErrors()) {
+            response.setStatus(NOT_ACCEPTABLE)
+
+            log.warn "Error saving $userInstance $userInstance.errors"
+
+            respond ([message: "Unable to update user's email.", error: userInstance.errors])
+            return
+        }
+
+        respond ([message: "Email updated Successfully."])
     }
 }
