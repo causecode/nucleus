@@ -9,6 +9,8 @@
 package com.cc.user
 
 import static org.springframework.http.HttpStatus.*
+import grails.converters.JSON
+import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
 
 /**
@@ -25,16 +27,9 @@ class UserManagementController {
     def exportService
 
     /**
-     * Dependency Injection for the springSecurityService.
-     */
-    def springSecurityService
-
-    /**
      * Dependency Injection for the userManagementService.
      */
     def userManagementService
-
-    private User userInstance
 
     static responseFormats = ["json"]
 
@@ -241,10 +236,6 @@ class UserManagementController {
             return
         }
 
-        <<<<<<< HEAD
         respond ([message: "Email updated Successfully."])
-        =======
-        exportService.export("excel", response.outputStream, userList, fields, labels, [:], parameters)
-        >>>>>>> spring-security-upgrade
     }
 }
