@@ -171,6 +171,13 @@ class UserManagementController {
         exportService.export("csv", response.outputStream, userList, fields, labels, [:], parameters)
     }
 
+    /**
+     * Used to update the email of any given user.
+     * @param id Identity of user to update.
+     * @param newEmail New email address to update
+     * @param confirmNewEmail Confirm new email
+     * @return Status message with success or not.
+     */
     def updateEmail() {
         params.putAll(request.JSON as Map)
         log.debug "Params reveived to update email $params"
