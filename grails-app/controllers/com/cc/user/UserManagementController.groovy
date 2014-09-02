@@ -47,6 +47,7 @@ class UserManagementController {
         Map requestData = request.JSON
         log.info "Parameters recevied to modify roles: $requestData"
 
+        Set failedUsersForRoleModification = []
         List userIds = requestData.userIds
         List roleInstanceList = Role.getAll(userManagementService.getAppropiateIdList(requestData.roleIds))
 
@@ -57,10 +58,21 @@ class UserManagementController {
                 UserRole.removeAll(userInstance)
             }
             roleInstanceList.each { roleInstance ->
-                UserRole.create(userInstance, roleInstance, true)
+                UserRole userRoleInstance = UserRole.create(userInstance, roleInstance, true)
+                if (!userRoleInstance) {
+                    failedUsersForRoleModification << userInstance.email
+                }
             }
         }
-        render ([success: true] as JSON)
+
+        Map result = [success: true, message: "Roles updated succesfully."]
+
+        if (failedUsersForRoleModification) {
+            result["success"] = true
+            result["message"] = "Unable to grant role for users with email(s) ${failedUsersForRoleModification.join(', ')}."
+        }
+
+        respond(result)
     }
 
     def makeUserActiveInactive() {
@@ -78,14 +90,25 @@ class UserManagementController {
             return
         }
 
-        if (useMongo) {
-            User.collection.update([_id: [$in: requestData.selectedIds]], [$set: [enabled: requestData.type]], false, true)
-        } else {
-            User.executeUpdate("UPDATE User SET enabled = :actionType WHERE id IN :userIds", [
-                actionType: requestData.type, userIds: requestData.selectedIds])
+        try {
+            if (useMongo) {
+                // Returns http://api.mongodb.org/java/current/com/mongodb/WriteResult.html
+                def writeResult = User.collection.update([_id: [$in: requestData.selectedIds]], [$set:
+                    [enabled: requestData.type]], false, true)
+
+                int updatedFields = writeResult.getN()
+                respond ([message: "Total $updatedFields user's account set to $typeText successfully.", success: true])
+            } else {
+                User.executeUpdate("UPDATE User SET enabled = :actionType WHERE id IN :userIds", [
+                    actionType: requestData.type, userIds: requestData.selectedIds])
+
+                respond ([message: "User's account set to $typeText successfully."])
+            }
+        } catch (Exception e) {
+            log.error "Error enable/disable user.", e
+            respond ([message: "Unable to enable/disable the user. Please try again.", success: false])
         }
 
-        respond ([message: "User's account set to $typeText successfully."])
     }
 
     def export(boolean selectAll) {
