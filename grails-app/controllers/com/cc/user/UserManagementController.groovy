@@ -9,7 +9,6 @@
 package com.cc.user
 
 import static org.springframework.http.HttpStatus.*
-import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 
 /**
@@ -24,12 +23,12 @@ class UserManagementController {
      * Dependency Injection for the exportService.
      */
     def exportService
-    
+
     /**
      * Dependency Injection for the springSecurityService.
      */
     def springSecurityService
-    
+
     /**
      * Dependency Injection for the userManagementService.
      */
@@ -72,12 +71,24 @@ class UserManagementController {
     def modifyRoles() {
         Map requestData = request.JSON
         log.info "Parameters recevied to modify roles: $requestData"
-    
+
         Set failedUsersForRoleModification = []
         List userIds = requestData.userIds
-        List roleInstanceList = Role.getAll(userManagementService.getAppropiateIdList(requestData.roleIds))
+        List roleIds = userManagementService.getAppropiateIdList(requestData.roleIds)
 
-        requestData.userIds.each { userId ->
+        if (!SpringSecurityUtils.ifAnyGranted("ROLE_ADMIN")) {
+            Role adminRole = Role.findByAuthority("ROLE_ADMIN")
+            List adminUsersIds = UserRole.findAllByRole(adminRole)*.user*.id
+
+            userIds = userIds - adminUsersIds
+            roleIds = roleIds.remove(adminRole.id)
+
+            log.info "Removed admin users and admin roles. $userIds, $roleIds"
+        }
+
+        List roleInstanceList = Role.getAll(roleIds)
+
+        userIds.each { userId ->
             User userInstance = User.get(userId)
 
             if (requestData.roleActionType == "refresh") {
@@ -122,6 +133,15 @@ class UserManagementController {
         if (!selectedUserIds) {
             respond([success: false, message: "Please select atleast one user."])
             return
+        }
+
+        if (!SpringSecurityUtils.ifAnyGranted("ROLE_ADMIN")) {
+            Role adminRole = Role.findByAuthority("ROLE_ADMIN")
+            List adminUsersIds = UserRole.findAllByRole(adminRole)*.user*.id
+
+            selectedUserIds = selectedUserIds - adminUsersIds
+
+            log.info "Removed admin users. $selectedUserIds"
         }
 
         try {
@@ -221,6 +241,10 @@ class UserManagementController {
             return
         }
 
+        <<<<<<< HEAD
         respond ([message: "Email updated Successfully."])
+        =======
+        exportService.export("excel", response.outputStream, userList, fields, labels, [:], parameters)
+        >>>>>>> spring-security-upgrade
     }
 }
