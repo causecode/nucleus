@@ -8,9 +8,10 @@
 
 package com.cc.util
 
+import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.userdetails.GrailsUser
 import grails.plugin.springsecurity.userdetails.GrailsUserDetailsService
-import grails.plugin.springsecurity.SpringSecurityUtils
+
 import org.springframework.dao.DataAccessException
 import org.springframework.security.core.authority.GrantedAuthorityImpl
 import org.springframework.security.core.userdetails.UserDetails
@@ -39,8 +40,15 @@ class CustomUserDetailsService implements GrailsUserDetailsService {
     @Override
     UserDetails loadUserByUsername(String username) throws UsernameNotFoundException, DataAccessException {
         User.withTransaction {
-            User userInstance = User.findByUsernameOrEmail(username, username)
-            if(!userInstance)
+            // Case insensitive query support for MongoDB
+            User userInstance = User.withCriteria(uniqueResult: true) {
+                or {
+                    ilike("username", username)
+                    ilike("email", username)
+                }
+            }
+
+            if (!userInstance)
                 throw new UsernameNotFoundException("User not found", username)
 
             def authorities = userInstance.authorities.collect { Role roleInstance ->
@@ -63,5 +71,4 @@ class CustomUserDetailsService implements GrailsUserDetailsService {
     UserDetails loadUserByUsername(String username, boolean loadRoles) throws UsernameNotFoundException, DataAccessException {
         loadUserByUsername(username)
     }
-
 }
