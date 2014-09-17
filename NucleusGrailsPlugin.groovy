@@ -1,3 +1,5 @@
+import com.cc.util.StringAsGspRenderer
+
 /*
  * Copyright (c) 2011, CauseCode Technologies Pvt Ltd, India.
  * All rights reserved.
@@ -25,4 +27,9 @@ class NucleusGrailsPlugin {
 
     def documentation = "https://bitbucket.org/causecode/nucleus"
 
+    def doWithSpring = {
+        stringAsGspRenderer(StringAsGspRenderer) {
+            groovyPagesTemplateEngine = ref('groovyPagesTemplateEngine')
+        }
+    }
 }
