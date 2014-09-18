@@ -33,10 +33,10 @@ class StringAsGspRenderer {
     private static final String TEMPLATE_CACHE_DIRECTORY_NAME
     private static final String TEMPLATE_CACHE_DIRECTORY_PATH
 
+    private Map<String, String> pageTemplateURLCache = new HashMap<String, String>()
+
     // Groovy page template engine bean injected in NucleusGrailsPlugin.groovy
     PageRenderer groovyPageRenderer
-
-    private Map<String, String> pageTemplateURLCache = new HashMap<String, String>()
 
     static {
         TEMPLATE_CACHE_DIRECTORY_NAME = "/template-cache"
@@ -64,10 +64,12 @@ class StringAsGspRenderer {
 
     /**
      * Used to generate a unique template id for a domain instance.
-     * @example User_14 for a instance of a domain class with id 14.
+     * @example User_14_2 for a instance of a domain class with id 14 & version 2.
      */
-    private String getPageIdForDomainInstance(Object domainInstance) {
+    private String getPageIdForDomain(Object domainInstance, String field) {
         StringBuilder pageId = new StringBuilder(domainInstance.class.simpleName.toLowerCase())
+        pageId.append("_")
+        pageId.append(field)
         pageId.append("_")
         pageId.append(domainInstance.id?.toString())
         pageId.append("_")
@@ -77,7 +79,7 @@ class StringAsGspRenderer {
     }
 
     void removeFromCache(Object domainInstance){
-        removeFromCache(getPageIdForDomainInstance(domainInstance))
+        removeFromCache(getPageIdForDomain(domainInstance))
     }
 
     /*
@@ -87,8 +89,8 @@ class StringAsGspRenderer {
         pageTemplateURLCache.remove(pageId)
     }
 
-    String render(Object domainInstance, String content, Map model) {
-        render(getPageIdForDomainInstance(domainInstance), content, model)
+    String render(String content, Map model) {
+        render("cc${System.currentTimeMillis()}", content, model)
     }
 
     /**
@@ -99,23 +101,28 @@ class StringAsGspRenderer {
      * @param model Model to be bind on the given content.
      * @return Compiled & converted string
      */
-    String render(String pageId, String content, Map model) {
+    String render(String pageID, String content, Map model) {
         clearCache()
 
         // Check if that template is already created & cached.
-        String fileURL = pageTemplateURLCache.get(pageId)
+        String fileURL = pageTemplateURLCache.get(pageID)
 
+        // If cached template URL not already exist
         if (!fileURL || !(new File(fileURL).exists())) {
             // Create the template path as in view folder
-            File templateFile = new File("$TEMPLATE_CACHE_DIRECTORY_PATH/_${pageId}.gsp")
+            File templateFile = new File("$TEMPLATE_CACHE_DIRECTORY_PATH/_${pageID}.gsp")
             // Write content to the file
             templateFile << content
 
             fileURL = templateFile.absolutePath
-            pageTemplateURLCache.put(pageId, fileURL)
+            pageTemplateURLCache.put(pageID, fileURL)
         }
 
         // Render content for new page.
-        groovyPageRenderer.render([template: "/$TEMPLATE_CACHE_DIRECTORY_NAME/$pageId", model: model])
+        groovyPageRenderer.render([template: "/$TEMPLATE_CACHE_DIRECTORY_NAME/$pageID", model: model])
+    }
+
+    String renderFromDomain(Object domainInstance, String field, Map model) {
+        render(getPageIdForDomain(domainInstance, field), domainInstance[field], model)
     }
 }
