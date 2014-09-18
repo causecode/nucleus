@@ -1,5 +1,3 @@
-import com.cc.util.StringAsGspRenderer
-
 /*
  * Copyright (c) 2011, CauseCode Technologies Pvt Ltd, India.
  * All rights reserved.
@@ -8,9 +6,11 @@ import com.cc.util.StringAsGspRenderer
  * without modification, are not permitted.
  */
 
+import com.cc.util.StringAsGspRenderer
+
 class NucleusGrailsPlugin {
 
-    def version = "0.3"
+    def version = "0.3.1-SNAPSHOT"
     def grailsVersion = "2.2 > *"
     def groupId = "com.cc.plugins"
     def dependsOn = [:]
@@ -29,7 +29,7 @@ class NucleusGrailsPlugin {
 
     def doWithSpring = {
         stringAsGspRenderer(StringAsGspRenderer) {
-            groovyPagesTemplateEngine = ref('groovyPagesTemplateEngine')
+            groovyPageRenderer = ref('groovyPageRenderer')
         }
     }
 }

@@ -8,13 +8,15 @@
 
 package com.cc.util
 
-import groovy.text.Template
+import grails.gsp.PageRenderer
+import grails.util.Environment
 
-import org.codehaus.groovy.grails.web.pages.GroovyPagesTemplateEngine
+import org.apache.commons.logging.Log
+import org.apache.commons.logging.LogFactory
 
 /**
  * A utility bean to compile & render a simple string text as a GSP content.
- * Basically, this bean creates a template for given string to compile & then 
+ * Basically, this bean creates a gsp template for given string (if not available) to compile & then 
  * uses the groovy page renderer engine to render that template.
  * 
  * To use this bean just inject <code>def stringAsGspRenderer</code> in controller, domain
@@ -26,19 +28,50 @@ import org.codehaus.groovy.grails.web.pages.GroovyPagesTemplateEngine
  */
 class StringAsGspRenderer {
 
-    // Groovy page template engine bean injected in NucleusGrailsPlugin.groovy
-    GroovyPagesTemplateEngine groovyPagesTemplateEngine
+    private static Log log = LogFactory.getLog(this)
 
-    private Map<String, Template> pageTemplateCache = new HashMap<String, Template>()
+    private static final String TEMPLATE_CACHE_DIRECTORY_NAME
+    private static final String TEMPLATE_CACHE_DIRECTORY_PATH
+
+    // Groovy page template engine bean injected in NucleusGrailsPlugin.groovy
+    PageRenderer groovyPageRenderer
+
+    private Map<String, String> pageTemplateURLCache = new HashMap<String, String>()
+
+    static {
+        TEMPLATE_CACHE_DIRECTORY_NAME = "/template-cache"
+
+        TEMPLATE_CACHE_DIRECTORY_PATH = "./grails-app/views/$TEMPLATE_CACHE_DIRECTORY_NAME"
+
+        if (![Environment.DEVELOPMENT, Environment.TEST].contains(Environment.current)) {
+            String catalinaHome = System.getenv("CATALINA_HOME")
+            TEMPLATE_CACHE_DIRECTORY_PATH = "$catalinaHome/webapps/ROOT/WEB-INF/$TEMPLATE_CACHE_DIRECTORY_PATH"
+        }
+
+        File temporaryDirectoryPath = new File(TEMPLATE_CACHE_DIRECTORY_PATH)
+
+        log.debug "Temporary path for template directory: $temporaryDirectoryPath.absolutePath"
+
+        if (!temporaryDirectoryPath.exists()) {
+            boolean status = temporaryDirectoryPath.mkdirs()
+            log.debug "Created template cache directory with status: [$status]"
+        }
+    }
+
+    void clearCache() {
+        pageTemplateURLCache = [:]
+    }
 
     /**
      * Used to generate a unique template id for a domain instance.
      * @example User_14 for a instance of a domain class with id 14.
      */
     private String getPageIdForDomainInstance(Object domainInstance) {
-        StringBuilder pageId = new StringBuilder(domainInstance.class.simpleName)
+        StringBuilder pageId = new StringBuilder(domainInstance.class.simpleName.toLowerCase())
         pageId.append("_")
         pageId.append(domainInstance.id?.toString())
+        pageId.append("_")
+        pageId.append(domainInstance.version?.toString())
 
         pageId.toString()
     }
@@ -51,7 +84,7 @@ class StringAsGspRenderer {
      * Used to remove a template from cache so new version of same template can be used.
      */
     void removeFromCache(String pageId){
-        pageTemplateCache.remove(pageId)
+        pageTemplateURLCache.remove(pageId)
     }
 
     String render(Object domainInstance, String content, Map model) {
@@ -67,20 +100,22 @@ class StringAsGspRenderer {
      * @return Compiled & converted string
      */
     String render(String pageId, String content, Map model) {
-        StringWriter stringWriterInstance = new StringWriter()
+        clearCache()
 
         // Check if that template is already created & cached.
-        Template template = pageTemplateCache.get(pageId)
+        String fileURL = pageTemplateURLCache.get(pageId)
 
-        if (!template) {
-            // If not create a template and store it to the cache. (It doesn't actually creates a file.)
-            template = groovyPagesTemplateEngine.createTemplate(content, "${pageId}.gsp")
-            pageTemplateCache.put(pageId, template)
+        if (!fileURL || !(new File(fileURL).exists())) {
+            // Create the template path as in view folder
+            File templateFile = new File("$TEMPLATE_CACHE_DIRECTORY_PATH/_${pageId}.gsp")
+            // Write content to the file
+            templateFile << content
+
+            fileURL = templateFile.absolutePath
+            pageTemplateURLCache.put(pageId, fileURL)
         }
 
-        // Apply the given model to the content template & write it to the writere.
-        template.make(model).writeTo(stringWriterInstance)
-
-        stringWriterInstance.toString()
+        // Render content for new page.
+        groovyPageRenderer.render([template: "/$TEMPLATE_CACHE_DIRECTORY_NAME/$pageId", model: model])
     }
 }
