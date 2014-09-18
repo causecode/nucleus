@@ -6,9 +6,11 @@
  * without modification, are not permitted.
  */
 
+import com.cc.util.StringAsGspRenderer
+
 class NucleusGrailsPlugin {
 
-    def version = "0.3"
+    def version = "0.3.1-SNAPSHOT"
     def grailsVersion = "2.2 > *"
     def groupId = "com.cc.plugins"
     def dependsOn = [:]
@@ -25,4 +27,9 @@ class NucleusGrailsPlugin {
 
     def documentation = "https://bitbucket.org/causecode/nucleus"
 
+    def doWithSpring = {
+        stringAsGspRenderer(StringAsGspRenderer) {
+            groovyPageRenderer = ref('groovyPageRenderer')
+        }
+    }
 }
