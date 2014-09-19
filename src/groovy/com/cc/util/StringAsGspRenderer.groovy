@@ -67,15 +67,15 @@ class StringAsGspRenderer {
      * @example User_14_2 for a instance of a domain class with id 14 & version 2.
      */
     private String getPageIdForDomain(Object domainInstance, String field) {
-        StringBuilder pageId = new StringBuilder(domainInstance.class.simpleName.toLowerCase())
-        pageId.append("_")
-        pageId.append(field)
-        pageId.append("_")
-        pageId.append(domainInstance.id?.toString())
-        pageId.append("_")
-        pageId.append(domainInstance.version?.toString())
+        StringBuilder pageID = new StringBuilder(domainInstance.class.simpleName.toLowerCase())
+        pageID.append("_")
+        pageID.append(field)
+        pageID.append("_")
+        pageID.append(domainInstance.id?.toString())
+        pageID.append("_")
+        pageID.append(domainInstance.version?.toString())
 
-        pageId.toString()
+        pageID.toString()
     }
 
     void removeFromCache(Object domainInstance){
@@ -85,8 +85,8 @@ class StringAsGspRenderer {
     /*
      * Used to remove a template from cache so new version of same template can be used.
      */
-    void removeFromCache(String pageId){
-        pageTemplateURLCache.remove(pageId)
+    void removeFromCache(String pageID){
+        pageTemplateURLCache.remove(pageID)
     }
 
     String render(String content, Map model) {
@@ -112,7 +112,7 @@ class StringAsGspRenderer {
             // Create the template path as in view folder
             File templateFile = new File("$TEMPLATE_CACHE_DIRECTORY_PATH/_${pageID}.gsp")
             // Write content to the file
-            templateFile << content
+            templateFile.text = content
 
             fileURL = templateFile.absolutePath
             pageTemplateURLCache.put(pageID, fileURL)
