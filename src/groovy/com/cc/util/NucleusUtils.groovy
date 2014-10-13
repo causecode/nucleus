@@ -69,4 +69,29 @@ class NucleusUtils {
 
         log.debug "NucleusUtil initialized."
     }
+
+    /**
+     * A utility method used to persist a domain instance, which first checks if domain instances
+     * has any validation error or not and if it has validation error then it prints logs and simply
+     * returns
+     * @param domainInstance
+     * @param flush
+     * @return
+     */
+    static boolean save(Object domainInstance, boolean flush) {
+        if (!domainInstance) {
+            return false
+        }
+
+        domainInstance.validate()
+
+        if (domainInstance.hasErrors()) {
+            log.warn "Error saving $domainInstance $domainInstance.errors"
+            return false
+        }
+
+        domainInstance.save(flush: flush)
+
+        return true
+    }
 }
