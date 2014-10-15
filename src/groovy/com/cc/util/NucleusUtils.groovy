@@ -26,7 +26,7 @@ import org.codehaus.groovy.grails.web.servlet.GrailsApplicationAttributes as GA
  */
 class NucleusUtils {
 
-    private static Log log = LogFactory.getLog(this)
+    private static Log logger = LogFactory.getLog(this)
 
     static Object mailService
 
@@ -59,7 +59,7 @@ class NucleusUtils {
     }
 
     static void initialize() {
-        log.debug "Initilizing NucleusUtil.."
+        logger.debug "Initilizing NucleusUtil.."
 
         if (pluginManager.hasGrailsPlugin("asynchronousMail")) {
             mailService = getBean("asynchronousMailService")
@@ -67,7 +67,7 @@ class NucleusUtils {
             mailService = getBean("mailService")
         }
 
-        log.debug "NucleusUtil initialized."
+        logger.debug "NucleusUtil initialized."
     }
 
     /**
@@ -76,9 +76,10 @@ class NucleusUtils {
      * returns
      * @param domainInstance
      * @param flush
+     * @param log An optional log instance of calling class to properly display log statements
      * @return
      */
-    static boolean save(Object domainInstance, boolean flush) {
+    static boolean save(Object domainInstance, boolean flush, Log log = logger) {
         if (!domainInstance) {
             return false
         }
