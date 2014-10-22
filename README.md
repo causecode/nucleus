@@ -83,3 +83,9 @@ Generic tagLib used to render pagination information for list pages.
 > total: (REQUIRED) total number of instances
 > max: (OPTIONAL) max number of instances
 > offset: (OPTIONAL) actual number of instances rendered
+
+### Generate Groovy Documentation
+To generate groovy document use following command and protect document using spring security static rules. Read more [here](http://www.gradle.org/docs/current/dsl/org.gradle.api.tasks.javadoc.Groovydoc.html) about groovydoc.
+```
+    groovydoc [options] [packagenames] [sourcefiles]
+```
