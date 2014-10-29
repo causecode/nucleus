@@ -8,7 +8,7 @@
 
 package com.cc.seo.sitemap
 
-import org.springframework.security.access.annotation.Secured
+import grails.plugin.springsecurity.annotation.Secured
 
 
 @Secured(["ROLE_ADMIN"])
