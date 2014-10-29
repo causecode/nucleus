@@ -8,9 +8,8 @@
 
 package com.cc.core.currency
 
-import grails.plugin.springsecurity.annotation.Secured
-
 import org.springframework.dao.DataIntegrityViolationException
+import grails.plugin.springsecurity.annotation.Secured
 
 import com.cc.currency.Currency
 

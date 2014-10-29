@@ -13,7 +13,7 @@ import grails.plugin.springsecurity.userdetails.GrailsUser
 import grails.plugin.springsecurity.userdetails.GrailsUserDetailsService
 
 import org.springframework.dao.DataAccessException
-import org.springframework.security.core.authority.GrantedAuthorityImpl
+import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UsernameNotFoundException
 
@@ -28,7 +28,7 @@ import com.cc.user.User
  */
 class CustomUserDetailsService implements GrailsUserDetailsService {
 
-    static final List NO_ROLES = [new GrantedAuthorityImpl(SpringSecurityUtils.NO_ROLE)]
+    static final List NO_ROLES = [new SimpleGrantedAuthority(SpringSecurityUtils.NO_ROLE)]
 
     /**
      * Override method search user by username parameter passed and return user details.
@@ -52,7 +52,7 @@ class CustomUserDetailsService implements GrailsUserDetailsService {
                 throw new UsernameNotFoundException("User not found", username)
 
             def authorities = userInstance.authorities.collect { Role roleInstance ->
-                new GrantedAuthorityImpl(roleInstance.authority)
+                new SimpleGrantedAuthority(roleInstance.authority)
             }
             new GrailsUser(userInstance.username, userInstance.password, userInstance.enabled, !userInstance.accountExpired,
                     !userInstance.passwordExpired, !userInstance.accountLocked, authorities ?: NO_ROLES, userInstance.id)
