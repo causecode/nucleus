@@ -23,8 +23,11 @@ grails.project.dependency.resolution = {
         build(":tomcat:7.0.42", ":release:3.0.1", ":rest-client-builder:2.0.1") {
             export = false
         }
-        compile (":spring-security-core:2.0-RC4") {
+        compile (":spring-security-core:2.0-RC3") {
             export = false
         }
+        /*compile (":hibernate:3.6.10.7") {
+            export = false
+        }*/
     }
 }

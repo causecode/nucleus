@@ -16,6 +16,7 @@ import com.cc.util.SitemapMarshaller
 class NucleusBootStrap {
 
     def grailsApplication
+    def stringAsGspRenderer
 
     def init = { servletContext ->
         log.debug "Nucleus Bootstrap started executing .."
@@ -25,6 +26,8 @@ class NucleusBootStrap {
         XML.registerObjectMarshaller(new SitemapMarshaller())
 
         JSON.registerObjectMarshaller(new CustomValidationErrorMarshaller(grailsApplication.mainContext))
+
+        stringAsGspRenderer.cleanupTemplateCache()
 
         log.debug "Nucleus Bootstrap finished executing."
     }

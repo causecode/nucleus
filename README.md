@@ -8,6 +8,11 @@
 
 See [ChangeLog.md](https://bitbucket.org/causecode/nucleus/src/d9be8242b8cc37260eac82ea157d1eebe49b71be/ChangeLog.md?at=master) file.
 
+## Running test cases
+
+To run the test cases, uncomment the hibernate plugin dependency in BuildConfig.groovy file. Just make sure to to do
+not commit that file.
+
 ## Architecture Overview
 
 ### Domains

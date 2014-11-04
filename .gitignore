@@ -5,3 +5,4 @@ target-eclipse/**
 target/**
 logs/**
 *.zip*
+grails-app/views/template-cache/*
