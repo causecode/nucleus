@@ -10,6 +10,7 @@ package com.cc.util
 
 import grails.gsp.PageRenderer
 import grails.util.Environment
+import groovy.io.FileType
 
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
@@ -39,7 +40,7 @@ class StringAsGspRenderer {
     PageRenderer groovyPageRenderer
 
     static {
-        TEMPLATE_CACHE_DIRECTORY_NAME = "/template-cache"
+        TEMPLATE_CACHE_DIRECTORY_NAME = "template-cache"
 
         TEMPLATE_CACHE_DIRECTORY_PATH = "./grails-app/views/$TEMPLATE_CACHE_DIRECTORY_NAME"
 
@@ -63,19 +64,87 @@ class StringAsGspRenderer {
     }
 
     /**
-     * Used to generate a unique template id for a domain instance.
-     * @example User_14_2 for a instance of a domain class with id 14 & version 2.
+     * Used to cleanup all template cache created by this utility class at startup.
      */
-    private String getPageIdForDomain(Object domainInstance, String field) {
+    void cleanupTemplateCache() {
+        def gspNamePattern = ~/_.*\.gsp/
+        File baseDirectoryPath = new File(TEMPLATE_CACHE_DIRECTORY_PATH)
+
+        log.debug "Cleaning up template cache folder"
+
+        baseDirectoryPath.eachFileMatch(FileType.FILES, gspNamePattern) { gspCacheFile ->
+            log.debug "Deleting template cache files: " + gspCacheFile.absolutePath
+            gspCacheFile.delete()
+        }
+
+        // Grails internally caches the file on deployed app. Cleaning up those also
+        if (![Environment.DEVELOPMENT, Environment.TEST].contains(Environment.current)) {
+            String catalinaHome = System.getenv("CATALINA_HOME")
+            log.debug "Catalina home: [$catalinaHome]"
+
+            // Grails caches like gsp_app_name_template_cache_autoresponder_body_id_version
+            gspNamePattern = ~/gsp_.*_template_cache.*/
+            baseDirectoryPath = new File("$catalinaHome/webapps/ROOT/WEB-INF/classes")
+
+            baseDirectoryPath.eachFileMatch(FileType.FILES, gspNamePattern) { gspCacheFile ->
+                log.debug "Deleting grails template cache files: (may be a bug) " + gspCacheFile.absolutePath
+                gspCacheFile.delete()
+            }
+        }
+    }
+
+    /**
+     * Used to cleanup the old version of any domain instance.
+     * @param domainInstance The instance of any domain object with version field
+     */
+    void cleanupOldTemplate(Object domainInstance, String field) {
+        if (!domainInstance || !domainInstance.id || !domainInstance.version) {
+            log.info "No older version to cleanup for $domainInstance"
+            return
+        }
+
+        String pageID = getPageIdForDomain(domainInstance, field, true)
+        File oldCacheFile = new File("$TEMPLATE_CACHE_DIRECTORY_PATH/_${pageID}.gsp")
+
+        if (oldCacheFile.exists()) {
+            log.debug "Deleting old cache file: $oldCacheFile.absolutePath"
+            oldCacheFile.delete()
+        } else {
+            log.debug "Old cache file not exists: $oldCacheFile.absolutePath"
+        }
+    }
+
+    /**
+     * Used to generate a unique template id for a domain instance.
+     * 
+     * @param domainInstance The instance of any grails domain class to create id for.
+     * @param field Field in the domain class for unique id
+     * @param previousVersion Will create a id with lower version. Used to delete the older file.
+     * 
+     * @example User_14_2 for a instance of a domain class with id 14 & version 2.
+     * 
+     * If domain has not yet been persisted than current timestamp will be appended
+     * to avoid the caching problem.
+     */
+    private String getPageIdForDomain(Object domainInstance, String field, boolean previousVersion = false) {
         StringBuilder pageID = new StringBuilder(domainInstance.class.simpleName.toLowerCase())
         pageID.append("_")
         pageID.append(field)
         pageID.append("_")
-        pageID.append(domainInstance.id?.toString())
-        pageID.append("_")
-        pageID.append(domainInstance.version?.toString())
 
-        pageID.toString()
+        if (domainInstance.id) {
+            pageID.append(domainInstance.id.toString())
+            pageID.append("_")
+            if (previousVersion) {
+                pageID.append((domainInstance.version - 1).toString())
+            } else {
+                pageID.append(domainInstance.version.toString())
+            }
+        } else {
+            pageID.append(System.currentTimeMillis())
+        }
+
+        return pageID.toString()
     }
 
     void removeFromCache(Object domainInstance){
