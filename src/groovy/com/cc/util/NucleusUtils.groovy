@@ -106,9 +106,10 @@ class NucleusUtils {
             plugin: "nucleus", model: model])
 
         String messageSubject = "[$appName][${model.environmentName}] Internal Server Error occurred."
+        String toEmail = grailsApplication.config.app.technical.support.email
 
         mailService.sendMail {
-            to "developers@causecode.com"
+            to toEmail ?: "developers@causecode.com"
             from "bootstrap@causecode.com"
             subject messageSubject
             html messageBody
