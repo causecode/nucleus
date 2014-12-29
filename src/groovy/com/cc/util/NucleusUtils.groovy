@@ -8,8 +8,8 @@
 
 package com.cc.util
 
+import java.util.Map;
 import javax.servlet.ServletContext
-
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 import org.codehaus.groovy.grails.commons.DefaultGrailsApplication
@@ -94,5 +94,25 @@ class NucleusUtils {
         domainInstance.save(flush: flush)
 
         return true
+    }
+
+    /**
+     * Method used to send email on exception to developers@causecode.com with detailed stacktrace and error line number.
+     * @param e
+     * @param model An map containing all parameters to send email with user reference.
+     */
+    static void sendExceptionEmail(Exception e, Map model) {
+        String messageBody = NucleusUtils.getBean("groovyPageRenderer").render([template: "/email-templates/error",
+            plugin: "nucleus", model: model])
+
+        String messageSubject = "[$appName][${model.environmentName}] Internal Server Error occurred."
+
+        mailService.sendMail {
+            to "developers@causecode.com"
+            from "bootstrap@causecode.com"
+            subject messageSubject
+            html messageBody
+        }
+        logger.debug "Sent Email on exception successfully."
     }
 }
