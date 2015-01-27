@@ -8,7 +8,6 @@
 
 package com.cc.util
 
-import java.util.Map;
 import javax.servlet.ServletContext
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
