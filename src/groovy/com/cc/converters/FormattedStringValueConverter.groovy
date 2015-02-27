@@ -8,20 +8,29 @@
 
 package com.cc.converters
 
-import org.grails.databinding.converters.FormattedValueConverter
 
 class FormattedStringValueConverter implements FormattedValueConverter {
-    def convert(value, String format) {
-        if('LOWERCASE' == format) {
+
+    /**
+     * A generic method to convert incoming data to either lower case or upper case.
+     * @param value String  whose value is to be converted to lower case.
+     * @param format String the required conversion format.
+     * @return String converted format.
+     */
+    def convert(def value, String format) {
+        if (format == 'LOWERCASE') {
             value = value.toLowerCase()
-        } else if('UPPERCASE' == format) {
+        } else if (format == 'UPPERCASE') {
             value = value.toUpperCase()
         }
-        value
+        return value
     }
 
+    /**
+     * Method to Specify the type to which this converter may be applied.
+     * @return Class
+     */
     Class getTargetType() {
-        // specifies the type to which this converter may be applied
-        String
+        return String
     }
 }
