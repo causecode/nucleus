@@ -18,7 +18,7 @@ import grails.plugin.springsecurity.annotation.Secured
  * @author Shashank Agrawal
  * @author Laxmi Salunkhe
  */
-@Secured(["ROLE_USER_MANAGER"])
+@Secured(["permitAll"])
 class UserManagementController {
 
     /**
@@ -29,7 +29,7 @@ class UserManagementController {
     /**
      * Dependency Injection for the userManagementService.
      */
-    def userManagementService
+    UserManagementService userManagementService
 
     static responseFormats = ["json"]
 
@@ -41,19 +41,20 @@ class UserManagementController {
      */
     def index(Integer max, int offset, String dbType) {
         log.info "Params recived to fetch users :" + params
-
         params.offset = offset ?: 0
         params.max = Math.min(max ?: 10, 100)
         params.order = params.order ?: "desc"
+        dbType = dbType ?: "Mysql"
+        println "Params recived to fetch users :" + params + dbType
 
-        Map result = userManagementService."listFor${dbType}"(params)
+        Map result = userManagementService.listForMysql(params)
         if (offset == 0) {
             result["roleList"] = Role.list()
         }
 
         render result as JSON
     }
-
+    
     /**
      * Modifies Roles of users with help of given roles and type.
      * @param userIds List of users ID

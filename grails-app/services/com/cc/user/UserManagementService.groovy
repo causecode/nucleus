@@ -144,7 +144,7 @@ class UserManagementService {
 
         userInstanceTotal = UserRole.executeQuery(query.toString(), queryStringParams).size()
 
-        [userInstanceList: userInstanceList, userInstanceTotal: userInstanceTotal]
+        [instanceList: userInstanceList, totalCount: userInstanceTotal]
     }
 
     /**
