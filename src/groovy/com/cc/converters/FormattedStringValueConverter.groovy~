@@ -12,10 +12,9 @@ import org.grails.databinding.converters.FormattedValueConverter
 
 /**
  * A convertor class used to provide String binding according to specified format in domain.
- * <code>
- *     @BindingFormat("LOWERCASE")
- *     String email
- * </code>
+ * Example:
+ * @BindingFormat("LOWERCASE")
+ * String email
  *
  * @author Priyanshu Chauhan 
  * @since 0.3.3
