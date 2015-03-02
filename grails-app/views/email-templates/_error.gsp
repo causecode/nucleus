@@ -32,6 +32,6 @@
         <br>
     </div>
     Team,<br>
-    BillAway Server
+    ${appName } Server
 </body>
 </html>

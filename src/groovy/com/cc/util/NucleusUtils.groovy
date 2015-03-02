@@ -101,14 +101,17 @@ class NucleusUtils {
      * @param model An map containing all parameters to send email with user reference.
      */
     static void sendExceptionEmail(Exception e, Map model) {
+        logger.debug "Sending exception email for User: ${model.userInstance}"
         String messageBody = NucleusUtils.getBean("groovyPageRenderer").render([template: "/email-templates/error",
             plugin: "nucleus", model: model])
+        String toEmail = "developers@causecode.com"
 
         String messageSubject = "[$appName][${model.environmentName}] Internal Server Error occurred."
-        String toEmail = grailsApplication.config.app.technical.support.email
+        if (grailsApplication.config.app.technical.support.email instanceof String)
+            toEmail = grailsApplication.config.app.technical.support.email
 
         mailService.sendMail {
-            to toEmail ?: "developers@causecode.com"
+            to toEmail
             from "bootstrap@causecode.com"
             subject messageSubject
             html messageBody
