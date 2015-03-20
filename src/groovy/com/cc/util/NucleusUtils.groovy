@@ -8,20 +8,15 @@
 
 package com.cc.util
 
-import javax.servlet.ServletContext
+import grails.util.Holders
+
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
-import org.codehaus.groovy.grails.commons.DefaultGrailsApplication
-import org.codehaus.groovy.grails.commons.spring.GrailsWebApplicationContext
-import org.codehaus.groovy.grails.plugins.DefaultGrailsPluginManager
-import org.codehaus.groovy.grails.web.context.ServletContextHolder as SCH
-import org.codehaus.groovy.grails.web.servlet.GrailsApplicationAttributes as GA
 
 /**
- * A utility class to provide some common & usefull stuff
+ * A utility class to provide some common & useful stuff
  * @author Shashank Agrawal
  * @since v0.3.1
- *
  */
 class NucleusUtils {
 
@@ -29,40 +24,24 @@ class NucleusUtils {
 
     static Object mailService
 
-    static GrailsWebApplicationContext getApplicationContext() {
-        servletContext.getAttribute(GA.APPLICATION_CONTEXT)
-    }
-
     static String getAppName() {
-        grailsApplication.metadata["app.name"].capitalize()
+        Holders.getGrailsApplication().metadata["app.name"].capitalize()
     }
 
     static Object getBean(String serviceName) {
-        applicationContext[serviceName]
-    }
-
-    static DefaultGrailsApplication getGrailsApplication() {
-        servletContext.getAttribute("grailsApplication")
+        Holders.getApplicationContext()[serviceName]
     }
 
     static void getMailService() {
         mailService
     }
 
-    static DefaultGrailsPluginManager getPluginManager() {
-        servletContext.getAttribute(GA.PLUGIN_MANAGER)
-    }
-
-    static ServletContext getServletContext() {
-        SCH.servletContext
-    }
-
     static void initialize() {
         logger.debug "Initilizing NucleusUtil.."
 
-        if (pluginManager.hasGrailsPlugin("asynchronousMail")) {
+        if (Holders.getPluginManager().hasGrailsPlugin("asynchronousMail")) {
             mailService = getBean("asynchronousMailService")
-        } else if (pluginManager.hasGrailsPlugin("mail")) {
+        } else if (Holders.getPluginManager().hasGrailsPlugin("mail")) {
             mailService = getBean("mailService")
         }
 
@@ -96,19 +75,20 @@ class NucleusUtils {
     }
 
     /**
-     * Method used to send email on exception to developers@causecode.com with detailed stacktrace and error line number.
-     * @param e
-     * @param model An map containing all parameters to send email with user reference.
+     * Method used to send email on exception to configured email or default to developers@causecode.com
+     * with detailed stacktrace and error line number.
+     * @param exceptions A list of exceptions
+     * @param model An map containing all parameters to send email.
      */
     static void sendExceptionEmail(Exception e, Map model) {
-        logger.debug "Sending exception email for User: ${model.userInstance}"
-        String messageBody = NucleusUtils.getBean("groovyPageRenderer").render([template: "/email-templates/error",
-            plugin: "nucleus", model: model])
-        String toEmail = "developers@causecode.com"
+        logger.debug "Sending exception email"
 
-        String messageSubject = "[$appName][${model.environmentName}] Internal Server Error occurred."
-        if (grailsApplication.config.app.technical.support.email instanceof String)
-            toEmail = grailsApplication.config.app.technical.support.email
+        String messageBody = getBean("groovyPageRenderer").render([template: "/email-templates/error",
+            plugin: "nucleus", model: model])
+
+        String messageSubject = "[$appName][Envirnoment.current] Internal Server Error occurred."
+
+        String toEmail = Holders.getFlatConfig()["app.technical.support.email"] ?: "developers@causecode.com"
 
         mailService.sendMail {
             to toEmail
