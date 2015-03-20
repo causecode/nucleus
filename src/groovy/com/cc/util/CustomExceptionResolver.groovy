@@ -51,11 +51,7 @@ class CustomExceptionResolver extends GrailsExceptionResolver {
             model["userInstance"] = springSecurityService.getCurrentUser()
         }
 
-        Throwable throwable = e
-        while (!throwable) {
-            throwable = throwable.getCause()
-        }
-        NucleusUtils.sendExceptionEmail(throwable, model)
+        NucleusUtils.sendExceptionEmail(findWrappedException(e), model)
 
         return super.resolveException(request, response, handler, e)
     }
