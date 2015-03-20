@@ -8,6 +8,7 @@
 
 package com.cc.util
 
+import grails.util.Environment
 import grails.util.Holders
 
 import org.apache.commons.logging.Log
@@ -77,25 +78,40 @@ class NucleusUtils {
     /**
      * Method used to send email on exception to configured email or default to developers@causecode.com
      * with detailed stacktrace and error line number.
+     * 
      * @param exceptions A list of exceptions
-     * @param model An map containing all parameters to send email.
+     * @param model OPTIONAL A map containing all parameters to send email.
+     * @param model.userInstance OPTIONAL Instance of {@link com.cc.user.User User} who was logged in
+     * @param model.requestURL OPTIONAL Grails server URL where exception occurred
+     * @param model.angularURL OPTIONAL Client side angular app URL
+     * @param model.codeExceutionFor OPTIONAL Any string to tell where exception occurred like "processing all users"
+     * 
+     * @since 0.3.3
      */
-    static void sendExceptionEmail(Exception e, Map model) {
+    static void sendExceptionEmail(List<Throwable> exceptions, Map model) {
         logger.debug "Sending exception email"
+
+        model = model ?: [:]
+        model["appName"] = getAppName()
+        model["exceptions"] = exceptions
 
         String messageBody = getBean("groovyPageRenderer").render([template: "/email-templates/error",
             plugin: "nucleus", model: model])
 
-        String messageSubject = "[$appName][Envirnoment.current] Internal Server Error occurred."
+        String messageSubject = "[$appName][${Environment.current.name}] Internal Server Error"
 
         String toEmail = Holders.getFlatConfig()["app.technical.support.email"] ?: "developers@causecode.com"
 
         mailService.sendMail {
-            to toEmail
-            from "bootstrap@causecode.com"
+            to (toEmail)
+            from (model["from"] ?: "bootstrap@causecode.com")
             subject messageSubject
             html messageBody
         }
-        logger.debug "Sent Email on exception successfully."
+        logger.debug "Exception email sent"
+    }
+
+    static void sendExceptionEmail(Throwable exception, Map model) {
+        sendExceptionEmail([exception], model)
     }
 }
