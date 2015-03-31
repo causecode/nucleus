@@ -1,8 +1,8 @@
-var nucleusApp = angular.module('nucleus', ['ngCookies', 'ngSanitize', 'ngResource', 'ngRoute', 'ui.bootstrap'], 
-        function($routeProvider, $locationProvider, $httpProvider) {});
+'use strict';
+var nucleusApp = angular.module('nucleus', ['ngCookies', 'ngSanitize', 'ngResource', 'ui.router','ui.bootstrap','ngcore']);
 
-nucleusApp.controller('UserManagementCtrl',['$scope', '$rootScope', '$resource', 'roleService',
-    function ($scope, $rootScope, $resource, roleService) {
+nucleusApp.controller('UserManagementController', ['$scope', '$state', 'UserManagementModel', '$resource', 'roleService',
+    function($scope, $state, UserManagementModel, $resource, roleService) {
     var User = $resource('/userManagement/list?dbType=Mongo');
 
     $scope.ajaxLoading = false;
@@ -222,10 +222,10 @@ nucleusApp.controller('UserManagementCtrl',['$scope', '$rootScope', '$resource',
         $scope.letterArray.push(String.fromCharCode(65 + i));
     }
 
-    roleService.getPromise().then(function(resp) {
+    /*roleService.getPromise().then(function(resp) {
         $scope.roleList = resp.data;
         $scope.roleFilterList = angular.copy(resp.data);
-    });
+    });*/
 }])
 .filter("roleName", function(roleService) {
     return function(roleId) {
@@ -234,10 +234,10 @@ nucleusApp.controller('UserManagementCtrl',['$scope', '$rootScope', '$resource',
 })
 .factory('roleService', function($http) {
     var roleList = [];
-    var promise = $http.get('/userManagement/roleList')
+    /*var promise = $http.get('/userManagement/roleList')
     promise.then(function(response) {
         roleList = response.data;
-    });
+    });*/
 
     function get(roleId) {
         var roleInstance;
@@ -254,7 +254,7 @@ nucleusApp.controller('UserManagementCtrl',['$scope', '$rootScope', '$resource',
             return get(roleId)
         },
         getPromise: function() {
-            return promise;
+            return //promise;
         },
         getRoleList: function() {
             return roleList

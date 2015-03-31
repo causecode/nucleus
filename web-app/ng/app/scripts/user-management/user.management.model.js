@@ -6,7 +6,7 @@ models.factory('UserManagementModel', ['BaseModel', function(BaseModel) {
     var AutoResponderModel = augment(BaseModel, function(uber) {
         var clazz;
 
-        this.resourceName = 'user';
+        this.resourceName = 'userManagement';
 
         this.customActions = {
         };
@@ -29,7 +29,7 @@ models.factory('UserManagementModel', ['BaseModel', function(BaseModel) {
             };
 
             clazz.getColumnNames = function() {
-                return ['scheduledOn', 'subject', 'lastUpdated', 'event', 'associatedLists'];
+                return ['firstName', 'lastName', 'email', 'dateCreated', 'lastUpdated'];
             };
 
             clazz.getSortProperties = function() {

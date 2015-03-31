@@ -138,7 +138,7 @@ class UserManagementService {
             query.append(""" or lower(ur1.user.email) like '${params.query.toLowerCase()}%' """)
             query.append(""" or lower(ur1.user.username) like '${params.query.toLowerCase()}%' """)
         }
-        query.append(" order by ur1.user.${params.sort} ${params.order}")
+        //query.append(" order by ur1.user.${params.sort} ${params.order}")
 
         userInstanceList = UserRole.executeQuery(query.toString(), queryStringParams, [max: params.max, offset: params.offset])
 
