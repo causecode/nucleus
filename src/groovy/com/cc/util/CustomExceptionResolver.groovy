@@ -42,7 +42,7 @@ class CustomExceptionResolver extends GrailsExceptionResolver {
 
         String appName = NucleusUtils.appName
 
-        Map model = [exception: e, stackTrace: errors.toString(), appName: appName]
+        Map model = [exception: e, stackTrace: errors.toString(), appName: appName, environmentName: Environment.current.name]
 
         if (request) {
             String requestURL = request.forwardURI
@@ -58,17 +58,7 @@ class CustomExceptionResolver extends GrailsExceptionResolver {
             model.userInstance = currentUserInstance
         }
 
-        String messageBody = NucleusUtils.getBean("groovyPageRenderer").render([template: "/email-templates/error",
-            plugin: "nucleus", model: model])
-
-        String messageSubject = "[$appName][${Environment.current.name}] Internal Server Error"
-
-        NucleusUtils.getMailService().sendMail {
-            to "developers@causecode.com"
-            from "bootstrap@causecode.com"
-            subject messageSubject
-            html messageBody
-        }
+        NucleusUtils.sendExceptionEmail(e, model)
 
         return super.resolveException(request, response, handler, e)
     }
