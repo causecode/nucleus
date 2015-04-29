@@ -65,7 +65,7 @@ class UserManagementService {
         }
 
         // Check type of id, either Long or mongo's ObjectId
-        if (ids[0].isNumber()) {
+        if (ids[0].toString().isNumber()) {
             // If domain id is of type Long
             ids = ids*.toLong()
         } else {
@@ -96,7 +96,7 @@ class UserManagementService {
     }
 
     /**
-     * Used to fetch list of user for MySql database with filters and pagination applied using HQL Query.
+     * Used to fetch list of user for list database with filters and pagination applied using HQL Query.
      * @param params List of parameters contains pagination, filter parameters.
      * @return Filtered list of user's with pagination applied.
      */
@@ -109,6 +109,7 @@ class UserManagementService {
         Map queryStringParams = [:]
         StringBuilder query = new StringBuilder("select distinct ur1.user from UserRole ur1")
 
+        //First a roleFilter has to be selected to process a request for a specific roleType
         if (params.roleFilter) {
             List roleFilterList = params.roleFilter as List
 
@@ -118,12 +119,13 @@ class UserManagementService {
             } else if (roleType == "All Granted") {
                 query.append(" where")
                 makeQueryToCheckEachRole(query, roleFilterList)
-            } else {
+            } else {        //Only granted roles
                 query.append(" where")
                 makeQueryToCheckEachRole(query, roleFilterList)
                 query.append(""" and exists ( select ur_count.user from UserRole ur_count where
                     ur1.user.id = ur_count.user.id group by ur_count.user having count(ur_count.role) = ${roleFilterList.size()})""")
             }
+            
         }
 
         if (params.letter) {
@@ -138,7 +140,7 @@ class UserManagementService {
             query.append(""" or lower(ur1.user.email) like '${params.query.toLowerCase()}%' """)
             query.append(""" or lower(ur1.user.username) like '${params.query.toLowerCase()}%' """)
         }
-        //query.append(" order by ur1.user.${params.sort} ${params.order}")
+        query.append(" order by ur1.user.${params.sort} ${params.order}")
 
         userInstanceList = UserRole.executeQuery(query.toString(), queryStringParams, [max: params.max, offset: params.offset])
 
@@ -150,7 +152,7 @@ class UserManagementService {
     /**
      * Appends HQL query string to query parameter on basis of role filters list provided.
      * @param query HQL query string to be appended.
-     * @param roleFilterList List of role filters.
+     * @param roleFilterList: List of role filters.
      */
     void makeQueryToCheckEachRole(StringBuilder query, roleFilterList) {
         roleFilterList.eachWithIndex { role, index ->

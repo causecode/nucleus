@@ -34,24 +34,25 @@ class UserManagementController {
     static responseFormats = ["json"]
 
     /**
-     * List action used to fetch Role list and User's list with filters and pagination applied.
+     * Index action used to fetch Role list and User's list with filters and pagination applied.
      * @param max Integer parameter used to set number of records to be returned.
      * @param dbType Type of database support. Must be either "Mongo" or "Mysql".
      * @return Result in JSON format.
      */
     def index(Integer max, int offset, String dbType) {
-        log.info "Params recived to fetch users :" + params
+        println ("Params received to fetch users :" + params)
         params.offset = offset ?: 0
         params.max = Math.min(max ?: 10, 100)
+        params.sort= params.sort ?: "dateCreated"       //Default sorting that is applied on page load
         params.order = params.order ?: "desc"
+        
         dbType = dbType ?: "Mysql"
-        println "Params recived to fetch users :" + params + dbType
+        println ("Params received to fetch users :" + params )
 
         Map result = userManagementService.listForMysql(params)
         if (offset == 0) {
             result["roleList"] = Role.list()
         }
-
         render result as JSON
     }
     
@@ -67,26 +68,25 @@ class UserManagementController {
     def modifyRoles() {
         Map requestData = request.JSON
         log.info "Parameters recevied to modify roles: $requestData"
-
+        
         Set failedUsersForRoleModification = []
         List userIds = userManagementService.getAppropiateIdList(requestData.userIds)
         List roleIds = userManagementService.getAppropiateIdList(requestData.roleIds)
-
+        
         if (!SpringSecurityUtils.ifAnyGranted("ROLE_ADMIN")) {
             Role adminRole = Role.findByAuthority("ROLE_ADMIN")
             List adminUsersIds = UserRole.findAllByRole(adminRole)*.user*.id
             log.debug "Removing admin user ids: $adminUsersIds."
-
+            
             userIds = userIds - adminUsersIds
-
             log.info "Removed admin users: $userIds"
         }
-
+        
         List roleInstanceList = Role.getAll(roleIds)
-
+        
         userIds.each { userId ->
             User userInstance = User.get(userId)
-
+            
             if (requestData.roleActionType == "refresh") {
                 UserRole.removeAll(userInstance)
             }
@@ -97,15 +97,14 @@ class UserManagementController {
                 }
             }
         }
-
+        
         Map result = [success: true, message: "Roles updated succesfully."]
-
+        
         if (failedUsersForRoleModification) {
             result["success"] = true
             result["message"] = "Unable to grant role for users with email(s) ${failedUsersForRoleModification.join(', ')}."
         }
-
-        respond(result)
+        render result as JSON
     }
 
     /**
@@ -118,22 +117,20 @@ class UserManagementController {
      */
     def makeUserActiveInactive() {
         Map requestData = request.JSON
+        Map result;
+        
         String typeText = requestData.type ? 'active': 'inactive'
-
-        log.info "Params received to $typeText users: $requestData"
+        println "Params received to $typeText users: $requestData"
 
         boolean useMongo = grailsApplication.config.cc.plugins.crm.persistence.provider == "mongodb"
 
         List selectedUserIds = userManagementService.getAppropiateIdList(requestData.selectedIds)
 
-
         if (!SpringSecurityUtils.ifAnyGranted("ROLE_ADMIN")) {
             Role adminRole = Role.findByAuthority("ROLE_ADMIN")
             List adminUsersIds = UserRole.findAllByRole(adminRole)*.user*.id
-
             selectedUserIds = selectedUserIds - adminUsersIds
-
-            log.info "Removed admin users. $selectedUserIds"
+            println("Removed admin users. $selectedUserIds")
         }
 
         if (!selectedUserIds) {
@@ -141,12 +138,11 @@ class UserManagementController {
             if (!SpringSecurityUtils.ifAnyGranted("ROLE_ADMIN")) {
                 message += " (Users with role Admin are excluded from selected list.)"
             }
-
-            respond([success: false, message: "Please select atleast one user."])
+            result = [success: false, message: "Please select atleast one user."]
+            render result as JSON
             return
         }
-        println selectedUserIds*.dump()
-
+   
         try {
             if (useMongo) {
                 // Returns http://api.mongodb.org/java/current/com/mongodb/WriteResult.html
@@ -157,13 +153,15 @@ class UserManagementController {
                 respond ([message: "Total $updatedFields user's account set to $typeText successfully.", success: true])
             } else {
                 User.executeUpdate("UPDATE User SET enabled = :actionType WHERE id IN :userIds", [
-                    actionType: requestData.type, userIds: requestData.selectedIds])
+                     actionType: requestData.type, userIds: selectedUserIds])
 
-                respond ([message: "User's account set to $typeText successfully."])
+                result= [message: "User's account set to $typeText successfully."]
+                render result as JSON
             }
         } catch (Exception e) {
             log.error "Error enable/disable user.", e
-            respond ([message: "Unable to enable/disable the user. Please try again.", success: false])
+            result = [message: "Unable to enable/disable the user. Please try again.", success: false]
+            render result as JSON
         }
     }
 
@@ -222,7 +220,7 @@ class UserManagementController {
 
         if (User.countByEmail(params.newEmail)) {
             response.setStatus(NOT_ACCEPTABLE.value())
-            respond ([message: "User already exist with Email: $params.newEmail"])
+            respond ([message: "User already exists with Email: $params.newEmail"])
             return
         }
 

@@ -8,7 +8,19 @@ models.factory('UserManagementModel', ['BaseModel', function(BaseModel) {
 
         this.resourceName = 'userManagement';
 
+        //Adding Custom actions except for those defined in $resource
         this.customActions = {
+                makeUserActiveInactive: {
+                    url: '@/userManagement/action/makeUserActiveInactive',
+                    method : 'POST',
+                    isArray : false
+                },
+
+                modifyRoles : {
+                    url: '@/userManagement/action/modifyRoles',
+                    isArray : false,
+                    method : 'POST',
+                }
         };
 
         this.constructor = function(data) {
@@ -19,10 +31,6 @@ models.factory('UserManagementModel', ['BaseModel', function(BaseModel) {
         };
 
         this.postConstruct = function() {
-            
-            clazz.prototype.toHTMLSubject = function() {
-                return '<a href="#/user-management/edit/' + this.id + '">' + this.name + '</a>';
-            };
 
             clazz.getClazzName = function() {
                 return 'UserManagementModel';
@@ -33,11 +41,11 @@ models.factory('UserManagementModel', ['BaseModel', function(BaseModel) {
             };
 
             clazz.getSortProperties = function() {
-                return ['amount', 'expiresOnDate'];
+                return ['dateCreated'];
             };
         };
     });
 
-    // Returning the resource. This is not really a instance.
+    // Returning the resource. This is not really an instance.
     return new AutoResponderModel({});
 }]);
