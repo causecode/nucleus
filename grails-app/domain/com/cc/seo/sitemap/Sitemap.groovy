@@ -13,7 +13,7 @@ import grails.rest.Resource
 /**
  * Sitemap groovy class used to specify has many URL relationship .
  */
-@Resource(uri = "/sitemap", formats = ["xml"])
+@Resource(uri = "/sitemap", formats = ["xml"], readOnly=true)
 class Sitemap {
  
     static hasMany = [urlset: Url]
