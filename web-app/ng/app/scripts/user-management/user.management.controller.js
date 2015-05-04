@@ -2,7 +2,7 @@
 var nucleusApp = angular.module('nucleus', ['ngCookies', 'ngSanitize', 'ngResource', 'ui.router','ui.bootstrap','ngcore']);
 
 nucleusApp.controller('UserManagementController', ['$scope', '$modal', '$state', 'UserManagementModel', '$resource', 'appService',
-    function($scope, $modal, $state, UserManagementModel, $resource, appService) {
+                                                   function($scope, $modal, $state, UserManagementModel, $resource, appService) {
     var User = $resource('/api/userManagement/action/index');
     $scope.selectedRoleFilter = [];
     $scope.responseCallback = 'onPagedListResponse';
@@ -17,7 +17,7 @@ nucleusApp.controller('UserManagementController', ['$scope', '$modal', '$state',
             $scope.selectedRoleFilter.push(roleId);
         }
         $scope.fetchAndDisplayUserList();
-    }
+    };
 
     $scope.getSelectedUserIdList = function() {
         var selectedUserId = [];
@@ -26,7 +26,7 @@ nucleusApp.controller('UserManagementController', ['$scope', '$modal', '$state',
         });
         return selectedUserId;
     };
-    
+
     $scope.addOrRemoveSelectedUser = function() {
         var currentUser = this.userInstance;
         if(currentUser.selected) { // Reverse selection value. Means un-selecting.
@@ -40,22 +40,22 @@ nucleusApp.controller('UserManagementController', ['$scope', '$modal', '$state',
         } else {
             $scope.selectedUser.push(currentUser);
         }
-    }
+    };
 
     $scope.sortList = function(data) {
         $scope.fetchAndDisplayUserList($scope.currentPage);
-    }
+    };
+    
     $scope.orderList = function() {
         $scope.fetchAndDisplayUserList($scope.currentPage);
-    }
-
+    };
+    
     $scope.onPagedListResponse = function(data) {
-    	$scope.roleList = data.roleList;
+        $scope.roleList = data.roleList;
     };
 
     $scope.selectAllUser = function() {
         var selectAll = this.selectUnselectAll;
-        console.log(selectAll)
         angular.forEach($scope.userInstanceList, function(user) {
             if(selectAll) {
                 user.selected = true;
@@ -103,17 +103,17 @@ nucleusApp.controller('UserManagementController', ['$scope', '$modal', '$state',
             makeUserActive : 'Make user active',
             makeUserInactive : 'Make user in-active',
             openModifyOverlay : 'Modify Role'
-    }
+    };
 
     $scope.makeUserActive= function(params) {
         params.type = true;
         $scope.makeUserActiveInactive(params);
-    }
+    };
 
     $scope.makeUserInactive= function(params) {
         params.type = false;
         $scope.makeUserActiveInactive(params);
-    }
+    };
 
     $scope.makeUserActiveInactive = function(params) {
         UserManagementModel.makeUserActiveInactive(params, function(data) {
@@ -122,47 +122,45 @@ nucleusApp.controller('UserManagementController', ['$scope', '$modal', '$state',
     };
 
     // Modal for Modifying User Roles
-
     var modalInstance;
     $scope.overlay = {};
-    
+
     $scope.openModal = function () {
 
-    	modalInstance = $modal.open({
-          templateUrl: 'modifyModal.html',	// Small HTML code to be rendered
-          size: 'md',
-          backdrop: 'static', 
-          scope: $scope
+        modalInstance = $modal.open({
+            templateUrl: 'modifyModal.html',
+            size: 'md',
+            backdrop: 'static', 
+            scope: $scope
         });
 
         modalInstance.result.then(function (selectedItem) {
             $scope.selected = selectedItem;
-          }, function () {
+        }, function () {
             console.log('Modal dismissed at: ' + new Date());
-          });
+        });
     };
-    
+
     $scope.cancel = function () {
         modalInstance.dismiss('cancel');
-      };
-      
+    };
+
     $scope.openModifyOverlay = function(params) {
-        $scope.openModal();	//Opens a Modal Page for Modification of User Roles
-        console.log('params',params);
+        $scope.openModal();	// Opens a Modal Page for Modification of User Roles
         $scope.selectedIdsfromParams = params.selectedIds;
-    }
-    
+    };
+
     $scope.modifyRoles = function() {
-    	 $scope.cancel();	//Closes the Modal: Modal.hide()
-    	 UserManagementModel.modifyRoles({userIds: $scope.selectedIdsfromParams, roleIds: $scope.overlay.assignableRoles , roleActionType: $scope.overlay.roleActionType}, function(data){
-             appService.alert(data.message, 'success');
-         })
-     };
-    
-    //Pushing A to Z
+        $scope.cancel();	// Closes the Modal: Modal.hide()
+        UserManagementModel.modifyRoles({userIds: $scope.selectedIdsfromParams, roleIds: $scope.overlay.assignableRoles , roleActionType: $scope.overlay.roleActionType}, function(data){
+            appService.alert(data.message, 'success');
+        });
+    };
+
+    // Pushing A to Z
     $scope.letterArray = [];
     for(var i = 0; i < 26; i++) {
         $scope.letterArray.push(String.fromCharCode(65 + i));
     }
 
-}])
+}]);
