@@ -96,7 +96,7 @@ class UserManagementService {
     }
 
     /**
-     * Used to fetch list of user for list database with filters and pagination applied using HQL Query.
+     * Used to fetch list of user for MySql database with filters and pagination applied using HQL Query.
      * @param params List of parameters contains pagination, filter parameters.
      * @return Filtered list of user's with pagination applied.
      */
@@ -112,6 +112,7 @@ class UserManagementService {
         //First a roleFilter has to be selected to process a request for a specific roleType
         if (params.roleFilter) {
             List roleFilterList = params.roleFilter as List
+            roleFilterList = roleFilterList*.toLong()       // will convert all values(*) inside the List from String to Long 
 
             if (roleType == "Any Granted") {
                 queryStringParams.roles = roleFilterList
@@ -125,7 +126,6 @@ class UserManagementService {
                 query.append(""" and exists ( select ur_count.user from UserRole ur_count where
                     ur1.user.id = ur_count.user.id group by ur_count.user having count(ur_count.role) = ${roleFilterList.size()})""")
             }
-            
         }
 
         if (params.letter) {
@@ -133,6 +133,7 @@ class UserManagementService {
             query.append(""" lower(ur1.user.firstName) like '${params.letter.toLowerCase()}%' """)
         }
 
+        // Filter by Query and by Letter
         if (params.query && !params.letter) {
             if (query.indexOf("where") == -1) query.append(" where")
             query.append(""" lower(ur1.user.firstName) like '%${params.query.toLowerCase()}%' """)

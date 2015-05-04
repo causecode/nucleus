@@ -18,7 +18,7 @@ import grails.plugin.springsecurity.annotation.Secured
  * @author Shashank Agrawal
  * @author Laxmi Salunkhe
  */
-@Secured(["permitAll"])
+@Secured(["ROLE_USER_MANAGER"])
 class UserManagementController {
 
     /**
@@ -67,7 +67,7 @@ class UserManagementController {
      */
     def modifyRoles() {
         Map requestData = request.JSON
-        log.info "Parameters recevied to modify roles: $requestData"
+        println "Parameters recevied to modify roles: $requestData"
         
         Set failedUsersForRoleModification = []
         List userIds = userManagementService.getAppropiateIdList(requestData.userIds)
@@ -82,11 +82,22 @@ class UserManagementController {
             log.info "Removed admin users: $userIds"
         }
         
+        Map result = [:]
+        
+        if (!userIds) {
+            String message = "Please select atleast one user."
+            if (!SpringSecurityUtils.ifAnyGranted("ROLE_ADMIN")) {
+                message += " (Users with role Admin are excluded from selected list.)"
+            }
+            result = [success: false, message: message]
+            render result as JSON
+            return
+        }
+        
         List roleInstanceList = Role.getAll(roleIds)
         
         userIds.each { userId ->
             User userInstance = User.get(userId)
-            
             if (requestData.roleActionType == "refresh") {
                 UserRole.removeAll(userInstance)
             }
@@ -98,7 +109,7 @@ class UserManagementController {
             }
         }
         
-        Map result = [success: true, message: "Roles updated succesfully."]
+        result = [success: true, message: "Roles updated succesfully."]
         
         if (failedUsersForRoleModification) {
             result["success"] = true
@@ -117,10 +128,11 @@ class UserManagementController {
      */
     def makeUserActiveInactive() {
         Map requestData = request.JSON
-        Map result;
+        Map result = [:]
         
         String typeText = requestData.type ? 'active': 'inactive'
         println "Params received to $typeText users: $requestData"
+        boolean activationStatus = false
 
         boolean useMongo = grailsApplication.config.cc.plugins.crm.persistence.provider == "mongodb"
 
@@ -138,7 +150,7 @@ class UserManagementController {
             if (!SpringSecurityUtils.ifAnyGranted("ROLE_ADMIN")) {
                 message += " (Users with role Admin are excluded from selected list.)"
             }
-            result = [success: false, message: "Please select atleast one user."]
+            result = [success: false, message: message]
             render result as JSON
             return
         }
@@ -152,8 +164,12 @@ class UserManagementController {
                 int updatedFields = writeResult.getN()
                 respond ([message: "Total $updatedFields user's account set to $typeText successfully.", success: true])
             } else {
+                selectedUserIds = selectedUserIds*.toLong()
+                if (requestData.type == 'active')
+                    activationStatus = true
+                    
                 User.executeUpdate("UPDATE User SET enabled = :actionType WHERE id IN :userIds", [
-                     actionType: requestData.type, userIds: selectedUserIds])
+                     actionType: activationStatus, userIds: selectedUserIds])
 
                 result= [message: "User's account set to $typeText successfully."]
                 render result as JSON
