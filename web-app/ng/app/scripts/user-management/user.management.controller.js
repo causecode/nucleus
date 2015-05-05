@@ -1,4 +1,5 @@
 'use strict';
+
 var nucleusApp = angular.module('nucleus', ['ngCookies', 'ngSanitize', 'ngResource', 'ui.router','ui.bootstrap','ngcore']);
 
 nucleusApp.controller('UserManagementController', ['$scope', '$modal', '$state', 'UserManagementModel', '$resource', 'appService',
