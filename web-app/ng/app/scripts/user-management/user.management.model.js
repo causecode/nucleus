@@ -8,7 +8,7 @@ models.factory('UserManagementModel', ['BaseModel', function(BaseModel) {
 
         this.resourceName = 'userManagement';
 
-        //Adding Custom actions except for those defined in $resource
+        // Adding Custom actions except for those defined in $resource
         this.customActions = {
                 makeUserActiveInactive: {
                     url: '@/userManagement/action/makeUserActiveInactive',
