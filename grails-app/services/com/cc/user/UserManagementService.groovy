@@ -109,7 +109,6 @@ class UserManagementService {
         Map queryStringParams = [:]
         StringBuilder query = new StringBuilder("select distinct ur1.user from UserRole ur1")
 
-        //First a roleFilter has to be selected to process a request for a specific roleType
         if (params.roleFilter) {
             List roleFilterList = params.roleFilter as List
             roleFilterList = roleFilterList*.toLong()       // will convert all values(*) inside the List from String to Long 
@@ -120,7 +119,8 @@ class UserManagementService {
             } else if (roleType == "All Granted") {
                 query.append(" where")
                 makeQueryToCheckEachRole(query, roleFilterList)
-            } else {        //Only granted roles
+            } else {
+                // roleType == "Only Granted"
                 query.append(" where")
                 makeQueryToCheckEachRole(query, roleFilterList)
                 query.append(""" and exists ( select ur_count.user from UserRole ur_count where
@@ -153,7 +153,7 @@ class UserManagementService {
     /**
      * Appends HQL query string to query parameter on basis of role filters list provided.
      * @param query HQL query string to be appended.
-     * @param roleFilterList: List of role filters.
+     * @param roleFilterList List of role filters.
      */
     void makeQueryToCheckEachRole(StringBuilder query, roleFilterList) {
         roleFilterList.eachWithIndex { role, index ->

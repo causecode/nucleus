@@ -10,7 +10,7 @@ nucleusApp.controller('UserManagementController', ['$scope', '$modal', '$state',
 
     $scope.addOrRemoveFromRoleFilter = function(roleId) {
         var index = $scope.selectedRoleFilter.indexOf(roleId);
-        if(index > -1) {
+        if (index > -1) {
             this.role.selected = false;
             $scope.selectedRoleFilter.splice(index, 1);
         } else {
@@ -21,34 +21,26 @@ nucleusApp.controller('UserManagementController', ['$scope', '$modal', '$state',
     };
 
     $scope.getSelectedUserIdList = function() {
-        var selectedUserId = [];
-        angular.forEach($scope.selectedUser, function(user) {
-            selectedUserId.push(user.id);
+        var selectedUserIds = [];
+        angular.forEach($scope.selectedUsers, function(user) {
+            selectedUserIds.push(user.id);
         });
-        return selectedUserId;
+        return selectedUserIds;
     };
 
     $scope.addOrRemoveSelectedUser = function() {
         var currentUser = this.userInstance;
-        if(currentUser.selected) { // Reverse selection value. Means un-selecting.
+        if(currentUser.selected) { // Reverse selection value. Means de-selecting.
             var index = -1;
-            angular.forEach($scope.selectedUser, function(selectedUser, i) {
+            angular.forEach($scope.selectedUsers, function(selectedUser, i) {
                 if(selectedUser.id === currentUser.id) {
                     index = i;
                 }
             });
-            $scope.selectedUser.splice(index, 1);
+            $scope.selectedUsers.splice(index, 1);
         } else {
-            $scope.selectedUser.push(currentUser);
+            $scope.selectedUsers.push(currentUser);
         }
-    };
-
-    $scope.sortList = function(data) {
-        $scope.fetchAndDisplayUserList($scope.currentPage);
-    };
-    
-    $scope.orderList = function() {
-        $scope.fetchAndDisplayUserList($scope.currentPage);
     };
     
     $scope.onPagedListResponse = function(data) {
@@ -70,7 +62,7 @@ nucleusApp.controller('UserManagementController', ['$scope', '$modal', '$state',
         angular.forEach($scope.userInstanceList, function(user) {
             user.selected = false;
         });
-        $scope.selectedUser = [];
+        $scope.selectedUsers = [];
     };
 
     $scope.clearSelectedletter = function() {
@@ -100,10 +92,10 @@ nucleusApp.controller('UserManagementController', ['$scope', '$modal', '$state',
     };
 
     $scope.userActions = {
-            export : 'Export User Report',
-            makeUserActive : 'Make user active',
-            makeUserInactive : 'Make user in-active',
-            openModifyOverlay : 'Modify Role'
+        export : 'Export User Report',
+        makeUserActive : 'Make user active',
+        makeUserInactive : 'Make user in-active',
+        openModifyOverlay : 'Modify Role'
     };
 
     $scope.makeUserActive= function(params) {
@@ -118,7 +110,10 @@ nucleusApp.controller('UserManagementController', ['$scope', '$modal', '$state',
 
     $scope.makeUserActiveInactive = function(params) {
         UserManagementModel.makeUserActiveInactive(params, function(data) {
-            appService.alert(data.message, 'success');
+            if (data.success == false)
+                appService.alert(data.message, 'success');
+            else
+                appService.alert(data.message, 'warn');
         });
     };
 
@@ -142,25 +137,28 @@ nucleusApp.controller('UserManagementController', ['$scope', '$modal', '$state',
         });
     };
 
-    $scope.cancel = function () {
+    $scope.closeModal = function () {
         modalInstance.dismiss('cancel');
     };
 
     $scope.openModifyOverlay = function(params) {
-        $scope.openModal();	// Opens a Modal Page for Modification of User Roles
+        $scope.openModal();     // Opens a Modal Page for Modification of User Roles
         $scope.selectedIdsfromParams = params.selectedIds;
     };
 
     $scope.modifyRoles = function() {
-        $scope.cancel();	// Closes the Modal: Modal.hide()
+        $scope.closeModal();    // Closes the Modal: Modal.hide()
         UserManagementModel.modifyRoles({userIds: $scope.selectedIdsfromParams, roleIds: $scope.overlay.assignableRoles , roleActionType: $scope.overlay.roleActionType}, function(data){
-            appService.alert(data.message, 'success');
+            if (data.success == false)
+                appService.alert(data.message, 'warn')
+            else
+                appService.alert(data.message, 'success');
         });
     };
 
     // Pushing A to Z
     $scope.letterArray = [];
-    for(var i = 0; i < 26; i++) {
+    for (var i = 0; i < 26; i++) {
         $scope.letterArray.push(String.fromCharCode(65 + i));
     }
 
