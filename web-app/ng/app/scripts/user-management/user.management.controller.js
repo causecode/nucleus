@@ -42,7 +42,7 @@ nucleusApp.controller('UserManagementController', ['$scope', '$modal', '$state',
             $scope.selectedUsers.push(currentUser);
         }
     };
-    
+
     $scope.onPagedListResponse = function(data) {
         $scope.roleList = data.roleList;
     };
@@ -92,10 +92,10 @@ nucleusApp.controller('UserManagementController', ['$scope', '$modal', '$state',
     };
 
     $scope.userActions = {
-        export : 'Export User Report',
-        makeUserActive : 'Make user active',
-        makeUserInactive : 'Make user in-active',
-        openModifyOverlay : 'Modify Role'
+            export : 'Export User Report',
+            makeUserActive : 'Make user active',
+            makeUserInactive : 'Make user in-active',
+            openModifyOverlay : 'Modify Role'
     };
 
     $scope.makeUserActive= function(params) {
@@ -110,10 +110,11 @@ nucleusApp.controller('UserManagementController', ['$scope', '$modal', '$state',
 
     $scope.makeUserActiveInactive = function(params) {
         UserManagementModel.makeUserActiveInactive(params, function(data) {
-            if (data.success == false)
+            if (data.success == false) {
                 appService.alert(data.message, 'success');
-            else
+            } else {
                 appService.alert(data.message, 'warn');
+            }
         });
     };
 
@@ -149,10 +150,11 @@ nucleusApp.controller('UserManagementController', ['$scope', '$modal', '$state',
     $scope.modifyRoles = function() {
         $scope.closeModal();    // Closes the Modal: Modal.hide()
         UserManagementModel.modifyRoles({userIds: $scope.selectedIdsfromParams, roleIds: $scope.overlay.assignableRoles , roleActionType: $scope.overlay.roleActionType}, function(data){
-            if (data.success == false)
-                appService.alert(data.message, 'warn')
-            else
+            if (data.success == false) {
+                appService.alert(data.message, 'warn');
+            } else {
                 appService.alert(data.message, 'success');
+            }
         });
     };
 
@@ -161,5 +163,4 @@ nucleusApp.controller('UserManagementController', ['$scope', '$modal', '$state',
     for (var i = 0; i < 26; i++) {
         $scope.letterArray.push(String.fromCharCode(65 + i));
     }
-
 }]);

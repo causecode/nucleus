@@ -26,7 +26,9 @@ environments {
         dataSource {
             dbCreate = "update"
             //url = "jdbc:h2:mem:testDb;MVCC=TRUE;LOCK_TIMEOUT=10000;DB_CLOSE_ON_EXIT=FALSE"
-            url = "jdbc:mysql://localhost:3306/nucleus"
+            url = "jdbc:mysql://localhost:3306/nucleus_t"
+            username = "root"
+            password = "causecode.11"
         }
     }
     production {

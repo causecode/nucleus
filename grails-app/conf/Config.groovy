@@ -1,3 +1,5 @@
+import org.apache.log4j.DailyRollingFileAppender
+
 grails.app.context = "/" 
 
 // Added by the Spring Security Core plugin:
@@ -18,6 +20,9 @@ grails.plugin.springsecurity.controllerAnnotations.staticRules = [
 ]
 
 log4j = {
+    appender new DailyRollingFileAppender(name: 'debugFile', datePattern: "'.'MM-dd-yyyy",
+        fileName: './logs/nucleus/debugLog', layout: pattern(conversionPattern: '%-5p %d %c{2} %x - %m%n%n'))
+
     error  'org.codehaus.groovy.grails.web.servlet',  //  controllers
            'org.codehaus.groovy.grails.web.pages', //  GSP
            'org.codehaus.groovy.grails.web.sitemesh', //  layouts
@@ -31,5 +36,5 @@ log4j = {
            'net.sf.ehcache.hibernate'
 
     warn   'org.mortbay.log'
-    debug  'com.cc'
+    debug  debugFile: ['com.cc']
 }
