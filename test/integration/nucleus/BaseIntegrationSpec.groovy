@@ -54,4 +54,9 @@ class BaseIntegrationSpec extends IntegrationSpec {
         UserRole.create(trialUser, userRole, true)
         assert trialUser.id
     }
+
+    void flushSession() {
+        // Workaround to flush the current session.
+        adminUser.save(flush:true)
+    }
 }

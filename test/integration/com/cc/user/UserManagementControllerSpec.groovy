@@ -19,8 +19,6 @@ class UserManagementControllerSpec extends BaseIntegrationSpec {
     }
 
     void "test Index action with date filter applied"() {
-        controller.userManagementService = userManagementService
-
         when: "Index action is called"
         controller.index(15, 0, "Mysql")
 
@@ -72,10 +70,6 @@ class UserManagementControllerSpec extends BaseIntegrationSpec {
         userManagerRole in normalUserAuthorities
     }
 
-    /*
-     * TODO: Tried a whole lot of checks, but if fails to update 'enabled' status.
-     */
-    @Ignore
     void "test makeUserActiveInactive() to see if a NON-ADMIN user is trying to change status of an ADMIN user"() {
         given: "Deactivation request for 2 non-admin and 1 Admin user"
         controller.request.json = [selectedIds: [adminUser.id, trialUser.id , normalUser.id], type: false]
@@ -83,21 +77,18 @@ class UserManagementControllerSpec extends BaseIntegrationSpec {
 
         when: "Action is called"
         controller.makeUserActiveInactive()
+        flushSession()
 
         then: "Admin users must be removed from the current ID list"
-        controller.response.status == 200   // Successful execution of method
-        adminUser.enabled == true   // Admin user Not deactivated
-        trialUser.enabled == false
-        normalUser.enabled == false
+        // refresh() action will fetch the updated values from the database
+        adminUser.refresh().enabled == true   // ADMIN user Not deactivated
+        trialUser.refresh().enabled == false
+        normalUser.refresh().enabled == false
     }
 
-    /*
-     * TODO: Tried a whole lot of checks, but if fails to update 'enabled' status.
-     */
-    @Ignore
     void "test makeUserActiveInactive() if ADMIN user changes activation status of other ADMIN User"() {
         given:"Admin user to perform Role modification"
-        // USER_MANAGER with Admin role
+        // USER_MANAGER with Admin role is currentl logged in
         SpringSecurityUtils.metaClass.'static'.ifAnyGranted = { String role ->
             return true
         }
@@ -107,11 +98,12 @@ class UserManagementControllerSpec extends BaseIntegrationSpec {
 
         when: "Action is called"
         controller.makeUserActiveInactive()
+        flushSession()
 
         then: "Deactivaion is allowed on all Users"
-        adminUser.enabled == false
-        trialUser.enabled == false
-        normalUser.enabled == false
+        adminUser.refresh().enabled == false
+        trialUser.refresh().enabled == false
+        normalUser.refresh().enabled == false
         controller.response.json.success == true
 
         cleanup:
@@ -154,8 +146,8 @@ class UserManagementControllerSpec extends BaseIntegrationSpec {
         controller.response.json.message.contains("No Roles selected.")
     }
 
-    void "test modifyRole() if Admin user tries to assign Admin RoleIds in Refresh mode"() {
-        given: "Admin role id for modification"
+    void "test modifyRole() if ADMIN user tries to assign Admin RoleIds in Refresh mode"() {
+        given: "Admin roleId for role modification"
         controller.request.json = [roleIds: [adminRole.id], userIds: [normalUser.id, trialUser.id], roleActionType : "refresh"]
         SpringSecurityUtils.metaClass.'static'.ifAnyGranted = { String role ->
             return true
@@ -177,7 +169,7 @@ class UserManagementControllerSpec extends BaseIntegrationSpec {
         SpringSecurityUtils.metaClass = null;
     }
 
-    void "test modifyRole() if Admin user tries to assign Admin RoleIds in Append mode"() {
+    void "test modifyRole() if ADMIN user tries to assign Admin RoleIds in Append mode"() {
         given: "Admin role id for modification"
         controller.request.json = [roleIds: [adminRole.id], userIds: [normalUser.id, trialUser.id], roleActionType : "append"]
         SpringSecurityUtils.metaClass.'static'.ifAnyGranted = { String role ->

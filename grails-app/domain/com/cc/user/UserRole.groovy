@@ -60,9 +60,7 @@ class UserRole implements Serializable {
     }
 
     static void removeAll(User u) {
-        UserRole.where {
-            user == User.load(u.id)
-        }.deleteAll()
+        UserRole.findAllByUser(u)*.delete(flush: true)  // to avoid flush session problem
     }
 
     static void removeAll(Role r) {
