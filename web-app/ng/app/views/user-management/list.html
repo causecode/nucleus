@@ -1,9 +1,9 @@
 <div ng-controller="UserManagementController">
-<div class="page-listing" style="position:relative">
-    <div class="page-header custom">
-        <h1>UserManagement List</h1>
-    </div>
-    <paged-list model-name="'UserManagement'" items-per-page="15" filter="true">
+    <div class="page-listing" style="position: relative">
+        <div class="page-header custom">
+            <h1>UserManagement List</h1>
+        </div>
+        <paged-list model-name="'UserManagement'" items-per-page="15" filter="true">
         <form ng-submit="filterList(); elementModels.showFilter=false;">
             <div class="row">
                 <section class="col-md-3">
@@ -13,7 +13,7 @@
                         <option value="All Granted">All Granted</option>
                         <option value="Only Granted">Only Granted</option>
                     </select>
-                    <select multiple="multiple" name="roleFilter" class="form-control" >
+                    <select multiple="multiple" name="roleFilter" class="form-control">
                         <option ng-repeat="role in roleList" value="{{role.id}}" ng-class="{active: role.selected}">
                             {{role.authority.substring(5).replace('_', ' ')}}
                         </option>
@@ -21,7 +21,7 @@
                 </section>
                 <section class="col-md-3">
                     <strong>Sort</strong>
-                    <select name="sort" class="form-control input-sm" >
+                    <select name="sort" class="form-control input-sm">
                         <option value="id">Id</option>
                         <option value="firstName">First Name</option>
                         <option value="lastName">Last Name</option>
@@ -32,7 +32,7 @@
                 </section>
                 <section class="col-md-3">
                     <strong>Order</strong>
-                    <select name="order" class="form-control input-sm" >
+                    <select name="order" class="form-control input-sm">
                         <option value="asc">Ascending</option>
                         <option value="desc">Descending</option>
                     </select>
@@ -44,28 +44,27 @@
             </div>
             <div class="row">
                 <section class="col-md-3">
-                <strong>Date Created</strong>
-                    <input type="text" name="dateCreated" placeholder="MM/dd/yyyy"
-                           class="form-control input-sm"/>
+                    <strong>Date Created</strong> <input type="text" name="dateCreated" placeholder="MM/dd/yyyy"
+                        class="form-control input-sm" />
                 </section>
-               
+
                 <section class="col-md-4">
                     <button class="btn btn-sm btn-primary">Filter</button>
                 </section>
             </div>
         </form>
-    </paged-list>
- </div>
- 
-<!-- Modify Modal template -->
-<script type="text/ng-template" id="modifyModal.html">
+        </paged-list>
+    </div>
+
+    <!-- Modify Modal template -->
+    <script type="text/ng-template" id="modifyRolesModal.html">
         <div class="modal-header">
             <h3 class="modal-title">Modify Roles</h3>
         </div>
         <div class="modal-body">
         <strong>Roles</strong>
         <select id="selectedUserRole" ng-model="overlay.assignableRoles" multiple="multiple" class="form-control input-sm" >
-                <option ng-repeat="role in roleList" value="{{role.id}}">
+                <option ng-repeat="role in roleList" value={{role.id}}>
                     {{role.authority.substring(5).replace('_', ' ')}}
                 </option>
         </select>
@@ -80,5 +79,5 @@
             <button class="btn btn-primary" type="submit" ng-click="modifyRoles()">Modify</button>
             <button  class="btn btn-warning" ng-click="closeModal()">Close</button>
         </div>
- </script>
- </div>
+    </script>
+</div>

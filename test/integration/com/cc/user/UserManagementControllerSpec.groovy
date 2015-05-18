@@ -24,7 +24,9 @@ class UserManagementControllerSpec extends BaseIntegrationSpec {
 
         then: "List of users will be returned"
         controller.response.json["instanceList"] != null
+        controller.response.json.instanceList[0].id
         controller.response.json["totalCount"] != null
+        controller.response.json.totalCount == 4
         controller.response.json["roleList"] != null
     }
 
@@ -37,13 +39,16 @@ class UserManagementControllerSpec extends BaseIntegrationSpec {
             return true
         }
 
-        when: "Admin tries to modify other ADMIN user's role"
+        when: "Admin tries to modify other ADMIN user's role in Refresh mode"
         controller.modifyRoles()
 
         then: "He should be allowed to do so in virtue"
         controller.response.status == 200       // Successful execution of the action
-        Set<Role> adminAuthorities = adminUser.getAuthorities()
+        Set<Role> adminAuthorities = managerUser.getAuthorities()
         userRole in adminAuthorities
+        // Previous roles are wiped off
+        userManagerRole in adminAuthorities == false
+        adminRole in adminAuthorities == false
 
         cleanup:
         SpringSecurityUtils.metaClass = null;
@@ -51,12 +56,15 @@ class UserManagementControllerSpec extends BaseIntegrationSpec {
     }
 
     void "test if a Non-ADMIN user is trying to Modify other users' roles"() {
-        when: "Logged-in user selects 1 ADMIN and 2 normal users for role modification"
-        controller.request.json = [roleActionType: "refresh", userIds: [adminUser.id, trialUser.id , normalUser.id], roleIds : [userManagerRole.id]]
+        given: "Request for Role modification in Refresh mode"
+        controller.request.json = [roleActionType: "refresh", userIds: [adminUser.id, trialUser.id , normalUser.id], 
+            roleIds : [userManagerRole.id]]
         controller.request.method = "POST"
+        
+        when: "Logged-in user selects 1 ADMIN and 2 normal users for role modification"
         controller.modifyRoles()
 
-        then: "Admin users must be removed from the ID list"
+        then: "Admin users must be removed from the ID list and Normal User's roles should be updated"
         Set<Role> adminAuthorities = adminUser.getAuthorities()
         // No role modification done for Admin user
         userManagerRole in adminAuthorities
@@ -65,9 +73,11 @@ class UserManagementControllerSpec extends BaseIntegrationSpec {
 
         Set<Role> trialUserAuthorities = trialUser.getAuthorities()
         userManagerRole in trialUserAuthorities
+        userRole in trialUserAuthorities == false
 
         Set<Role> normalUserAuthorities = normalUser.getAuthorities()
         userManagerRole in normalUserAuthorities
+        userRole in normalUserAuthorities == false
     }
 
     void "test makeUserActiveInactive() to see if a NON-ADMIN user is trying to change status of an ADMIN user"() {
@@ -80,7 +90,7 @@ class UserManagementControllerSpec extends BaseIntegrationSpec {
         flushSession()
 
         then: "Admin users must be removed from the current ID list"
-        // refresh() action will fetch the updated values from the database
+        // 'refresh' action will fetch the updated values from the database
         adminUser.refresh().enabled == true   // ADMIN user Not deactivated
         trialUser.refresh().enabled == false
         normalUser.refresh().enabled == false
@@ -88,7 +98,7 @@ class UserManagementControllerSpec extends BaseIntegrationSpec {
 
     void "test makeUserActiveInactive() if ADMIN user changes activation status of other ADMIN User"() {
         given:"Admin user to perform Role modification"
-        // USER_MANAGER with Admin role is currentl logged in
+        // USER_MANAGER with Admin role is currently logged in
         SpringSecurityUtils.metaClass.'static'.ifAnyGranted = { String role ->
             return true
         }
@@ -148,7 +158,8 @@ class UserManagementControllerSpec extends BaseIntegrationSpec {
 
     void "test modifyRole() if ADMIN user tries to assign Admin RoleIds in Refresh mode"() {
         given: "Admin roleId for role modification"
-        controller.request.json = [roleIds: [adminRole.id], userIds: [normalUser.id, trialUser.id], roleActionType : "refresh"]
+        controller.request.json = [roleIds: [adminRole.id], userIds: [normalUser.id, trialUser.id], 
+            roleActionType : "refresh"]
         SpringSecurityUtils.metaClass.'static'.ifAnyGranted = { String role ->
             return true
         }
@@ -156,14 +167,16 @@ class UserManagementControllerSpec extends BaseIntegrationSpec {
         when: "Admin tries to set Admin Role to 2 Normal users"
         controller.modifyRoles()
 
-        then: "Admin role should be applied to the 2 Normal Users"
+        then: "Only Admin role should be applied to the 2 Normal Users"
         controller.response.json.success == true
 
         Set<Role> trialUserAuthorities = trialUser.getAuthorities()
         adminRole in trialUserAuthorities
+        userRole in trialUserAuthorities == false
 
         Set<Role> normalUserAuthorities = normalUser.getAuthorities()
         adminRole in normalUserAuthorities
+        userRole in normalUserAuthorities == false
 
         cleanup:
         SpringSecurityUtils.metaClass = null;
@@ -171,7 +184,8 @@ class UserManagementControllerSpec extends BaseIntegrationSpec {
 
     void "test modifyRole() if ADMIN user tries to assign Admin RoleIds in Append mode"() {
         given: "Admin role id for modification"
-        controller.request.json = [roleIds: [adminRole.id], userIds: [normalUser.id, trialUser.id], roleActionType : "append"]
+        controller.request.json = [roleIds: [adminRole.id], userIds: [normalUser.id, trialUser.id], 
+            roleActionType : "append"]
         SpringSecurityUtils.metaClass.'static'.ifAnyGranted = { String role ->
             return true
         }

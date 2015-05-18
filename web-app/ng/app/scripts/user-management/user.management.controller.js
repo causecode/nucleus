@@ -2,8 +2,8 @@
 
 var nucleusApp = angular.module('nucleus', ['ngCookies', 'ngSanitize', 'ngResource', 'ui.router','ui.bootstrap','ngcore']);
 
-nucleusApp.controller('UserManagementController', ['$scope', '$modal', '$state', 'UserManagementModel', '$resource', 'appService',
-                                                   function($scope, $modal, $state, UserManagementModel, $resource, appService) {
+nucleusApp.controller('UserManagementController', ['$scope', '$modal', '$state', 'UserManagementModel', '$resource', 
+        'appService',function($scope, $modal, $state, UserManagementModel, $resource, appService) {
     var User = $resource('/api/userManagement/action/index');
     $scope.selectedRoleFilter = [];
     $scope.responseCallback = 'onPagedListResponse';
@@ -92,10 +92,10 @@ nucleusApp.controller('UserManagementController', ['$scope', '$modal', '$state',
     };
 
     $scope.userActions = {
-            export : 'Export User Report',
-            makeUserActive : 'Make user active',
-            makeUserInactive : 'Make user in-active',
-            openModifyOverlay : 'Modify Role'
+        export : 'Export User Report',
+        makeUserActive : 'Make user active',
+        makeUserInactive : 'Make user in-active',
+        openModifyOverlay : 'Modify Role'
     };
 
     $scope.makeUserActive= function(params) {
@@ -109,12 +109,10 @@ nucleusApp.controller('UserManagementController', ['$scope', '$modal', '$state',
     };
 
     $scope.makeUserActiveInactive = function(params) {
-        UserManagementModel.makeUserActiveInactive(params, function(data) {
-            if (data.success == false) {
-                appService.alert(data.message, 'success');
-            } else {
-                appService.alert(data.message, 'warn');
-            }
+        UserManagementModel.makeUserActiveInactive(params, function(response) {
+            appService.alert(response.message, 'success');
+        }, function(response) {
+               appService.alert(response.data.message, 'warn');
         });
     };
 
@@ -125,7 +123,7 @@ nucleusApp.controller('UserManagementController', ['$scope', '$modal', '$state',
     $scope.openModal = function () {
 
         modalInstance = $modal.open({
-            templateUrl: 'modifyModal.html',
+            templateUrl: 'modifyRolesModal.html',
             size: 'md',
             backdrop: 'static', 
             scope: $scope
@@ -149,12 +147,11 @@ nucleusApp.controller('UserManagementController', ['$scope', '$modal', '$state',
 
     $scope.modifyRoles = function() {
         $scope.closeModal();    // Closes the Modal: Modal.hide()
-        UserManagementModel.modifyRoles({userIds: $scope.selectedIdsfromParams, roleIds: $scope.overlay.assignableRoles , roleActionType: $scope.overlay.roleActionType}, function(data){
-            if (data.success == false) {
-                appService.alert(data.message, 'warn');
-            } else {
-                appService.alert(data.message, 'success');
-            }
+        UserManagementModel.modifyRoles({userIds: $scope.selectedIdsfromParams, roleIds: $scope.overlay.assignableRoles , 
+                roleActionType: $scope.overlay.roleActionType}, function(response){
+            appService.alert(response.message, 'success');
+        }, function(response) {
+               appService.alert(response.data.message, 'warn');
         });
     };
 

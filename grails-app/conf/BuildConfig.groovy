@@ -18,7 +18,7 @@ grails.project.dependency.resolution = {
 
     dependencies {
         test "org.grails:grails-datastore-test-support:1.0.2-grails-2.4"
-        runtime 'mysql:mysql-connector-java:5.1.29'     // Driver for MySql JDBC
+        runtime 'mysql:mysql-connector-java:5.1.29' // Driver for MySql JDBC
         compile 'commons-beanutils:commons-beanutils:1.8.3'
     }
 
@@ -32,10 +32,9 @@ grails.project.dependency.resolution = {
         compile (":hibernate:3.6.10.18") {
             export = false
         }
-        
+
         compile ":export:1.6"
-        
-        //plugins for compile step
+
         compile ':cache:1.1.3'
     }
 }

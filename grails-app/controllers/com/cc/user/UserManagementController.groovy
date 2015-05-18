@@ -42,11 +42,11 @@ class UserManagementController {
     def index(Integer max, int offset, String dbType) {
         params.offset = offset ?: 0
         params.max = Math.min(max ?: 10, 100)
-        params.sort= params.sort ?: "dateCreated"       // Default sorting that is applied on page load
+        params.sort= params.sort ?: "dateCreated"
         params.order = params.order ?: "desc"
 
         dbType = dbType ?: "Mysql"
-        log.info "Params received to fetch users :" + params
+        log.info "Params received to fetch users :$params"
 
         Map result = userManagementService."listFor${dbType}"(params)
         if (offset == 0) {
@@ -66,14 +66,13 @@ class UserManagementController {
      */
     def modifyRoles() {
         Map requestData = request.JSON
-        requestData.roleActionType = requestData.roleActionType ?: "refresh"
         log.info "Parameters recevied to modify roles: $requestData"
 
         Set failedUsersForRoleModification = []
         List userIds = userManagementService.getAppropiateIdList(requestData.userIds)
         List roleIds = userManagementService.getAppropiateIdList(requestData.roleIds)
+        roleIds = roleIds*.toLong()
 
-        // Current User is Non-ADMIN by default
         if (!SpringSecurityUtils.ifAnyGranted("ROLE_ADMIN")) {
             Role adminRole = Role.findByAuthority("ROLE_ADMIN")
             List adminUsersIds = UserRole.findAllByRole(adminRole)*.user*.id
@@ -81,31 +80,31 @@ class UserManagementController {
 
             userIds = userIds - adminUsersIds
             log.info "Removed admin users: $userIds"
-            /* If a User is trying to assign ADMIN Role to any User, he should not be allowed to do so.
-               Only ADMIN Users can assign ADMIN role to other Users.*/
+            /* 
+             * If a User is trying to assign ADMIN Role to any User, he should not be allowed to do so.
+               Only ADMIN Users can assign ADMIN role to other Users.
+            */
             roleIds -= adminRole.id
-            log.info ("[Not authorized] Removing Admin Role ids")
+            log.info "[Not authorized] Removing Admin Role ids"
         }
-
-        Map result = [:]
 
         if (!userIds) {
             String message = "Please select atleast one user."
             if (!SpringSecurityUtils.ifAnyGranted("ROLE_ADMIN")) {
                 message += " (Users with role Admin are excluded from selected list.)"
             }
-            result = [success: false, message: message, status: HttpStatus.NOT_ACCEPTABLE]
-            render result as JSON
+            response.setStatus(HttpStatus.NOT_ACCEPTABLE.value())
+            respond ([success: false, message: message])
             return
         }
         
-        if(!roleIds) {
+        if (!roleIds) {
             String message = "No Roles selected."
             if (!SpringSecurityUtils.ifAnyGranted("ROLE_ADMIN")) {
                 message += "Only Users with Admin role can assign Admin roles."
             }
-            result = [ success: false, message: message, status: HttpStatus.NOT_ACCEPTABLE]
-            render result as JSON
+            response.setStatus(HttpStatus.NOT_ACCEPTABLE.value())
+            respond ([success: false, message: message])
             return
         }
 
@@ -117,20 +116,24 @@ class UserManagementController {
                 UserRole.removeAll(userInstance)
             }
             roleInstanceList.each { roleInstance ->
-                UserRole userRoleInstance = UserRole.create(userInstance, roleInstance, true)
+                UserRole userRoleInstance = UserRole.findByUserAndRole(userInstance, roleInstance)
+                // To avoid MySQLIntegrityConstraintViolationException which occurs if duplicate record is inserted
                 if (!userRoleInstance) {
+                    userRoleInstance = UserRole.create(userInstance, roleInstance, true)
+                }
+                if (!userRoleInstance || userRoleInstance.hasErrors()) {
                     failedUsersForRoleModification << userInstance.email
                 }
             }
         }
 
-        result = [success: true, message: "Roles updated succesfully."]
-
         if (failedUsersForRoleModification) {
-            result["success"] = true
-            result["message"] = "Unable to grant role for users with email(s) ${failedUsersForRoleModification.join(', ')}."
+            response.setStatus(HttpStatus.NOT_ACCEPTABLE.value())
+            respond ([success: false, message: "Unable to grant role for users with email(s)"+ 
+                "${failedUsersForRoleModification.join(', ')}."])
         }
-        render result as JSON
+
+        respond ([success: true, message: "Roles updated succesfully."])
     }
 
     /**
@@ -143,7 +146,6 @@ class UserManagementController {
      */
     def makeUserActiveInactive() {
         Map requestData = request.JSON
-        Map result = [:]
 
         String typeText = requestData.type ? "active": "inactive"
         log.info "Params received to $typeText users: $requestData"
@@ -164,8 +166,8 @@ class UserManagementController {
             if (!SpringSecurityUtils.ifAnyGranted("ROLE_ADMIN")) {
                 message += " (Users with role Admin are excluded from selected list.)"
             }
-            result = [success: false, message: message]
-            render result as JSON
+            response.setStatus(HttpStatus.NOT_ACCEPTABLE.value())
+            respond ([success: false, message: message])
             return
         }
 
@@ -183,13 +185,12 @@ class UserManagementController {
                 User.executeUpdate("UPDATE User SET enabled = :actionType WHERE id IN :userIds", [
                     actionType: requestData.type, userIds: selectedUserIds])
 
-                result= [message: "User's account set to $typeText successfully.", success: true]
-                render result as JSON
+                respond ([message: "User's account set to $typeText successfully.", success: true])
             }
         } catch (Exception e) {
             log.error "Error enable/disable user.", e
-            result = [message: "Unable to enable/disable the user. Please try again.", success: false]
-            render result as JSON
+            response.setStatus(HttpStatus.NOT_ACCEPTABLE.value())
+            respond ([message: "Unable to enable/disable the user. Please try again.", success: false])
         }
     }
 
@@ -229,7 +230,7 @@ class UserManagementController {
      */
     def updateEmail() {
         params.putAll(request.JSON as Map)
-        log.debug "Params reveived to update email $params"
+        log.debug "Params reveived to update email: $params"
 
         if (!params.id || !params.newEmail || !params.confirmNewEmail) {
             response.setStatus(HttpStatus.NOT_ACCEPTABLE.value())

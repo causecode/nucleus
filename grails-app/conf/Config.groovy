@@ -19,6 +19,24 @@ grails.plugin.springsecurity.controllerAnnotations.staticRules = [
     '/**': ["permitAll"]
 ]
 
+grails.mime.types = [ html: ['text/html','application/xhtml+xml'],
+    xml: ['text/xml', 'application/xml'],
+    text: 'text/plain',
+    js: 'text/javascript',
+    rss: 'application/rss+xml',
+    atom: 'application/atom+xml',
+    css: 'text/css',
+    csv: 'text/csv',
+    pdf: 'application/pdf',
+    rtf: 'application/rtf',
+    excel: 'application/vnd.ms-excel',
+    ods: 'application/vnd.oasis.opendocument.spreadsheet',
+    all: '*/*',
+    json: ['application/json','text/json'],
+    form: 'application/x-www-form-urlencoded',
+    multipartForm: 'multipart/form-data',
+]
+
 log4j = {
     appender new DailyRollingFileAppender(name: 'debugFile', datePattern: "'.'MM-dd-yyyy",
         fileName: './logs/nucleus/debugLog', layout: pattern(conversionPattern: '%-5p %d %c{2} %x - %m%n%n'))

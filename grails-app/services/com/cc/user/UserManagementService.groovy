@@ -120,7 +120,7 @@ class UserManagementService {
                 query.append(" where")
                 makeQueryToCheckEachRole(query, roleFilterList)
             } else {
-                // roleType == "Only Granted"
+                // When roleType is "Only Granted"
                 query.append(" where")
                 makeQueryToCheckEachRole(query, roleFilterList)
                 query.append(""" and exists ( select ur_count.user from UserRole ur_count where
@@ -133,7 +133,6 @@ class UserManagementService {
             query.append(""" lower(ur1.user.firstName) like '${params.letter.toLowerCase()}%' """)
         }
 
-        // Filter by Query and by Letter
         if (params.query && !params.letter) {
             if (query.indexOf("where") == -1) query.append(" where")
             query.append(""" lower(ur1.user.firstName) like '%${params.query.toLowerCase()}%' """)

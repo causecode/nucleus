@@ -3,7 +3,7 @@ dataSource {
     driverClassName = "com.mysql.jdbc.Driver"
     username = "root"
     password = "causecode.11"
-    dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+    dialect = org.hibernate.dialect.MySQL5InnoDBDialect
 }
 hibernate {
     cache.use_second_level_cache = true
@@ -11,15 +11,12 @@ hibernate {
     cache.region.factory_class = 'net.sf.ehcache.hibernate.EhCacheRegionFactory' // Hibernate 3
 }
 
-// environment specific settings
 environments {
     development {
         dataSource {
             dbCreate = "update" // one of 'create', 'create-drop', 'update', 'validate', ''
             //url = "jdbc:h2:mem:devDb;MVCC=TRUE;LOCK_TIMEOUT=10000;DB_CLOSE_ON_EXIT=FALSE"
             url = "jdbc:mysql://localhost:3306/nucleus"
-            username = "root"
-            password = "causecode.11"
         }
     }
     test {
@@ -27,8 +24,6 @@ environments {
             dbCreate = "update"
             //url = "jdbc:h2:mem:testDb;MVCC=TRUE;LOCK_TIMEOUT=10000;DB_CLOSE_ON_EXIT=FALSE"
             url = "jdbc:mysql://localhost:3306/nucleus_t"
-            username = "root"
-            password = "causecode.11"
         }
     }
     production {

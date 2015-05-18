@@ -26,7 +26,7 @@ class BaseIntegrationSpec extends IntegrationSpec {
         // Creating Users for each setup
         // Admin user
         adminUser = new User([username: "admin@1", password: "admin@13", email: "bootstrap1@causecode.com",
-                              firstName: "CauseCode", lastName: "Technologies", gender: "male", enabled: true])
+            firstName: "CauseCode", lastName: "Technologies", gender: "male", enabled: true])
         adminUser.save(flush: true)
         UserRole.create(adminUser, adminRole, true)
         UserRole.create(adminUser, userRole, true)
@@ -35,28 +35,31 @@ class BaseIntegrationSpec extends IntegrationSpec {
 
         // Normal user
         normalUser = new User([username: "jane@1", password: "admin@13", email:"janeCC@causecode.com",
-                               firstName: "Jane", lastName: "Doe", gender: "female", enabled: true])
+            firstName: "Jane", lastName: "Doe", gender: "female", enabled: true])
         normalUser.save(flush: true)
         UserRole.create(normalUser, userRole, true)
         assert normalUser.id
 
         // User manager
         managerUser = new User([username: "xxxx", password: "admin@13", email:"rachna1@causecode.com",
-                                firstName: "XXX", lastName: "YYY", gender: "female", enabled: true])
+            firstName: "XXX", lastName: "YYY", gender: "female", enabled: true])
         managerUser.save(flush: true)
         UserRole.create(managerUser, userManagerRole, true)
         UserRole.create(managerUser, userRole, true)
         assert managerUser.id
 
         trialUser = new User([username: "trial", password: "admin@13", email:"trial@causecode.com",
-                              firstName: "Trial", lastName: "User", gender: "female", enabled: true])
+            firstName: "Trial", lastName: "User", gender: "female", enabled: true])
         trialUser.save(flush: true)
         UserRole.create(trialUser, userRole, true)
         assert trialUser.id
     }
 
     void flushSession() {
-        // Workaround to flush the current session.
+        /*
+         * Workaround to flush the current session. If flush = true is passed once, all the updates persist to the
+         * database after the successful execution of an HQL query.
+         */
         adminUser.save(flush:true)
     }
 }
