@@ -156,7 +156,7 @@ class DateUtil {
     }
 
     /**
-     * Sets Date calender instance.
+     * Sets Date calendar instance.
      * @param Date The {@link Date} Object
      * @return {@link Calendar}
      */
@@ -244,7 +244,7 @@ class DateUtil {
 
     /**
      * Returns formatted date with given time zone and format. If time zone not specified date will be 
-     * parsed with defaul time zone.
+     * parsed with default time zone.
      * @param dateString String date to be parsed.
      * @param timezone Sting value containing time zone.
      * @param format Format in which date is being parsed. Default set to ["MM/dd/yyyy"].
@@ -271,7 +271,7 @@ class DateUtil {
 
     /**
      * Returns formatted date string with given time zone and format. If time zone not specified date will be
-     * parsed with defaul time zone.
+     * parsed with default time zone.
      * @param date Date to be parsed.
      * @param timezone Sting value containing time zone.
      * @param format Format in which date is being parsed.
