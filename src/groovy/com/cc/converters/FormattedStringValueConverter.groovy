@@ -28,7 +28,7 @@ class FormattedStringValueConverter implements FormattedValueConverter {
      * @param format String the required conversion format.
      * @return String converted format.
      */
-    String convert(String value, String format) {
+    Object convert(Object value, String format) {
         if (!value) {
             return null
         }
