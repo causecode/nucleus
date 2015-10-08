@@ -10,7 +10,6 @@ package com.cc.seo.sitemap
 
 import grails.plugin.springsecurity.annotation.Secured
 
-
 @Secured(["ROLE_ADMIN"])
 class SitemapController {
 
@@ -31,12 +30,15 @@ class SitemapController {
         redirect uri: "/dashboard"
     }
 
-    /**
+   /**
      * Default action : Responds Sitemap first object or new sitemap Object.
+     * Reverting back the commit: https://bitbucket.org/causecode/nucleus/commits/a4500461f761f69bcf39372d03a5b3fe58b84dce
+     * Replaced respond with render, since it was adding an extra xml <list> element to the generated
+     * sitemap.xml
      */
     @Secured(["permitAll"])
     def index() {
-        respond Sitemap.first() ?: EMPTY_SITEMAP
+        render((Sitemap.first() ?: EMPTY_SITEMAP) as XML)
     }
 
 }
