@@ -10,7 +10,7 @@ See [ChangeLog.md](https://bitbucket.org/causecode/nucleus/src/d9be8242b8cc37260
 
 ## Running test cases
 
-To run the test cases, uncomment the hibernate plugin dependency in BuildConfig.groovy file. Just make sure to to do
+To run the test cases, uncomment the hibernate plugin dependency in BuildConfig.groovy file. Just make sure you do
 not commit that file.
 
 ## Architecture Overview
