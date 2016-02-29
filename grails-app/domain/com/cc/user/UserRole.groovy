@@ -59,13 +59,23 @@ class UserRole implements Serializable {
         rowCount > 0
     }
 
+    /**
+     * Remove all role of a given User by removing instance of UserRole
+     * for particular User.
+     * @param u Instance of {@link com.cc.user.User User}
+     */
     static void removeAll(User u) {
         UserRole.findAllByUser(u)*.delete(flush: true)  // To avoid session flush problems
     }
 
-    static void removeAll(Role r) {
+    /**
+     * Remove all instances of UserRole for a given role.
+     * Useful when wanted to revoke a particular role from every User.
+     * @param roleInstance
+     */
+    static void removeAll(Role roleInstance) {
         UserRole.where {
-            role == Role.load(r.id)
+            role == Role.load(roleInstance.id)
         }.deleteAll()
     }
 
