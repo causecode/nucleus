@@ -6,3 +6,8 @@ target/**
 logs/**
 *.zip*
 grails-app/views/template-cache/*
+/web-app/ng/bower_components/*
+/web-app/ng/node_modules/*
+.groovy
+web-app/ng/.editorconfig
+web-app/ng/app/.htaccess

@@ -65,7 +65,7 @@ class UserManagementService {
         }
 
         // Check type of id, either Long or mongo's ObjectId
-        if (ids[0].isNumber()) {
+        if (ids[0].toString().isNumber()) {
             // If domain id is of type Long
             ids = ids*.toLong()
         } else {
@@ -111,6 +111,7 @@ class UserManagementService {
 
         if (params.roleFilter) {
             List roleFilterList = params.roleFilter as List
+            roleFilterList = roleFilterList*.toLong()       // will convert all values(*) inside the List from String to Long 
 
             if (roleType == "Any Granted") {
                 queryStringParams.roles = roleFilterList
@@ -119,6 +120,7 @@ class UserManagementService {
                 query.append(" where")
                 makeQueryToCheckEachRole(query, roleFilterList)
             } else {
+                // When roleType is "Only Granted"
                 query.append(" where")
                 makeQueryToCheckEachRole(query, roleFilterList)
                 query.append(""" and exists ( select ur_count.user from UserRole ur_count where
@@ -144,7 +146,7 @@ class UserManagementService {
 
         userInstanceTotal = UserRole.executeQuery(query.toString(), queryStringParams).size()
 
-        [userInstanceList: userInstanceList, userInstanceTotal: userInstanceTotal]
+        [instanceList: userInstanceList, totalCount: userInstanceTotal]
     }
 
     /**
