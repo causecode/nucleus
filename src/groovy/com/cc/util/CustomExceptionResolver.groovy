@@ -18,57 +18,40 @@ import org.apache.commons.logging.LogFactory
 import org.codehaus.groovy.grails.web.errors.GrailsExceptionResolver
 import org.springframework.web.servlet.ModelAndView
 
-import com.cc.user.User
-
+/**
+ * Used to handle any exception thrown while processing any request and
+ * sends an exception email to configured email for non development environment.
+ * 
+ * @author Shashank Agrawal
+ * @since 0.3.3
+ */
 class CustomExceptionResolver extends GrailsExceptionResolver {
 
     private static Log log = LogFactory.getLog(this)
 
     @Override
     ModelAndView resolveException(HttpServletRequest request, HttpServletResponse response, Object handler, Exception e) {
-        if (!Environment.isDevelopmentMode()) {
+        if (Environment.isDevelopmentMode() || !NucleusUtils.getMailService()) {
             return super.resolveException(request, response, handler, e)
         }
 
-        def mailService = NucleusUtils.getMailService()
+        Map model = [:]
 
-        if (!mailService) {
-            log.info "No mail plugin installed to send exception message"
-            return super.resolveException(request, response, handler, e)
+        String requestURL = request.forwardURI
+        if (request.queryString) {
+            requestURL += "?" + request.queryString
         }
 
-        StringWriter errors = new StringWriter()
-        e.printStackTrace(new PrintWriter(errors))
+        model["requestURL"] = requestURL
+        // Some angular based client side app may send header for current URL
+        model["angularURL"] = request.getHeader("angular-url")
 
-        String appName = NucleusUtils.appName
-
-        Map model = [exception: e, stackTrace: errors.toString(), appName: appName]
-
-        if (request) {
-            String requestURL = request.forwardURI
-            if (request.queryString) {
-                requestURL += "?" + request.queryString
-            }
-
-            model.requestURL = requestURL
-
-            def springSecurityService = NucleusUtils.getBean("springSecurityService")
-            User currentUserInstance = springSecurityService.getCurrentUser()
-
-            model.userInstance = currentUserInstance
+        def springSecurityService = NucleusUtils.getBean("springSecurityService")
+        if (springSecurityService) {
+            model["userInstance"] = springSecurityService.getCurrentUser()
         }
 
-        String messageBody = NucleusUtils.getBean("groovyPageRenderer").render([template: "/email-templates/error",
-            plugin: "nucleus", model: model])
-
-        String messageSubject = "[$appName][${Environment.current.name}] Internal Server Error"
-
-        NucleusUtils.getMailService().sendMail {
-            to "developers@causecode.com"
-            from "bootstrap@causecode.com"
-            subject messageSubject
-            html messageBody
-        }
+        NucleusUtils.sendExceptionEmail(findWrappedException(e), model)
 
         return super.resolveException(request, response, handler, e)
     }

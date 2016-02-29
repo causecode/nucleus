@@ -1,0 +1,83 @@
+<div ng-controller="UserManagementController">
+    <div class="page-listing" style="position: relative">
+        <div class="page-header custom">
+            <h1>UserManagement List</h1>
+        </div>
+        <paged-list model-name="'UserManagement'" items-per-page="15" filter="true">
+        <form ng-submit="filterList(); elementModels.showFilter=false;">
+            <div class="row">
+                <section class="col-md-3">
+                    <strong>Role</strong>
+                    <select class="form-control" name="roleType">
+                        <option value="Any Granted" selected>Any Granted</option>
+                        <option value="All Granted">All Granted</option>
+                        <option value="Only Granted">Only Granted</option>
+                    </select>
+                    <select multiple="multiple" name="roleFilter" class="form-control">
+                        <option ng-repeat="role in roleList" value="{{role.id}}" ng-class="{active: role.selected}">
+                            {{role.authority.substring(5).replace('_', ' ')}}
+                        </option>
+                    </select>
+                </section>
+                <section class="col-md-3">
+                    <strong>Sort</strong>
+                    <select name="sort" class="form-control input-sm">
+                        <option value="id">Id</option>
+                        <option value="firstName">First Name</option>
+                        <option value="lastName">Last Name</option>
+                        <option value="email">Email</option>
+                        <option value="dateCreated">Date Created</option>
+                        <option value="lastJoined">Last Updated</option>
+                    </select>
+                </section>
+                <section class="col-md-3">
+                    <strong>Order</strong>
+                    <select name="order" class="form-control input-sm">
+                        <option value="asc">Ascending</option>
+                        <option value="desc">Descending</option>
+                    </select>
+                </section>
+                <section class="col-md-3">
+                    <strong>Query</strong>
+                    <input type="text" name="query" class="form-control input-sm" />
+                </section>
+            </div>
+            <div class="row">
+                <section class="col-md-3">
+                    <strong>Date Created</strong> <input type="text" name="dateCreated" placeholder="MM/dd/yyyy"
+                        class="form-control input-sm" />
+                </section>
+
+                <section class="col-md-4">
+                    <button class="btn btn-sm btn-primary">Filter</button>
+                </section>
+            </div>
+        </form>
+        </paged-list>
+    </div>
+
+    <!-- Modify Modal template -->
+    <script type="text/ng-template" id="modifyRolesModal.html">
+        <div class="modal-header">
+            <h3 class="modal-title">Modify Roles</h3>
+        </div>
+        <div class="modal-body">
+        <strong>Roles</strong>
+        <select id="selectedUserRole" ng-model="overlay.assignableRoles" multiple="multiple" class="form-control input-sm" >
+                <option ng-repeat="role in roleList" value={{role.id}}>
+                    {{role.authority.substring(5).replace('_', ' ')}}
+                </option>
+        </select>
+        <strong>Action Type</strong><br>
+        <input type="radio" name="roleAction" ng-model="overlay.roleActionType" value="append">Grant these also
+        <i class="fa fa-question-circle" tooltip="Will add selected roles keeping existing roles" ></i>
+        <br>
+        <input type="radio" name="roleAction" ng-model="overlay.roleActionType" value="refresh">Grant only these
+        <i class="fa fa-question-circle" tooltip="Will remove all roles & add selected roles" ></i>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-primary" type="submit" ng-click="modifyRoles()">Modify</button>
+            <button  class="btn btn-warning" ng-click="closeModal()">Close</button>
+        </div>
+    </script>
+</div>

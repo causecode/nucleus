@@ -8,7 +8,7 @@
 
 package com.cc.user
 
-import static org.springframework.http.HttpStatus.*
+import org.springframework.http.HttpStatus
 import grails.converters.JSON
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
@@ -29,7 +29,7 @@ class UserManagementController {
     /**
      * Dependency Injection for the userManagementService.
      */
-    def userManagementService
+    UserManagementService userManagementService
 
     static responseFormats = ["json"]
 
@@ -40,17 +40,18 @@ class UserManagementController {
      * @return Result in JSON format.
      */
     def index(Integer max, int offset, String dbType) {
-        log.info "Params recived to fetch users :" + params
-
         params.offset = offset ?: 0
         params.max = Math.min(max ?: 10, 100)
+        params.sort= params.sort ?: "dateCreated"
         params.order = params.order ?: "desc"
+
+        dbType = dbType ?: "Mysql"
+        log.info "Params received to fetch users :$params"
 
         Map result = userManagementService."listFor${dbType}"(params)
         if (offset == 0) {
             result["roleList"] = Role.list()
         }
-
         render result as JSON
     }
 
@@ -70,41 +71,69 @@ class UserManagementController {
         Set failedUsersForRoleModification = []
         List userIds = userManagementService.getAppropiateIdList(requestData.userIds)
         List roleIds = userManagementService.getAppropiateIdList(requestData.roleIds)
+        roleIds = roleIds*.toLong()
 
         if (!SpringSecurityUtils.ifAnyGranted("ROLE_ADMIN")) {
             Role adminRole = Role.findByAuthority("ROLE_ADMIN")
             List adminUsersIds = UserRole.findAllByRole(adminRole)*.user*.id
-            log.debug "Removing admin user ids: $adminUsersIds."
+            log.info "Removing admin user ids: $adminUsersIds."
 
             userIds = userIds - adminUsersIds
-
             log.info "Removed admin users: $userIds"
+            /* 
+             * If a User is trying to assign ADMIN Role to any User, he should not be allowed to do so.
+               Only ADMIN Users can assign ADMIN role to other Users.
+            */
+            roleIds -= adminRole.id
+            log.info "[Not authorized] Removing Admin Role ids"
+        }
+
+        if (!userIds) {
+            String message = "Please select atleast one user."
+            if (!SpringSecurityUtils.ifAnyGranted("ROLE_ADMIN")) {
+                message += " (Users with role Admin are excluded from selected list.)"
+            }
+            response.setStatus(HttpStatus.NOT_ACCEPTABLE.value())
+            respond ([success: false, message: message])
+            return
+        }
+        
+        if (!roleIds) {
+            String message = "No Roles selected."
+            if (!SpringSecurityUtils.ifAnyGranted("ROLE_ADMIN")) {
+                message += "Only Users with Admin role can assign Admin roles."
+            }
+            response.setStatus(HttpStatus.NOT_ACCEPTABLE.value())
+            respond ([success: false, message: message])
+            return
         }
 
         List roleInstanceList = Role.getAll(roleIds)
 
         userIds.each { userId ->
             User userInstance = User.get(userId)
-
             if (requestData.roleActionType == "refresh") {
                 UserRole.removeAll(userInstance)
             }
             roleInstanceList.each { roleInstance ->
-                UserRole userRoleInstance = UserRole.create(userInstance, roleInstance, true)
+                UserRole userRoleInstance = UserRole.findByUserAndRole(userInstance, roleInstance)
+                // To avoid MySQLIntegrityConstraintViolationException which occurs if duplicate record is inserted
                 if (!userRoleInstance) {
+                    userRoleInstance = UserRole.create(userInstance, roleInstance, true)
+                }
+                if (!userRoleInstance || userRoleInstance.hasErrors()) {
                     failedUsersForRoleModification << userInstance.email
                 }
             }
         }
 
-        Map result = [success: true, message: "Roles updated succesfully."]
-
         if (failedUsersForRoleModification) {
-            result["success"] = true
-            result["message"] = "Unable to grant role for users with email(s) ${failedUsersForRoleModification.join(', ')}."
+            response.setStatus(HttpStatus.NOT_ACCEPTABLE.value())
+            respond ([success: false, message: "Unable to grant role for users with email(s)"+ 
+                "${failedUsersForRoleModification.join(', ')}."])
         }
 
-        respond(result)
+        respond ([success: true, message: "Roles updated succesfully."])
     }
 
     /**
@@ -117,22 +146,19 @@ class UserManagementController {
      */
     def makeUserActiveInactive() {
         Map requestData = request.JSON
-        String typeText = requestData.type ? 'active': 'inactive'
 
+        String typeText = requestData.type ? "active": "inactive"
         log.info "Params received to $typeText users: $requestData"
 
         boolean useMongo = grailsApplication.config.cc.plugins.crm.persistence.provider == "mongodb"
 
         List selectedUserIds = userManagementService.getAppropiateIdList(requestData.selectedIds)
 
-
         if (!SpringSecurityUtils.ifAnyGranted("ROLE_ADMIN")) {
             Role adminRole = Role.findByAuthority("ROLE_ADMIN")
             List adminUsersIds = UserRole.findAllByRole(adminRole)*.user*.id
-
             selectedUserIds = selectedUserIds - adminUsersIds
-
-            log.info "Removed admin users. $selectedUserIds"
+            log.info "Removed admin users: $selectedUserIds"
         }
 
         if (!selectedUserIds) {
@@ -140,11 +166,10 @@ class UserManagementController {
             if (!SpringSecurityUtils.ifAnyGranted("ROLE_ADMIN")) {
                 message += " (Users with role Admin are excluded from selected list.)"
             }
-
-            respond([success: false, message: "Please select atleast one user."])
+            response.setStatus(HttpStatus.NOT_ACCEPTABLE.value())
+            respond ([success: false, message: message])
             return
         }
-        println selectedUserIds*.dump()
 
         try {
             if (useMongo) {
@@ -155,13 +180,16 @@ class UserManagementController {
                 int updatedFields = writeResult.getN()
                 respond ([message: "Total $updatedFields user's account set to $typeText successfully.", success: true])
             } else {
-                User.executeUpdate("UPDATE User SET enabled = :actionType WHERE id IN :userIds", [
-                    actionType: requestData.type, userIds: requestData.selectedIds])
+                selectedUserIds = selectedUserIds*.toLong()
 
-                respond ([message: "User's account set to $typeText successfully."])
+                User.executeUpdate("UPDATE User SET enabled = :actionType WHERE id IN :userIds", [
+                    actionType: requestData.type, userIds: selectedUserIds])
+
+                respond ([message: "User's account set to $typeText successfully.", success: true])
             }
         } catch (Exception e) {
             log.error "Error enable/disable user.", e
+            response.setStatus(HttpStatus.NOT_ACCEPTABLE.value())
             respond ([message: "Unable to enable/disable the user. Please try again.", success: false])
         }
     }
@@ -202,10 +230,10 @@ class UserManagementController {
      */
     def updateEmail() {
         params.putAll(request.JSON as Map)
-        log.debug "Params reveived to update email $params"
+        log.debug "Params reveived to update email: $params"
 
         if (!params.id || !params.newEmail || !params.confirmNewEmail) {
-            response.setStatus(NOT_ACCEPTABLE.value())
+            response.setStatus(HttpStatus.NOT_ACCEPTABLE.value())
             respond ([message: "Please select a user and enter new & confirmation email."])
             return
         }
@@ -214,20 +242,20 @@ class UserManagementController {
         params.confirmNewEmail = params.confirmNewEmail.toLowerCase()
 
         if (params.newEmail != params.confirmNewEmail) {
-            response.setStatus(NOT_ACCEPTABLE.value())
+            response.setStatus(HttpStatus.NOT_ACCEPTABLE.value())
             respond ([message: "Email dose not match the Confirm Email."])
             return
         }
 
         if (User.countByEmail(params.newEmail)) {
-            response.setStatus(NOT_ACCEPTABLE.value())
-            respond ([message: "User already exist with Email: $params.newEmail"])
+            response.setStatus(HttpStatus.NOT_ACCEPTABLE.value())
+            respond ([message: "User already exists with Email: $params.newEmail"])
             return
         }
 
         User userInstance = User.get(params.id)
         if (!userInstance) {
-            response.setStatus(NOT_ACCEPTABLE.value())
+            response.setStatus(HttpStatus.NOT_ACCEPTABLE.value())
             respond ([message: "User not found with id: $params.id."])
             return
         }
@@ -235,7 +263,7 @@ class UserManagementController {
         userInstance.email = params.newEmail
         userInstance.save()
         if (userInstance.hasErrors()) {
-            response.setStatus(NOT_ACCEPTABLE.value())
+            response.setStatus(HttpStatus.NOT_ACCEPTABLE.value())
 
             log.warn "Error saving $userInstance $userInstance.errors"
 
