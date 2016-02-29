@@ -1,4 +1,4 @@
-<plugin name='nucleus' version='0.3.2' grailsVersion='2.2 &gt; *'>
+<plugin name='nucleus' version='0.3.3' grailsVersion='2.2 &gt; *'>
   <author>CauseCode</author>
   <authorEmail>shashank.agrawal@causecode.com</authorEmail>
   <title>Nucleus Plugin</title>
@@ -8,9 +8,7 @@
   <type>NucleusGrailsPlugin</type>
   <resources>
     <resource>NucleusBootStrap</resource>
-    <resource>NucleusConfig</resource>
     <resource>NucleusDevBootStrap</resource>
-    <resource>NucleusResources</resource>
     <resource>NucleusUrlMappings</resource>
     <resource>com.cc.core.currency.CurrencyController</resource>
     <resource>com.cc.seo.sitemap.SitemapController</resource>
@@ -29,6 +27,7 @@
     <resource>com.cc.user.UserRole</resource>
     <resource>com.cc.contact.ContactService</resource>
     <resource>com.cc.user.UserManagementService</resource>
+    <resource>com.cc.exception.RenderTagLib</resource>
     <resource>com.cc.nucleus.NucleusTagLib</resource>
   </resources>
 </plugin>

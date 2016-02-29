@@ -10,7 +10,7 @@ import com.cc.util.StringAsGspRenderer
 
 class NucleusGrailsPlugin {
 
-    def version = "0.3.2"
+    def version = "0.3.3"
     def grailsVersion = "2.2 > *"
     def groupId = "com.cc.plugins"
     def dependsOn = [:]

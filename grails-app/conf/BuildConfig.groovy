@@ -1,5 +1,3 @@
-import grails.util.Environment
-
 grails.project.class.dir = "target/classes"
 grails.project.test.class.dir = "target/test-classes"
 grails.project.test.reports.dir = "target/test-reports"
@@ -38,13 +36,8 @@ grails.project.dependency.resolution = {
         compile (":spring-security-core:2.0-RC3", ":export:1.5") {
             export = false
         }
-
-        // Do not include hibernate while in development
-        // But do include them while packaging like "maven-install" or "maven-deploy"
-        if (!Environment.isDevelopmentMode() || isAPluginBuild) {
-            compile (":hibernate4:4.3.8.1", ":cache:1.1.3") {
-                export = false
-            }
+        compile (":hibernate4:4.3.8.1") {
+            export = false
         }
     }
 }
