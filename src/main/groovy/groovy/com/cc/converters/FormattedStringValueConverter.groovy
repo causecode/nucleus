@@ -8,7 +8,7 @@
 
 package com.cc.converters
 
-import org.grails.databinding.converters.FormattedValueConverter
+import grails.databinding.converters.FormattedValueConverter
 
 /**
  * A convertor class used to provide String binding according to specified format in domain.

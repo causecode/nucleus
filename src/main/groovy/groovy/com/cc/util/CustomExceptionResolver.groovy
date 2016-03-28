@@ -15,7 +15,7 @@ import javax.servlet.http.HttpServletResponse
 
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
-import org.codehaus.groovy.grails.web.errors.GrailsExceptionResolver
+import org.grails.web.errors.GrailsExceptionResolver
 import org.springframework.web.servlet.ModelAndView
 
 /**

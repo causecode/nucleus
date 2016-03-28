@@ -1,9 +1,9 @@
 package com.cc.exception
 
-import org.codehaus.groovy.grails.support.encoding.CodecLookup
-import org.codehaus.groovy.grails.support.encoding.Encoder
-import org.codehaus.groovy.grails.web.errors.ErrorsViewStackTracePrinter
-import org.codehaus.groovy.grails.web.errors.ExceptionUtils
+import org.grails.encoder.CodecLookup
+import org.grails.encoder.Encoder
+import org.grails.web.errors.ErrorsViewStackTracePrinter
+import org.grails.exceptions.ExceptionUtils
 import org.springframework.util.StringUtils
 
 /**

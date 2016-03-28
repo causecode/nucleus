@@ -10,9 +10,9 @@ package com.cc.util
 
 import grails.converters.XML
 
-import org.codehaus.groovy.grails.web.converters.Converter
-import org.codehaus.groovy.grails.web.converters.marshaller.NameAwareMarshaller
-import org.codehaus.groovy.grails.web.converters.marshaller.ObjectMarshaller
+import org.grails.web.converters.Converter
+import org.grails.web.converters.marshaller.NameAwareMarshaller
+import org.grails.web.converters.marshaller.ObjectMarshaller
 
 import com.cc.seo.sitemap.Sitemap
 

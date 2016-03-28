@@ -3,6 +3,8 @@
 .classpath
 .settings/**
 target-eclipse/**
+.gradle/**
+build/**
 target/**
 logs/**
 *.zip*
@@ -12,3 +14,4 @@ grails-app/views/template-cache/*
 .groovy
 web-app/ng/.editorconfig
 web-app/ng/app/.htaccess
+scripts/**
