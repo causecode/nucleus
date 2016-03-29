@@ -1,4 +1,4 @@
-<plugin name='nucleus' version='0.3.3' grailsVersion='2.2 &gt; *'>
+<plugin name='nucleus' version='0.3.4' grailsVersion='2.2 &gt; *'>
   <author>CauseCode</author>
   <authorEmail>shashank.agrawal@causecode.com</authorEmail>
   <title>Nucleus Plugin</title>
@@ -10,24 +10,24 @@
     <resource>NucleusBootStrap</resource>
     <resource>NucleusDevBootStrap</resource>
     <resource>NucleusUrlMappings</resource>
-    <resource>com.cc.core.currency.CurrencyController</resource>
-    <resource>com.cc.seo.sitemap.SitemapController</resource>
-    <resource>com.cc.user.UserManagementController</resource>
-    <resource>com.cc.contact.Contact</resource>
-    <resource>com.cc.contact.Phone</resource>
-    <resource>com.cc.contact.PhoneCountryCode</resource>
-    <resource>com.cc.currency.Currency</resource>
-    <resource>com.cc.geo.location.City</resource>
-    <resource>com.cc.geo.location.Country</resource>
-    <resource>com.cc.geo.location.Location</resource>
-    <resource>com.cc.seo.sitemap.Sitemap</resource>
-    <resource>com.cc.seo.sitemap.Url</resource>
-    <resource>com.cc.user.Role</resource>
-    <resource>com.cc.user.User</resource>
-    <resource>com.cc.user.UserRole</resource>
-    <resource>com.cc.contact.ContactService</resource>
-    <resource>com.cc.user.UserManagementService</resource>
-    <resource>com.cc.exception.RenderTagLib</resource>
-    <resource>com.cc.nucleus.NucleusTagLib</resource>
+    <resource>com.causecode.core.currency.CurrencyController</resource>
+    <resource>com.causecode.seo.sitemap.SitemapController</resource>
+    <resource>com.causecode.user.UserManagementController</resource>
+    <resource>com.causecode.contact.Contact</resource>
+    <resource>com.causecode.contact.Phone</resource>
+    <resource>com.causecode.contact.PhoneCountryCode</resource>
+    <resource>com.causecode.currency.Currency</resource>
+    <resource>com.causecode.geo.location.City</resource>
+    <resource>com.causecode.geo.location.Country</resource>
+    <resource>com.causecode.geo.location.Location</resource>
+    <resource>com.causecode.seo.sitemap.Sitemap</resource>
+    <resource>com.causecode.seo.sitemap.Url</resource>
+    <resource>com.causecode.user.Role</resource>
+    <resource>com.causecode.user.User</resource>
+    <resource>com.causecode.user.UserRole</resource>
+    <resource>com.causecode.contact.ContactService</resource>
+    <resource>com.causecode.user.UserManagementService</resource>
+    <resource>com.causecode.exception.RenderTagLib</resource>
+    <resource>com.causecode.nucleus.NucleusTagLib</resource>
   </resources>
 </plugin>

@@ -1,9 +1,9 @@
 package nucleus
 
-import com.cc.user.Role;
-import com.cc.user.User
-import com.cc.user.UserManagementController
-import com.cc.user.UserRole
+import com.causecode.user.Role;
+import com.causecode.user.User
+import com.causecode.user.UserManagementController
+import com.causecode.user.UserRole
 
 import grails.test.spock.IntegrationSpec
 

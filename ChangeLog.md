@@ -1,5 +1,9 @@
 # ChangeLog
 
+## Version 0.3.4
+1. Migrated from Grails version 2.5.0 to 3.1.4.
+2. Changed package name from `cc` to > `causecode`.
+
 ## Version 0.2
 
 ### New Feature

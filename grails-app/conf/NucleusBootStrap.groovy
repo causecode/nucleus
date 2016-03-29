@@ -9,9 +9,9 @@
 import grails.converters.JSON
 import grails.converters.XML
 
-import com.cc.util.CustomValidationErrorMarshaller
-import com.cc.util.NucleusUtils
-import com.cc.util.SitemapMarshaller
+import com.causecode.util.CustomValidationErrorMarshaller
+import com.causecode.util.NucleusUtils
+import com.causecode.util.SitemapMarshaller
 
 class NucleusBootStrap {
 

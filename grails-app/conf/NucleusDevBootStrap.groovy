@@ -1,8 +1,8 @@
 import grails.util.Environment
 
-import com.cc.user.Role
-import com.cc.user.User
-import com.cc.user.UserRole
+import com.causecode.user.Role
+import com.causecode.user.User
+import com.causecode.user.UserRole
 
 class NucleusDevBootStrap {
 

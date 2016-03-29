@@ -6,7 +6,7 @@
  * without modification, are not permitted.
  */
 
-import com.cc.util.StringAsGspRenderer
+import com.causecode.util.StringAsGspRenderer
 
 class NucleusGrailsPlugin {
 
