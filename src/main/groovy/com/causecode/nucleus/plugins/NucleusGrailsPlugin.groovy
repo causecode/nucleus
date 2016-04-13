@@ -6,6 +6,8 @@
  * without modification, are not permitted.
  */
 
+package com.causecode.nucleus.plugins
+
 import com.causecode.util.StringAsGspRenderer
 
 class NucleusGrailsPlugin {

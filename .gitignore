@@ -7,6 +7,8 @@ target-eclipse/**
 build/**
 target/**
 logs/**
+*.iml
+plugin.xml
 *.zip*
 grails-app/views/template-cache/*
 /web-app/ng/bower_components/*

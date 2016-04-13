@@ -1,3 +1,26 @@
+grails{
+    profile = "web-plugin"
+    codegen{
+        defaultPackage = "nucleus"
+    }
+}
+
+info{
+    app{
+        name = "@info.app.name@"
+        version = "@info.app.version@"
+        grailsVersion = "@info.app.grailsVersion@"
+    }
+}
+
+spring {
+    groovy{
+        template {
+            "check-template-location" = false
+        }
+    }
+}
+
 dataSource {
     pooled = true
     driverClassName = "com.mysql.jdbc.Driver"
@@ -5,6 +28,7 @@ dataSource {
     password = "causecode.11"
     dialect = org.hibernate.dialect.MySQL5InnoDBDialect
 }
+
 hibernate {
     cache.use_second_level_cache = true
     cache.use_query_cache = false
