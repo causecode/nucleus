@@ -8,9 +8,13 @@
 
 package com.causecode.nucleus.plugins
 
+import grails.plugins.*
 import com.causecode.util.StringAsGspRenderer
 
-class NucleusGrailsPlugin {
+class NucleusGrailsPlugin extends Plugin {
+
+    def name = "nucleus"
+    def version = "0.3.4"
 
     def grailsVersion = "2.2 > *"
     def groupId = "com.cc.plugins"

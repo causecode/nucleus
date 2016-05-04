@@ -29,7 +29,7 @@ class NucleusBootStrap {
 
         JSON.registerObjectMarshaller(new CustomValidationErrorMarshaller(grailsApplication.mainContext))
 
-        stringAsGspRenderer.cleanupTemplateCache()
+        stringAsGspRenderer?.cleanupTemplateCache()
 
         log.debug "Nucleus Bootstrap finished executing."
     }
