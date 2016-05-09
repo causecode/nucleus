@@ -36,7 +36,7 @@
             </div>
         </div>
         <div class="col-sm-1">
-            <g:link uri="/j_spring_security_switch_user?j_username={{userInstance.username }}"
+            <g:link uri="/login/impersonate?username={{userInstance.username }}"
                 ng-hide="{{currentUserInstance.id  === userInstance.id }}"
                 data-container="body" rel="tooltip" title="Use Causecode as {{userInstance.username }}" class="pull-right">
                 <small><i class="fa fa-exchange"></i></small>

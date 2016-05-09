@@ -41,6 +41,7 @@ class CustomUserDetailsService implements GrailsUserDetailsService {
     UserDetails loadUserByUsername(String username) throws UsernameNotFoundException, DataAccessException {
         User.withTransaction {
             // Case insensitive query support for MongoDB
+
             User userInstance = User.withCriteria(uniqueResult: true) {
                 or {
                     ilike("username", username)
@@ -49,11 +50,13 @@ class CustomUserDetailsService implements GrailsUserDetailsService {
             }
 
             if (!userInstance)
-                throw new UsernameNotFoundException("User not found", username)
+                throw new UsernameNotFoundException("User not found $userInstance")
+            
 
             def authorities = userInstance.authorities.collect { Role roleInstance ->
                 new SimpleGrantedAuthority(roleInstance.authority)
             }
+
             new GrailsUser(userInstance.username, userInstance.password, userInstance.enabled, !userInstance.accountExpired,
                     !userInstance.passwordExpired, !userInstance.accountLocked, authorities ?: NO_ROLES, userInstance.id)
         }
