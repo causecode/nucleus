@@ -6,7 +6,7 @@
  * without modification, are not permitted.
  */
 
-package com.causecode.nucleus.plugins
+package nucleus
 
 import grails.plugins.*
 import com.causecode.util.StringAsGspRenderer
@@ -16,7 +16,7 @@ class NucleusGrailsPlugin extends Plugin {
     def name = "nucleus"
     def version = "0.3.4"
 
-    def grailsVersion = "2.2 > *"
+    def grailsVersion = "3.1.4"
     def groupId = "com.cc.plugins"
     def dependsOn = [:]
     def pluginExcludes = [

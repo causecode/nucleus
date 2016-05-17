@@ -26,7 +26,8 @@ class NucleusUtils {
     static Object mailService
 
     static String getAppName() {
-        Holders.getGrailsApplication().metadata["app.name"].capitalize()
+        Holders.getConfig().app.name.capitalize()
+        //Holders.getGrailsApplication().metadata["app.name"].capitalize()
     }
 
     static Object getBean(String serviceName) {
