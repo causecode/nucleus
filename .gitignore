@@ -17,3 +17,4 @@ grails-app/views/template-cache/*
 web-app/ng/.editorconfig
 web-app/ng/app/.htaccess
 scripts/**
+bin/**
