@@ -80,7 +80,7 @@ class UserManagementController {
 
             userIds = userIds - adminUsersIds
             log.info "Removed admin users: $userIds"
-            /* 
+            /*
              * If a User is trying to assign ADMIN Role to any User, he should not be allowed to do so.
                Only ADMIN Users can assign ADMIN role to other Users.
             */
@@ -97,7 +97,7 @@ class UserManagementController {
             respond ([success: false, message: message])
             return
         }
-        
+
         if (!roleIds) {
             String message = "No Roles selected."
             if (!SpringSecurityUtils.ifAnyGranted("ROLE_ADMIN")) {
@@ -129,7 +129,7 @@ class UserManagementController {
 
         if (failedUsersForRoleModification) {
             response.setStatus(HttpStatus.NOT_ACCEPTABLE.value())
-            respond ([success: false, message: "Unable to grant role for users with email(s)"+ 
+            respond ([success: false, message: "Unable to grant role for users with email(s)"+
                 "${failedUsersForRoleModification.join(', ')}."])
         }
 

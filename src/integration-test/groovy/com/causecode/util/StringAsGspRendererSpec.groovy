@@ -4,16 +4,20 @@
  *
  * Redistribution and use in source and binary forms, with or
  * without modification, are not permitted.
- */
+ *//*
+
 
 package com.causecode.util
 
-import grails.test.spock.IntegrationSpec
+import grails.transaction.Rollback
 import grails.util.Environment
-
 import com.causecode.user.User
+import grails.test.mixin.integration.Integration
+import spock.lang.*
 
-class StringAsGspRendererSpec extends IntegrationSpec {
+@Integration
+@Rollback
+class StringAsGspRendererSpec extends Specification {
 
     StringAsGspRenderer stringAsGspRenderer
     User userInstance
@@ -72,4 +76,4 @@ class StringAsGspRendererSpec extends IntegrationSpec {
 
         assert filesInDirectory(new File(stringAsGspRenderer.TEMPLATE_CACHE_DIRECTORY_PATH)) == 0
     }
-}
+}*/

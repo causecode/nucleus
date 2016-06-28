@@ -2,7 +2,9 @@ grails:
     profile: web-plugin
     codegen:
         defaultPackage: nucleus
-
+    gorm:
+        failOnError: true
+        autoFlush: true
 info:
     app:
         name: '@info.app.name@'
@@ -18,28 +20,32 @@ spring:
 dataSource:
     pooled: true
     driverClassName: "org.h2.Driver"
-    username: 'root'
-    password: 'causecode.11'
     dialect: "org.hibernate.dialect.H2Dialect"
 
+#hibernate:
+#    cache:
+#        use_second_level_cache: true
+#        use_query_cache: false
+#        #provider_class: 'net.sf.ehcache.hibernate.EhCacheProvider'
+#    region:
+#         factory_class: 'org.hibernate.cache.ehcache.EhCacheRegionFactory'
 hibernate:
     cache:
         use_second_level_cache: true
         use_query_cache: false
-        region.factory_class: 'org.hibernate.cache.ehcache.EhCacheRegionFactory' # Hibernate
+        provider_class: 'net.sf.ehcache.hibernate.EhCacheProvider'
+        region.factory_class: 'org.hibernate.cache.ehcache.EhCacheRegionFactory'
 
 ---
 environments:
     development:
         dataSource:
-            dbCreate: 'update' # one of 'create', 'create-drop', 'update', 'validate', ''
-            #url: 'jdbc:h2:mem:devDb;MVCC=TRUE;LOCK_TIMEOUT=10000;DB_CLOSE_ON_EXIT=FALSE'
-            url: 'jdbc:h2://localhost:3306/nucleus'
+            dbCreate: 'create-drop'
+            url: 'jdbc:h2:mem:devDb'
     test:
         dataSource:
             dbCreate: 'update'
-            #url: 'jdbc:h2:mem:testDb;MVCC=TRUE;LOCK_TIMEOUT=10000;DB_CLOSE_ON_EXIT=FALSE'
-            url: 'jdbc:h2://localhost:3306/nucleus_t'
+            url: 'jdbc:h2:mem:testDb'
     production:
         dataSource:
             dbCreate: 'update'
