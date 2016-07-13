@@ -67,30 +67,7 @@ class StringAsGspRenderer {
      * Used to cleanup all template cache created by this utility class at startup.
      */
     void cleanupTemplateCache() {
-        def gspNamePattern = ~/_.*\.gsp/
-        File baseDirectoryPath = new File(TEMPLATE_CACHE_DIRECTORY_PATH)
-
-        log.debug "Cleaning up template cache folder"
-
-        baseDirectoryPath.eachFileMatch(FileType.FILES, gspNamePattern) { gspCacheFile ->
-            log.debug "Deleting template cache files: " + gspCacheFile.absolutePath
-            gspCacheFile.delete()
-        }
-
-        // Grails internally caches the file on deployed app. Cleaning up those also
-        if (![Environment.DEVELOPMENT, Environment.TEST].contains(Environment.current)) {
-            String catalinaHome = System.getenv("CATALINA_HOME")
-            log.debug "Catalina home: [$catalinaHome]"
-
-            // Grails caches like gsp_app_name_template_cache_autoresponder_body_id_version
-            gspNamePattern = ~/gsp_.*_template_cache.*/
-            baseDirectoryPath = new File("$catalinaHome/webapps/ROOT/WEB-INF/classes")
-
-            baseDirectoryPath.eachFileMatch(FileType.FILES, gspNamePattern) { gspCacheFile ->
-                log.debug "Deleting grails template cache files: (may be a bug) " + gspCacheFile.absolutePath
-                gspCacheFile.delete()
-            }
-        }
+        println "cleanupTemplateCache"
     }
 
     /**
