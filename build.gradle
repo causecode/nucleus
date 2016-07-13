@@ -9,7 +9,6 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        // Uncomment while publishing 
         classpath "com.netflix.nebula:nebula-publishing-plugin:4.4.4"
         classpath "org.grails:grails-gradle-plugin:$grailsVersion"
     }
@@ -54,11 +53,11 @@ project.publishing {
 group "com.causecode.plugins"
 version "0.3.4-RC2"
 
-apply plugin:"eclipse"
-apply plugin:"idea"
-apply plugin:"org.grails.grails-plugin"
-apply plugin:"org.grails.grails-plugin-publish"
-apply plugin:"org.grails.grails-gsp"
+apply plugin: "eclipse"
+apply plugin: "idea"
+apply plugin: "org.grails.grails-plugin"
+apply plugin: "org.grails.grails-plugin-publish"
+apply plugin: "org.grails.grails-gsp"
 
 ext {
     grailsVersion = project.grailsVersion
@@ -67,6 +66,8 @@ ext {
 
 repositories {
     mavenLocal()
+    mavenCentral()
+    maven { url "https://plugins.gradle.org/m2/" }
     maven { url "https://repo.grails.org/grails/core" }
 }
 
@@ -75,6 +76,11 @@ dependencyManagement {
         mavenBom "org.grails:grails-bom:$grailsVersion"
     }
     applyMavenExclusions false
+}
+
+bootRun {
+    addResources = false // We can set it to true if we would like to reload src/main/resources
+    jvmArgs = ["-Xdebug", "-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005"]
 }
 
 dependencies {
@@ -87,22 +93,24 @@ dependencies {
     compile "org.grails:grails-web-boot"
     compile "org.grails.plugins:cache"
     compile "org.grails.plugins:scaffolding"
-
+    compile "org.grails.plugins:hibernate4:5.0.0.RC1"
     console "org.grails:grails-console"
-
     profile "org.grails.profiles:web-plugin:3.1.4"
-
     provided "org.grails:grails-plugin-services"
     provided "org.grails:grails-plugin-domain-class"
     provided "org.grails.plugins:spring-security-core:3.0.4"
-    provided "org.grails.plugins:export:1.5"
-    provided "org.grails.plugins:hibernate4"
-
+    provided "org.grails.plugins:export:2.0.0"
+    provided "org.hibernate:hibernate-ehcache"
     testCompile "org.grails:grails-plugin-testing"
     testCompile "org.grails.plugins:geb"
     testCompile "org.grails:grails-datastore-test-support:1.0.2-grails-2.4"
     testRuntime "org.seleniumhq.selenium:selenium-htmlunit-driver:2.47.1"
     testRuntime "net.sourceforge.htmlunit:htmlunit:2.18"
+    runtime "com.h2database:h2:1.4.190"
+    runtime "mysql:mysql-connector-java:5.1.16"
+    compile "javax.validation:validation-api:1.1.0.Final"
+    runtime "org.hibernate:hibernate-validator:5.0.3.Final"
+    compile "org.grails.plugins:mongodb"
 }
 
 task wrapper(type: Wrapper) {
