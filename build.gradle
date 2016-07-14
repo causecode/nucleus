@@ -51,7 +51,7 @@ project.publishing {
 }
 
 group "com.causecode.plugins"
-version "0.3.4-RC2"
+version "0.3.4"
 
 apply plugin: "eclipse"
 apply plugin: "idea"
@@ -115,4 +115,17 @@ dependencies {
 
 task wrapper(type: Wrapper) {
     gradleVersion = gradleWrapperVersion
+}
+
+grailsPublish {
+    user = 'user'  // Not required if you defined BINARY_USER var
+    key = 'key'    // Not required if you defined BINARY_KEY var
+    userOrg = 'mycompany' // Optional
+    githubSlug = 'foo/bar'
+    license {
+        name = 'Apache-2.0'
+    }
+    title = "My Plugin Title"
+    desc = "My Plugin Description"
+    developers = [johndoe:"John Doe"]
 }
