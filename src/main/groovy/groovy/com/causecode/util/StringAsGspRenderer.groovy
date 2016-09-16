@@ -42,7 +42,7 @@ class StringAsGspRenderer {
     static {
         TEMPLATE_CACHE_DIRECTORY_NAME = "template-cache"
 
-        TEMPLATE_CACHE_DIRECTORY_PATH = "./grails-app/views/$TEMPLATE_CACHE_DIRECTORY_NAME"
+        TEMPLATE_CACHE_DIRECTORY_PATH = "/tmp/$TEMPLATE_CACHE_DIRECTORY_NAME"
 
         if (![Environment.DEVELOPMENT, Environment.TEST].contains(Environment.current)) {
             String catalinaHome = System.getenv("CATALINA_HOME")
