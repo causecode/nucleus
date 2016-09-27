@@ -10,7 +10,7 @@ package com.causecode.util
 
 import grails.util.Environment
 import grails.util.Holders
-
+import org.springframework.context.ApplicationContext
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 
@@ -38,13 +38,19 @@ class NucleusUtils {
         mailService
     }
 
-    static void initialize() {
+    static void initialize(ApplicationContext applicationContext) {
         logger.debug "Initilizing NucleusUtil.."
 
-        if (Holders.getPluginManager().hasGrailsPlugin("asynchronousMail")) {
-            mailService = getBean("asynchronousMailService")
-        } else if (Holders.getPluginManager().hasGrailsPlugin("mail")) {
-            mailService = getBean("mailService")
+        try {
+            mailService = applicationContext.getBean('asynchronousMailService')
+        } catch(Exception e) {
+            println ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> caught new exception"
+            mailService = applicationContext.getBean('mailService')
+        }
+
+        if (!mailService) {
+            println ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> mail service null"
+            return
         }
 
         logger.debug "NucleusUtil initialized."
