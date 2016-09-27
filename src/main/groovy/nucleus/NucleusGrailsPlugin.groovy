@@ -8,6 +8,7 @@
 
 package nucleus
 
+import com.causecode.util.NucleusUtils
 import grails.plugins.*
 import com.causecode.util.StringAsGspRenderer
 
@@ -40,12 +41,14 @@ class NucleusGrailsPlugin extends Plugin {
         }
     }
 
-    void doWithDynamicMethods() {
-        // TODO Implement registering dynamic methods to classes (optional)
+
+    @Override
+    void doWithApplicationContext() {
+        NucleusUtils.initialize()
     }
 
-    void doWithApplicationContext() {
-        // TODO Implement post initialization spring config (optional)
+    void doWithDynamicMethods() {
+        // TODO Implement registering dynamic methods to classes (optional)
     }
 
     void onChange(Map<String, Object> event) {

@@ -23,7 +23,6 @@ class NucleusBootStrap {
 
         registerStringUtilityMethods()
 
-        NucleusUtils.initialize()
 
         XML.registerObjectMarshaller(new SitemapMarshaller())
 
