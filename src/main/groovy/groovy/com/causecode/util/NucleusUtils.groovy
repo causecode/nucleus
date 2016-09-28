@@ -10,6 +10,7 @@ package com.causecode.util
 
 import grails.util.Environment
 import grails.util.Holders
+import org.springframework.beans.BeansException
 import org.springframework.context.ApplicationContext
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
@@ -22,7 +23,6 @@ import org.apache.commons.logging.LogFactory
 class NucleusUtils {
 
     private static Log logger = LogFactory.getLog(this)
-
     static Object mailService
 
     static String getAppName() {
@@ -43,14 +43,13 @@ class NucleusUtils {
 
         try {
             mailService = applicationContext.getBean('asynchronousMailService')
-        } catch(Exception e) {
-            println ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> caught new exception"
-            mailService = applicationContext.getBean('mailService')
-        }
-
-        if (!mailService) {
-            println ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> mail service null"
-            return
+        } catch(BeansException e) {
+            logger.debug "AsynchronousMailService bean not found, trying to inject MailService."
+            try {
+                mailService = applicationContext.getBean('mailService')
+            } catch(BeansException ex) {
+                logger.debug "MailService bean not found."
+            }
         }
 
         logger.debug "NucleusUtil initialized."
@@ -109,12 +108,18 @@ class NucleusUtils {
 
         String toEmail = Holders.getFlatConfig()["app.technical.support.email"] ?: "developers@causecode.com"
 
+        if (!mailService) {
+            logger.debug 'Could not send email as MailService bean is null.'
+            return
+        }
+
         mailService.sendMail {
             to (toEmail)
             from (model["from"] ?: "bootstrap@causecode.com")
             subject messageSubject
             html messageBody
         }
+
         logger.debug "Exception email sent"
     }
 

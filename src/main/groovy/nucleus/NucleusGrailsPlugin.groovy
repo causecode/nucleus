@@ -14,12 +14,7 @@ import com.causecode.util.StringAsGspRenderer
 
 class NucleusGrailsPlugin extends Plugin {
 
-    def name = "nucleus"
-    def version = "0.3.4"
-
     def grailsVersion = "3.1.4 > *"
-    def groupId = "com.cc.plugins"
-    def dependsOn = [:]
     def pluginExcludes = [
         "grails-app/views/error.gsp"
     ]

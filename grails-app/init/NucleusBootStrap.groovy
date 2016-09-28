@@ -23,7 +23,6 @@ class NucleusBootStrap {
 
         registerStringUtilityMethods()
 
-
         XML.registerObjectMarshaller(new SitemapMarshaller())
 
         JSON.registerObjectMarshaller(new CustomValidationErrorMarshaller(grailsApplication.mainContext))

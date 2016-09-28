@@ -18,40 +18,8 @@ plugins {
     id 'nebula.maven-publish' version '4.4.4'
 }
 
-project.publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            from project.components.java
-            println "Removing dependencies without a version"
-
-            groupId "com.causecode.plugins"
-            artifactId "nucleus"
-            version "0.3.9RC1"
-
-            pom.withXml {
-                def pomNode = asNode()
-                // version-less dependencies are handled with dependencyManagement
-                pomNode.dependencies.dependency.findAll {
-                    it.version.text().isEmpty()
-                }.each {
-                    it.replaceNode {}
-                }
-            }
-        }
-    }
-    repositories {
-        maven {
-            credentials {
-                username mavenPublishUser
-                password mavenPublishPassword
-            }
-            url "http://maven-upload.causecode.com"
-        }
-    }
-}
-
 group "com.causecode.plugins"
-version "0.3.9RC1"
+version "0.3.9"
 
 apply plugin: "eclipse"
 apply plugin: "idea"
@@ -111,6 +79,35 @@ dependencies {
     compile "javax.validation:validation-api:1.1.0.Final"
     runtime "org.hibernate:hibernate-validator:5.0.3.Final"
     compile "org.grails.plugins:mongodb"
+}
+
+project.publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from project.components.java
+
+            artifactId "nucleus"
+
+            pom.withXml {
+                def pomNode = asNode()
+                // version-less dependencies are handled with dependencyManagement
+                pomNode.dependencies.dependency.findAll {
+                    it.version.text().isEmpty()
+                }.each {
+                    it.replaceNode {}
+                }
+            }
+        }
+    }
+    repositories {
+        maven {
+            credentials {
+                username mavenPublishUser
+                password mavenPublishPassword
+            }
+            url "http://maven-upload.causecode.com"
+        }
+    }
 }
 
 task wrapper(type: Wrapper) {
