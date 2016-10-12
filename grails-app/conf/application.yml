@@ -1,7 +1,7 @@
 grails:
     profile: web-plugin
     codegen:
-        defaultPackage: nucleus
+        defaultPackage: com.causecode
     gorm:
         failOnError: true
         autoFlush: true
@@ -22,13 +22,6 @@ dataSource:
     driverClassName: "org.h2.Driver"
     dialect: "org.hibernate.dialect.H2Dialect"
 
-#hibernate:
-#    cache:
-#        use_second_level_cache: true
-#        use_query_cache: false
-#        #provider_class: 'net.sf.ehcache.hibernate.EhCacheProvider'
-#    region:
-#         factory_class: 'org.hibernate.cache.ehcache.EhCacheRegionFactory'
 hibernate:
     cache:
         use_second_level_cache: true

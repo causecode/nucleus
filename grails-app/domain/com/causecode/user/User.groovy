@@ -8,7 +8,7 @@
 
 package com.causecode.user
 
-import org.grails.databinding.BindingFormat
+import grails.databinding.BindingFormat
 
 /**
  * User groovy class used to specify person entity with default information.
@@ -79,12 +79,4 @@ class User {
     String getFullName() {
         return firstName + " " + lastName
     }
-/*
-
-    static void executeUpdate(Map requestData, List selectedUserIds) {
-        executeQuery("UPDATE User SET enabled = :actionType WHERE id IN :userIds", [
-                actionType: requestData.type, userIds: selectedUserIds])
-    }
-*/
-
 }

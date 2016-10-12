@@ -33,6 +33,7 @@ class StringAsGspRenderer {
 
     private static final String TEMPLATE_CACHE_DIRECTORY_NAME
     private static final String TEMPLATE_CACHE_DIRECTORY_PATH
+    private static final String APP_ROOT
 
     private Map<String, String> pageTemplateURLCache = new HashMap<String, String>()
 
@@ -41,14 +42,15 @@ class StringAsGspRenderer {
 
     static {
         TEMPLATE_CACHE_DIRECTORY_NAME = "template-cache"
+        String catalinaHome = System.getenv("CATALINA_HOME")
+        APP_ROOT = "$catalinaHome/webapps/ROOT/WEB-INF"
 
         // For supporting running of War using embedded container.
-        TEMPLATE_CACHE_DIRECTORY_PATH = "./grails-app/views/$TEMPLATE_CACHE_DIRECTORY_NAME"
+        TEMPLATE_CACHE_DIRECTORY_PATH = "$APP_ROOT/grails-app/views/$TEMPLATE_CACHE_DIRECTORY_NAME"
 
-//        if (![Environment.DEVELOPMENT, Environment.TEST].contains(Environment.current)) {
-//            String catalinaHome = System.getenv("CATALINA_HOME")
-//            TEMPLATE_CACHE_DIRECTORY_PATH = "./WEB-INF/$TEMPLATE_CACHE_DIRECTORY_PATH"
-//        }
+        if (!APP_ROOT || [Environment.DEVELOPMENT, Environment.TEST].contains(Environment.current)) {
+            TEMPLATE_CACHE_DIRECTORY_PATH = "./grails-app/views/$TEMPLATE_CACHE_DIRECTORY_NAME"
+        }
 
         File temporaryDirectoryPath = new File(TEMPLATE_CACHE_DIRECTORY_PATH)
 
