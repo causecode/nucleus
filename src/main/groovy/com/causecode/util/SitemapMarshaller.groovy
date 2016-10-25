@@ -5,7 +5,6 @@
  * Redistribution and use in source and binary forms, with or
  * without modification, are not permitted.
  */
-
 package com.causecode.util
 
 import grails.converters.XML
@@ -21,6 +20,7 @@ import com.causecode.seo.sitemap.Sitemap
  * @author Shashank Agrawal
  *
  */
+
 class SitemapMarshaller implements ObjectMarshaller, NameAwareMarshaller {
 
     /**
@@ -28,7 +28,9 @@ class SitemapMarshaller implements ObjectMarshaller, NameAwareMarshaller {
      * @param object The {@link Object}
      * @return Boolean value checking object accepted is instance of Sitemap or not.
      */
-    public boolean supports(Object object) {
+    //TODO remove instanceOf check
+    @SuppressWarnings(['Instanceof'])
+    boolean supports(Object object) {
         return object instanceof Sitemap
     }
 
@@ -37,16 +39,16 @@ class SitemapMarshaller implements ObjectMarshaller, NameAwareMarshaller {
      * @param object The {@link Object}
      * @param converter {@link Converter} instance used to convert object.
      */
-    public void marshalObject(Object object, Converter<XML> converter) {
+    void marshalObject(Object object, Converter<XML> converter) {
         Sitemap sitemap = object as Sitemap
-        converter.attribute 'xmlns', "http://www.sitemaps.org/schemas/sitemap/0.9"
+        converter.attribute 'xmlns', 'http://www.sitemaps.org/schemas/sitemap/0.9'
         sitemap.urlset.each {
             converter.startNode 'url'
             converter.startNode 'loc'
             converter.chars it.loc
             converter.end()
 
-            if(it.changefreq) {
+            if (it.changefreq) {
                 converter.startNode 'changefreq'
                 converter.chars Float.toString(it.changefreq)
                 converter.end()
@@ -66,7 +68,7 @@ class SitemapMarshaller implements ObjectMarshaller, NameAwareMarshaller {
      * @return Return tag name for the Object.
      */
     String getElementName(Object o) {
-        return 'urlset'
+        return 'urlset' + o
     }
 
 }

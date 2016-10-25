@@ -5,7 +5,6 @@
  * Redistribution and use in source and binary forms, with or
  * without modification, are not permitted.
  */
-
 package com.causecode.util.date
 
 import java.text.DateFormat
@@ -18,10 +17,9 @@ import java.text.SimpleDateFormat
  */
 class DateUtil {
 
-    static final String DEFAULT_DATE_FORMAT = "MM/dd/yyyy"
+    static final String DEFAULT_DATE_FORMAT = 'MM/dd/yyyy'
 
-    private Calendar c = Calendar.getInstance()
-
+    private final Calendar c = Calendar.instance
     /**
      * Sets beginning of the day
      * @param calendar The {@link Calendar} object
@@ -39,9 +37,10 @@ class DateUtil {
      * @return {@link Calendar}
      */
     private void setEndOfDay() {
+        int fiftyNine = 59
         c.set(Calendar.HOUR_OF_DAY, 23)
-        c.set(Calendar.MINUTE, 59)
-        c.set(Calendar.SECOND, 59)
+        c.set(Calendar.MINUTE, fiftyNine)
+        c.set(Calendar.SECOND, fiftyNine)
         c.set(Calendar.MILLISECOND, 0)
     }
 
@@ -53,7 +52,7 @@ class DateUtil {
     Map getDateRangeForThisWeek(boolean includeWeekend = true) {
         setBeginningOfDay()
         c.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY)
-        Date sunday = c.getTime()
+        Date sunday = c.time
 
         setEndOfDay()
         if (includeWeekend) {
@@ -62,7 +61,7 @@ class DateUtil {
             c.set(Calendar.DAY_OF_WEEK, Calendar.FRIDAY)
         }
 
-        Date saturday = c.getTime()
+        Date saturday = c.time
         return [startDate: sunday, endDate: saturday]
     }
 
@@ -73,11 +72,11 @@ class DateUtil {
     Map getWeekDayRange() {
         setBeginningOfDay()
         c.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY)
-        Date monday = c.getTime()
+        Date monday = c.time
 
         setEndOfDay()
         c.set(Calendar.DAY_OF_WEEK, Calendar.FRIDAY)
-        Date friday = c.getTime()
+        Date friday = c.time
 
         return [startDate: monday, endDate: friday]
     }
@@ -89,11 +88,11 @@ class DateUtil {
     Map getDateRangeForComingWeekend() {
         setBeginningOfDay()
         c.set(Calendar.DAY_OF_WEEK, Calendar.SATURDAY)
-        Date comingSaturday = c.getTime()
+        Date comingSaturday = c.time
 
         setEndOfDay()
         c.add(Calendar.DAY_OF_YEAR, 1)
-        Date comingSunday = c.getTime()
+        Date comingSunday = c.time
 
         return [startDate: comingSaturday, endDate: comingSunday]
     }
@@ -105,7 +104,7 @@ class DateUtil {
     Map getDateRangeForThisMonth() {
         c.set(Calendar.DAY_OF_MONTH, c.getActualMaximum(Calendar.DAY_OF_MONTH))
         setEndOfDay()
-        Date lastDayOfTheMonth = c.getTime()
+        Date lastDayOfTheMonth = c.time
 
         return [startDate: new Date(), endDate: lastDayOfTheMonth]
     }
@@ -115,17 +114,17 @@ class DateUtil {
      * @param timePeriod String containing type of date range.
      * @return Map containing date range.
      */
-    Map getDateRange(String timePeriod = "this_week") {
+    Map getDateRange(String timePeriod = 'this_week') {
         Map dateRange
         switch (timePeriod) {
-            case "this_week":
-                dateRange = getDateRangeForThisWeek()
+            case 'this_week':
+                dateRange = dateRangeForThisWeek
                 break
-            case "this_weekend":
-                dateRange = getDateRangeForComingWeekend()
+            case 'this_weekend':
+                dateRange = dateRangeForComingWeekend
                 break
-            case "this_month":
-                dateRange = getDateRangeForThisMonth()
+            case 'this_month':
+                dateRange = dateRangeForThisMonth
                 break
         }
 
@@ -149,20 +148,24 @@ class DateUtil {
         if (!rangeFromNow) {
             if (args.fromNumberOfDays) {
                 c.add(Calendar.DAY_OF_MONTH, -args.fromNumberOfDays)
-            } else if (args.fromDay) {
-                c.set(Calendar.DAY_OF_MONTH, args.fromDay)
+            } else {
+                if (args.fromDay) {
+                    c.set(Calendar.DAY_OF_MONTH, args.fromDay)
+                }
             }
         }
 
-        Date startDate = c.getTime()
+        Date startDate = c.time
         if (args.toNumberOfDays) {
             c.add(Calendar.DAY_OF_MONTH, Calendar.DAY_OF_MONTH + args.toNumberOfDays)
-        } else if (args.toDay) {
-            c.set(Calendar.DAY_OF_MONTH, args.toDay)
+        } else {
+            if (args.toDay) {
+                c.set(Calendar.DAY_OF_MONTH, args.toDay)
+            }
         }
 
         setEndOfDay()
-        Date endDate = c.getTime()
+        Date endDate = c.time
         return [startDate: startDate, endDate: endDate]
     }
 
@@ -173,7 +176,7 @@ class DateUtil {
      * @return Sting containing only Date.
      */
     String getDatePart(Date date = c.getTime(), String format = DEFAULT_DATE_FORMAT) {
-        return new SimpleDateFormat(format).format(date)
+        return new SimpleDateFormat(format, Locale.ENGLISH).format(date)
     }
 
     /**
@@ -181,8 +184,8 @@ class DateUtil {
      * @param date The {@link Date} Object
      * @return Sting containing only Time.
      */
-    String getTimePart(Date date = c.getTime()) {
-        return new SimpleDateFormat("MM/dd/yyyy").format(date)
+    String getTimePart(Date date = c.time) {
+        return new SimpleDateFormat('HH:mm:ss', Locale.ENGLISH).format(date)
     }
 
     /**
@@ -191,9 +194,9 @@ class DateUtil {
      * @param time String containing time.
      * @return {@link Date}.
      */
-    Date addTimeTo(Date date = c.getTime(), String time = "9:00 AM") {
-        String stringDate = new SimpleDateFormat("MM/dd/yyyy").format(date)
-        stringDate = stringDate + " " + time
+    Date addTimeTo(Date date = c.time, String time = '9:00 AM') {
+        String stringDate = new SimpleDateFormat(DEFAULT_DATE_FORMAT, Locale.ENGLISH).format(date)
+        stringDate = stringDate + ' ' + time
         return parse(stringDate)
     }
 
@@ -205,11 +208,12 @@ class DateUtil {
      */
     boolean equalsWithoutTime(Date a, Date b) {
         c.setTime(a)
-        Calendar secondCalendar = Calendar.getInstance()
+        Calendar secondCalendar = Calendar.instance
+        secondCalendar.setTime(b)
         this.setBeginningOfDay()
         this.setBeginningOfDay(secondCalendar)
 
-        return c.equals(secondCalendar)
+        return (c == secondCalendar)
     }
 
     /**
@@ -223,25 +227,26 @@ class DateUtil {
         if (!year) {
             return null
         }
-
-        String dateString = (month ?: "01") + "/" + (day ?: "01") + "/" + year
+        String slash = '/'
+        String one = '01'
+        String dateString = (month ?: one) + slash + (day ?: one) + slash + year
         return parse(dateString, null, DEFAULT_DATE_FORMAT)
     }
 
     /**
-     * Returns formatted date with given time zone and format. If time zone not specified date will be 
+     * Returns formatted date with given time zone and format. If time zone not specified date will be
      * parsed with default time zone.
      * @param dateString String date to be parsed.
      * @param timezone Sting value containing time zone.
      * @param format Format in which date is being parsed. Default set to ["MM/dd/yyyy"].
      * @return Parsed Date with given time zone and format.
      */
-    static Date parse(String dateString, String timezone, String format = DEFAULT_DATE_FORMAT) {
+    static Date parse(String dateString, String timezone = TimeZone.getDefault(), String format = DEFAULT_DATE_FORMAT) {
         if (!dateString) {
             return null
         }
 
-        DateFormat dateFormat = new SimpleDateFormat(format)
+        DateFormat dateFormat = new SimpleDateFormat(format, Locale.ENGLISH)
         if (timezone) {
             dateFormat.setTimeZone(TimeZone.getTimeZone(timezone))
         }
@@ -252,11 +257,11 @@ class DateUtil {
     /**
      * Return Formatted Date String from given {@link Date} and format.
      * @param date Date to be parsed.
-     * @param format Format in which date is being parsed. Default set to ["MM/dd/yyyy"]
+     * @param dateFormat Format in which date is being parsed. Default set to ["MM/dd/yyyy"]
      * @return Parsed string Date with given format.
      */
-    static String format(Date date, String format = DEFAULT_DATE_FORMAT) {
-        return format(date, null, format)
+    static String format(Date date, String dateFormat = DEFAULT_DATE_FORMAT) {
+        return format(date, null, dateFormat)
     }
 
     /**
@@ -269,10 +274,10 @@ class DateUtil {
      */
     static String format(Date date, String timezone, String format) {
         if (!date) {
-            return ""
+            return ''
         }
 
-        DateFormat dateFormat = new SimpleDateFormat(format)
+        DateFormat dateFormat = new SimpleDateFormat(format, Locale.ENGLISH)
         if (timezone) {
             dateFormat.setTimeZone(TimeZone.getTimeZone(timezone))
         }

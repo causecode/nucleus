@@ -5,15 +5,17 @@
  * Redistribution and use in source and binary forms, with or
  * without modification, are not permitted.
  */
-
 package com.causecode.contact
 
 import com.causecode.geo.location.Location
+import groovy.transform.EqualsAndHashCode
 
 /**
  * Used to store location and contact information.
  *
  */
+@SuppressWarnings(['UnnecessaryTransientModifier'])
+@EqualsAndHashCode
 class Contact {
 
     Date dateCreated
@@ -45,4 +47,8 @@ class Contact {
         phone cascade: 'all'
     }
 
+    @Override
+    String toString() {
+        return "Contact [$id]"
+    }
 }

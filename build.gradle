@@ -26,7 +26,8 @@ apply plugin: "idea"
 apply plugin: "org.grails.grails-plugin"
 apply plugin: "org.grails.grails-plugin-publish"
 apply plugin: "org.grails.grails-gsp"
-
+apply plugin: "jacoco"
+apply plugin: "codenarc"
 ext {
     grailsVersion = project.grailsVersion
     gradleWrapperVersion = project.gradleWrapperVersion
@@ -72,6 +73,7 @@ dependencies {
     runtime "com.h2database:h2"
     testCompile "org.grails:grails-plugin-testing"
     testCompile "org.grails.plugins:geb"
+    testCompile "com.causecode.plugins:asynchronous-mail:2.3.1"
     testRuntime "org.seleniumhq.selenium:selenium-htmlunit-driver:2.47.1"
     testRuntime "net.sourceforge.htmlunit:htmlunit:2.18"
 
@@ -134,5 +136,52 @@ grailsPublish {
     }
     title = "My Plugin Title"
     desc = "My Plugin Description"
-    developers = [johndoe:"John Doe"]
+    developers = [johndoe: "John Doe"]
+}
+
+jacoco {
+    toolVersion = "0.7.7.201606060606"
+    reportsDir = file("$buildDir/jacoco")
+}
+jacocoTestReport {
+    reports {
+        xml.enabled false
+        csv.enabled false
+        html.enabled true
+        html.destination "${buildDir}/jacoco/jacocoHtml"
+    }
+    executionData test
+    jacocoTestReport.dependsOn test
+    afterEvaluate {
+        classDirectories = files(classDirectories.files.collect {
+            fileTree(dir: it,
+                    exclude: ['**/FriendlyUrlService*/**',
+                              '**/Scraper*/**',
+                              '**/Application*/**',
+                              '**/Scraper*/**',
+                              '**/BlogTagLib*/**',
+                              '**/NucleusTagLib*/**',
+                              '**/PageTagLib*/**',
+                              '**/RenderTagLib*/**',
+                              '**/NucleusBootStrap*/**',
+                              '**/NucleusDevBootStrap*/**',
+                              '**/NucleusGrailsPlugin*/**',
+                              '**/NucleusUrlMappings*/**',
+                              '**/UrlMappings*/**',
+                              '**/CustomValidationErrorMarshaller*/**',
+                              '**/SitemapMarshaller*/**',
+                              '**/Hashids*/**',
+                              'com/causecode/marshaller/**',
+                              'com/causecode/content/navigation/**',
+                              'com/causecode/content/news/**',
+                              'com/causecode/content/inputWidget/**',
+                    ])
+        })
+    }
+}
+codenarc {
+    toolVersion = "0.25.2"
+}
+codenarcMain {
+    configFile file('config/codenarc/codenarc.groovy')
 }

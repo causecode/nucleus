@@ -5,37 +5,33 @@
  * Redistribution and use in source and binary forms, with or
  * without modification, are not permitted.
  */
-
 package com.causecode.util
 
 import grails.gsp.PageRenderer
-import grails.util.Environment
-import groovy.io.FileType
 
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 
 /**
  * A utility bean to compile & render a simple string text as a GSP content.
- * Basically, this bean creates a gsp template for given string (if not available) to compile & then 
+ * Basically, this bean creates a gsp template for given string (if not available) to compile & then
  * uses the groovy page renderer engine to render that template.
- * 
  * To use this bean just inject <code>def stringAsGspRenderer</code> in controller, domain
  * or services like other dependency injection.
  * @see NucleusGrailsPlugin.groovy for bean registration
  * @author Shashank Agrawal
  * @since v0.3.1
- *
  */
+@SuppressWarnings(['JavaIoPackageAccess'])
 class StringAsGspRenderer {
 
-    private static Log log = LogFactory.getLog(this)
+    private static Log logger = LogFactory.getLog(this)
 
     private static final String TEMPLATE_CACHE_DIRECTORY_NAME
     private static final String TEMPLATE_CACHE_DIRECTORY_PATH
     private static final String APP_ROOT
 
-    private Map<String, String> pageTemplateURLCache = new HashMap<String, String>()
+    private Map<String, String> pageTemplateURLCache = [:]
 
     // Groovy page template engine bean injected in NucleusGrailsPlugin.groovy
     PageRenderer groovyPageRenderer
@@ -54,11 +50,11 @@ class StringAsGspRenderer {
 
         File temporaryDirectoryPath = new File(TEMPLATE_CACHE_DIRECTORY_PATH)
 
-        log.debug "Temporary path for template directory: $temporaryDirectoryPath.absolutePath"
+        logger.debug "Temporary path for template directory: $temporaryDirectoryPath.absolutePath"
 
         if (!temporaryDirectoryPath.exists()) {
             boolean status = temporaryDirectoryPath.mkdirs()
-            log.debug "Created template cache directory with status: [$status]"
+            logger.debug "Created template cache directory with status: [$status]"
         }
     }
 
@@ -70,7 +66,7 @@ class StringAsGspRenderer {
      * Used to cleanup all template cache created by this utility class at startup.
      */
     void cleanupTemplateCache() {
-        println "cleanupTemplateCache"
+        logger.info 'cleanupTemplateCache'
     }
 
     /**
@@ -79,7 +75,7 @@ class StringAsGspRenderer {
      */
     void cleanupOldTemplate(Object domainInstance, String field) {
         if (!domainInstance || !domainInstance.id || !domainInstance.version) {
-            log.info "No older version to cleanup for $domainInstance"
+            logger.info "No older version to cleanup for $domainInstance"
             return
         }
 
@@ -87,34 +83,32 @@ class StringAsGspRenderer {
         File oldCacheFile = new File("$TEMPLATE_CACHE_DIRECTORY_PATH/_${pageID}.gsp")
 
         if (oldCacheFile.exists()) {
-            log.debug "Deleting old cache file: $oldCacheFile.absolutePath"
+            logger.debug "Deleting old cache file: $oldCacheFile.absolutePath"
             oldCacheFile.delete()
         } else {
-            log.debug "Old cache file not exists: $oldCacheFile.absolutePath"
+            logger.debug "Old cache file not exists: $oldCacheFile.absolutePath"
         }
     }
 
     /**
      * Used to generate a unique template id for a domain instance.
-     * 
      * @param domainInstance The instance of any grails domain class to create id for.
      * @param field Field in the domain class for unique id
      * @param previousVersion Will create a id with lower version. Used to delete the older file.
-     * 
      * @example User_14_2 for a instance of a domain class with id 14 & version 2.
-     * 
      * If domain has not yet been persisted than current timestamp will be appended
      * to avoid the caching problem.
      */
     private String getPageIdForDomain(Object domainInstance, String field, boolean previousVersion = false) {
         StringBuilder pageID = new StringBuilder(domainInstance.class.simpleName.toLowerCase())
-        pageID.append("_")
+        String appendWith = '_'
+        pageID.append(appendWith)
         pageID.append(field)
-        pageID.append("_")
+        pageID.append(appendWith)
 
         if (domainInstance.id) {
             pageID.append(domainInstance.id.toString())
-            pageID.append("_")
+            pageID.append(appendWith)
             if (previousVersion) {
                 pageID.append((domainInstance.version - 1).toString())
             } else {
@@ -127,14 +121,14 @@ class StringAsGspRenderer {
         return pageID.toString()
     }
 
-    void removeFromCache(Object domainInstance){
-        removeFromCache(getPageIdForDomain(domainInstance))
+    void removeFromCache (Object domainInstance, String field) {
+        removeFromCache(getPageIdForDomain(domainInstance, field))
     }
 
     /*
      * Used to remove a template from cache so new version of same template can be used.
      */
-    void removeFromCache(String pageID){
+    void removeFromCache(String pageID) {
         pageTemplateURLCache.remove(pageID)
     }
 
@@ -144,7 +138,6 @@ class StringAsGspRenderer {
 
     /**
      * Used to compile & render a given content binded with model as string.
-     * 
      * @param pageId A unique pageId for the content to create a template.
      * @param content String content to compile & render as gsp.
      * @param model Model to be bind on the given content.

@@ -5,7 +5,6 @@
  * Redistribution and use in source and binary forms, with or
  * without modification, are not permitted.
  */
-
 package com.causecode.user
 
 import grails.databinding.BindingFormat
@@ -13,10 +12,11 @@ import grails.databinding.BindingFormat
 /**
  * User groovy class used to specify person entity with default information.
  */
+@SuppressWarnings(['GrailsDomainHasEquals', 'GrailsDomainWithServiceReference', 'UnnecessaryTransientModifier'])
 class User {
 
     transient springSecurityService
-
+    static final int NAME_MAX_LENGTH = 100
     boolean accountExpired
     boolean accountLocked
     boolean enabled = true
@@ -54,7 +54,7 @@ class User {
     }
 
     Set<Role> getAuthorities() {
-        UserRole.findAllByUser(this).collect { it.role } as Set
+        UserRole.findAllByUser(this)*.role as Set
     }
 
     def beforeInsert() {
@@ -79,6 +79,6 @@ class User {
     }
 
     String getFullName() {
-        return firstName + " " + lastName
+       return firstName + ' ' + lastName
     }
 }

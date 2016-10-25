@@ -5,13 +5,15 @@
  * Redistribution and use in source and binary forms, with or
  * without modification, are not permitted.
  */
-
 package com.causecode.contact
+
+import groovy.transform.EqualsAndHashCode
 
 /**
  * Used to store phone number and phone country code information.
  *
  */
+@EqualsAndHashCode
 class Phone {
 
     String number
@@ -29,5 +31,9 @@ class Phone {
 
     def getFullPhoneNumber() {
         return '+(' + countryCode.code + ')' + number
+    }
+    @Override
+    String toString() {
+        return "Phone [$id]"
     }
 }

@@ -5,15 +5,15 @@
  * Redistribution and use in source and binary forms, with or
  * without modification, are not permitted.
  */
-
 package com.causecode.geo.location
 
-import com.causecode.geo.location.City
+import groovy.transform.EqualsAndHashCode
 
 /**
  * Used to stores all location information.
  *
  */
+@EqualsAndHashCode
 class Location {
 
     Date dateCreated
@@ -37,5 +37,10 @@ class Location {
 
     def getFullAddress() {
         return address + ', ' + city.cityStateCountry + ' - ' + zip
+    }
+
+    @Override
+    String toString() {
+        return "Location [$id]"
     }
 }

@@ -38,7 +38,7 @@
         <tbody>
             <g:each in="${currencyInstanceList}" var="currencyInstance">
                 <tr>
-                    <td><g:link action="show" id="${currencyInstance.id}">${fieldValue(bean: currencyInstance, field: "dateCreated")}</g:link></td>
+                    <td><g:link action="show" params="${[currencyInstance: currencyInstance]}" id="${currencyInstance.id}">${fieldValue(bean: currencyInstance, field: "dateCreated")}</g:link></td>
                     <td><g:formatDate date="${currencyInstance.lastUpdated}" /></td>
                     <td>${fieldValue(bean: currencyInstance, field: "code")}</td>
                     <td>${fieldValue(bean: currencyInstance, field: "name")}</td>

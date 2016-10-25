@@ -5,19 +5,19 @@
  * Redistribution and use in source and binary forms, with or
  * without modification, are not permitted.
  */
-
 package com.causecode.geo.location
 
 /**
  * Used to store country code and name information.
  *
  */
+@SuppressWarnings(['GrailsDomainHasEquals'])
 class Country {
 
     String code
     String name
 
-	//TODO CDN Google inject issue on build
+    //TODO CDN Google inject issue on build
     //UFile flag
 
     Date dateCreated

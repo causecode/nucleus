@@ -5,7 +5,6 @@
  * Redistribution and use in source and binary forms, with or
  * without modification, are not permitted.
  */
-
 package com.causecode.converters
 
 import grails.databinding.converters.FormattedValueConverter
@@ -17,7 +16,7 @@ import grails.databinding.converters.FormattedValueConverter
  *     String email
  * </code>
  *
- * @author Priyanshu Chauhan 
+ * @author Priyanshu Chauhan
  * @since 0.3.3
  */
 class FormattedStringValueConverter implements FormattedValueConverter {
@@ -29,15 +28,18 @@ class FormattedStringValueConverter implements FormattedValueConverter {
      * @return String converted format.
      */
     Object convert(Object value, String format) {
-        if (!value) {
+        Object tempValue = value
+        if (!tempValue) {
             return null
         }
-        if (format == "LOWERCASE") {
-            value = value.toLowerCase()
-        } else if (format == "UPPERCASE") {
-            value = value.toUpperCase()
+        if (format == 'LOWERCASE') {
+            tempValue = value.toLowerCase()
+        } else {
+            if (format == 'UPPERCASE') {
+                tempValue = value.toUpperCase()
+            }
         }
-        return value
+        return tempValue
     }
 
     /**
