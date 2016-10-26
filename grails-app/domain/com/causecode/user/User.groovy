@@ -8,7 +8,7 @@
 
 package com.causecode.user
 
-import org.grails.databinding.BindingFormat
+import grails.databinding.BindingFormat
 
 /**
  * User groovy class used to specify person entity with default information.
@@ -24,27 +24,29 @@ class User {
 
     @BindingFormat('MM/dd/yyyy')
     Date birthdate
+
     Date dateCreated
     Date lastUpdated
 
     String email
     String firstName
-    String fullName
     String gender
     String lastName
     String password
     String username
+    String pictureURL
 
-    static transients = ["springSecurityService", "fullName"]
+    static transients = ['springSecurityService']
 
     static constraints = {
         email blank: false, email: true, unique: true
-        gender inList: ["male", "female"], size: 4..6, nullable: true
-        password blank: false
+        gender inList: ['male', 'female', 'unspecified'], size: 4..11, nullable: true
+        password blank: false, password: true
         username blank: false, unique: true
         birthdate nullable: true, max: new Date().clearTime()
-        firstName maxSize: 100
-        lastName maxSize: 100
+        firstName maxSize: 100, nullable: true
+        lastName maxSize: 100, nullable: true
+        pictureURL nullable: true
     }
 
     static mapping = {
@@ -79,12 +81,4 @@ class User {
     String getFullName() {
         return firstName + " " + lastName
     }
-/*
-
-    static void executeUpdate(Map requestData, List selectedUserIds) {
-        executeQuery("UPDATE User SET enabled = :actionType WHERE id IN :userIds", [
-                actionType: requestData.type, userIds: selectedUserIds])
-    }
-*/
-
 }
