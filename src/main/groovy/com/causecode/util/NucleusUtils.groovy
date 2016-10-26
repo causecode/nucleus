@@ -64,7 +64,7 @@ class NucleusUtils {
      * @param log An optional log instance of calling class to properly display log statements
      * @return
      */
-    static boolean save(Object domainInstance, boolean flush, Log log = logger) {
+    static boolean save(Object domainInstance, boolean flush, def log = logger) {
         if (!domainInstance) {
             return false
         }
