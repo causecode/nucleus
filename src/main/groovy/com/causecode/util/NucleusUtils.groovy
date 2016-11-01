@@ -5,7 +5,6 @@
  * Redistribution and use in source and binary forms, with or
  * without modification, are not permitted.
  */
-
 package com.causecode.util
 
 import grails.util.Environment
@@ -84,14 +83,14 @@ class NucleusUtils {
     /**
      * Method used to send email on exception to configured email or default to developers@causecode.com
      * with detailed stacktrace and error line number.
-     * 
+     *
      * @param exceptions A list of exceptions
      * @param model OPTIONAL A map containing all parameters to send email.
      * @param model.userInstance OPTIONAL Instance of {@link com.causecode.user.User User} who was logged in
      * @param model.requestURL OPTIONAL Grails server URL where exception occurred
      * @param model.angularURL OPTIONAL Client side angular app URL
      * @param model.codeExceutionFor OPTIONAL Any string to tell where exception occurred like "processing all users"
-     * 
+     *
      * @since 0.3.3
      */
     static void sendExceptionEmail(List<Throwable> exceptions, Map model) {
