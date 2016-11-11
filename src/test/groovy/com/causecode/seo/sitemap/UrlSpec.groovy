@@ -15,7 +15,7 @@ import spock.lang.Specification
 @TestFor(Url)
 class UrlSpec extends Specification {
 
-    def 'test toString() method'() {
+    void 'test toString() method'() {
         when: 'Url instance is given and toString is called'
 
         Url userUrl = new Url(changefreq: 'change', loc: 'https://causecode.com/users', priority: 1.0f)

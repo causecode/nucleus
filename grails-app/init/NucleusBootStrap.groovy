@@ -6,19 +6,21 @@
  * without modification, are not permitted.
  */
 
+import com.causecode.util.StringAsGspRenderer
 import grails.converters.JSON
 import grails.converters.XML
 
 import com.causecode.util.CustomValidationErrorMarshaller
 import com.causecode.util.SitemapMarshaller
+import grails.core.GrailsApplication
 
 /**
  * Configuration class for registering marshallers and registering metaMethods.
  */
 class NucleusBootStrap {
 
-    def grailsApplication
-    def stringAsGspRenderer
+    GrailsApplication grailsApplication
+    StringAsGspRenderer stringAsGspRenderer
 
     def init = { servletContext ->
         log.debug 'Nucleus Bootstrap started executing ..'
@@ -33,7 +35,7 @@ class NucleusBootStrap {
     }
 
     private static void registerStringUtilityMethods() {
-        int space = ' '
+        char space = ' '
         /**
          * Used to convert camel case to title or natural case.
          * @example "firstName".camelCaseToTile() == "First Name"

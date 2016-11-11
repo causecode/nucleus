@@ -18,7 +18,6 @@ class NucleusTagLib {
     def pagerInfo = { attrs, body ->
         long total = attrs.total
         if (!total) {
-            //out << """<i class="fa fa-meh-o"></i> Sorry, no records found."""
             out << '<i class="fa fa-meh-o"></i> Sorry, no records found.'
             return
         }

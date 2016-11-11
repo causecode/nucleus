@@ -26,7 +26,6 @@ class NucleusUtils {
 
     static String getAppName() {
         Holders.config.'app.name'.capitalize()
-        //Holders.getGrailsApplication().metadata["app.name"].capitalize()
     }
 
     static Object getBean(String serviceName) {

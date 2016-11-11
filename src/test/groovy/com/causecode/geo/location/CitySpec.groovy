@@ -15,7 +15,7 @@ import spock.lang.Specification
 @TestFor(City)
 class CitySpec extends Specification {
 
-    def 'test toString(List fields) method'() {
+    void 'test toString(List fields) method'() {
         given: 'List of valid fields for city'
         Country india = new Country(name: 'India')
         List fields = ['country', 'city', 'state', 'stateCode']
@@ -35,7 +35,7 @@ class CitySpec extends Specification {
         result == 'India, Pune, Maharashtra, MH'
     }
 
-    def 'test toString method'() {
+    void 'test toString method'() {
         when: 'toString method is called by cityInstance'
         Country india = new Country(name: 'India', code: 'IND')
         assert india.save(flush: true, failOnError: true)

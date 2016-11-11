@@ -12,13 +12,14 @@ import spock.lang.Specification
 
 @TestFor(Role)
 class RoleSpec extends Specification{
-    def 'test toString() method'() {
+
+    void 'test toString() method'() {
         when: 'UserRole instance is created and toString is called'
         Role role = new Role(authority:'ROLE_ADMIN')
         assert role.save(flush: true, failOnError: true)
         String result = role.toString()
 
-        then:
+        then: 'result must satisfy the following condition'
         result == 'Role [1]'
     }
 }

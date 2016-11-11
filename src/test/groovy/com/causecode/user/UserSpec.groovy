@@ -7,19 +7,22 @@
  */
 package com.causecode.user
 
+import grails.plugin.springsecurity.SpringSecurityService
+import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
 import spock.lang.Shared
 import spock.lang.Specification
 import spock.lang.Unroll
 
 @TestFor(User)
+@Mock(SpringSecurityService)
 class UserSpec extends Specification {
 
     def 'test email update'() {
         given: 'An email address already stored in database'
         User adminUser = new User(firstName: 'admin', lastName: 'admin', username: 'admin', password: 'admin@123', email: 'admin@causecode.com')
 
-        def springSecurityServiceForAdminUser = new Object()
+        SpringSecurityService springSecurityServiceForAdminUser = new SpringSecurityService()
         springSecurityServiceForAdminUser.metaClass.encodePassword = { String password -> 'ENCODED_PASSWORD' }
         adminUser.springSecurityService = springSecurityServiceForAdminUser
         assert adminUser.save(flush: true)
@@ -33,7 +36,7 @@ class UserSpec extends Specification {
     }
 
     @Unroll("person #field is #test using #value")
-    def 'test user gender constraints'() {
+    void 'test user gender constraints'() {
         when: 'User instance is created with provided gender values'
         User userInstance = new User(firstName: 'admin', lastName: 'admin', username: 'admin', password: 'admin@123', email: 'admin@causecode.com', "$field": value)
 
@@ -51,7 +54,7 @@ class UserSpec extends Specification {
 
     @Shared Date date = new Date().clearTime()
     @Unroll('User #field is #test using #value')
-    def 'test birth date constraints'() {
+    void 'test birth date constraints'() {
 
         when: 'User instance is created with provided birthdate'
         User userInstance = new User(firstName: 'admin', lastName: 'admin', username: 'admin', password: 'admin', email: 'admin@causecode.com', "$field": value)

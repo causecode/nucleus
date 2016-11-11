@@ -30,7 +30,7 @@ class CurrencyController {
     private static final Map ACTION_LIST_MAP = [action: ACTION_LIST]
 
     def index() {
-        redirect(action: ACTION_LIST)
+        redirect(ACTION_LIST_MAP)
     }
 
     def list(Integer max) {
@@ -48,14 +48,14 @@ class CurrencyController {
             render(view: VIEW_CREATE)
             return
         }
-        redirect(action: ACTION_LIST)
+        redirect(ACTION_LIST_MAP)
     }
 
     def edit(Currency currencyInstance) {
         if (currencyInstance) {
             render(view: VIEW_EDIT, model: [currencyInstance: currencyInstance])
         } else {
-            redirect(action: ACTION_LIST)
+            redirect(ACTION_LIST_MAP)
         }
     }
 
@@ -85,7 +85,7 @@ class CurrencyController {
                 currencyInstance.delete(FLUSH_TRUE)
                 redirect(ACTION_LIST_MAP)
             } catch (DataIntegrityViolationException e) {
-                redirect(action: ACTION_LIST)
+                redirect(ACTION_LIST_MAP)
             }
         } else {
             flash.error = 'Selected currency does not exist'

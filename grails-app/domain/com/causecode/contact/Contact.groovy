@@ -14,7 +14,6 @@ import groovy.transform.EqualsAndHashCode
  * Used to store location and contact information.
  *
  */
-@SuppressWarnings(['UnnecessaryTransientModifier'])
 @EqualsAndHashCode
 class Contact {
 

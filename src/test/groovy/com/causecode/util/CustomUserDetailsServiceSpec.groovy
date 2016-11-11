@@ -19,16 +19,16 @@ import spock.lang.Specification
 import spock.util.mop.ConfineMetaClassChanges
 
 
-@Mock([User, Role, UserRole])
+@Mock([User, Role, UserRole, SpringSecurityService])
 @TestFor(CustomUserDetailsService)
 class CustomUserDetailsServiceSpec extends Specification {
 
     @ConfineMetaClassChanges(SpringSecurityService)
-    def 'test loadUserByUsername method when user is found'() {
+    void 'test loadUserByUsername method when user is found'() {
         given: 'User instance'
         User adminUser = new User(firstName: 'admin', lastName: 'admin', username: 'admin', password: 'admin@123', email: 'admin@causecode.com')
 
-        def springSecurityServiceForAdminUser = new Object()
+        SpringSecurityService springSecurityServiceForAdminUser = new SpringSecurityService()
         springSecurityServiceForAdminUser.metaClass.encodePassword = { String password -> 'ENCODED_PASSWORD' }
         adminUser.springSecurityService = springSecurityServiceForAdminUser
         assert adminUser.save(flush: true, failOnError: true)
@@ -47,7 +47,7 @@ class CustomUserDetailsServiceSpec extends Specification {
         details.username == username
     }
 
-    def 'test loadUserByUsername method when user does not exist'() {
+    void 'test loadUserByUsername method when user does not exist'() {
         given:'CustomUserDetailsService instance'
         CustomUserDetailsService customUserDetailsService = new CustomUserDetailsService()
 

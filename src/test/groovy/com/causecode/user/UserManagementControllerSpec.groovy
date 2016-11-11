@@ -9,15 +9,16 @@ package com.causecode.user
 
 import grails.converters.JSON
 import grails.plugin.springsecurity.SpringSecurityService
+import grails.plugins.export.ExportService
 import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
 import grails.plugin.springsecurity.SpringSecurityUtils
 import org.springframework.http.HttpStatus
-import spock.lang.*
+import spock.lang.Specification
 import spock.util.mop.ConfineMetaClassChanges
 
 @TestFor(UserManagementController)
-@Mock([User, Role, UserRole])
+@Mock([User, Role, UserRole, SpringSecurityService, ExportService])
 class UserManagementControllerSpec extends Specification {
 
     User adminUser, managerUser, normalUser, trialUser
@@ -25,29 +26,33 @@ class UserManagementControllerSpec extends Specification {
 
     def setup() {
         adminUser = new User([username : 'admin', password: 'admin@13', email: 'adminbootstrap@causecode.com',
-                              firstName: 'CauseCode', lastName: 'Technologies', gender: 'male', enabled: true])
-        def springSecurityServiceForAdminUser = new Object()
+        firstName: 'CauseCode', lastName: 'Technologies', gender: 'male', enabled: true
+        ])
+        SpringSecurityService springSecurityServiceForAdminUser = new SpringSecurityService()
         springSecurityServiceForAdminUser.metaClass.encodePassword = { String password -> 'ENCODED_PASSWORD' }
         adminUser.springSecurityService = springSecurityServiceForAdminUser
         assert adminUser.save(flush: true)
 
         managerUser = new User([username : 'manager', password: 'manager@13', email: 'managerbootstrap@causecode.com',
-                                firstName: 'CauseCode', lastName: 'Technologies', gender: 'male', enabled: true])
-        def springSecurityServiceForManagerUser = new Object()
+        firstName: 'CauseCode', lastName: 'Technologies', gender: 'male', enabled: true
+        ])
+        SpringSecurityService springSecurityServiceForManagerUser = new SpringSecurityService()
         springSecurityServiceForManagerUser.metaClass.encodePassword = { String password -> 'ENCODED_PASSWORD' }
         managerUser.springSecurityService = springSecurityServiceForManagerUser
         assert managerUser.save(failOnError: true, flush: true)
 
         normalUser = new User([username : 'normal', password: 'normal@13', email: 'normalbootstrap@causecode.com',
-                               firstName: 'normalCauseCode', lastName: 'normalTechnologies', gender: 'male', enabled: true])
-        def springSecurityServiceForNormalUser = new Object()
+        firstName: 'normalCauseCode', lastName: 'normalTechnologies', gender: 'male', enabled: true
+        ])
+        SpringSecurityService springSecurityServiceForNormalUser = new SpringSecurityService()
         springSecurityServiceForNormalUser.metaClass.encodePassword = { String password -> 'ENCODED_PASSWORD' }
         normalUser.springSecurityService = springSecurityServiceForNormalUser
         assert normalUser.save(flush: true)
 
         trialUser = new User([username : 'trial', password: 'trial@13', email: 'trailbootstrap@causecode.com',
-                              firstName: 'trialCauseCode', lastName: 'trialTechnologies', gender: 'male', enabled: true])
-        def springSecurityServiceTrial = new Object()
+        firstName: 'trialCauseCode', lastName: 'trialTechnologies', gender: 'male', enabled: true
+        ])
+        SpringSecurityService springSecurityServiceTrial = new SpringSecurityService()
         springSecurityServiceTrial.metaClass.encodePassword = { String password -> 'ENCODED_PASSWORD' }
         trialUser.springSecurityService = springSecurityServiceTrial
         assert trialUser.save(flush: true)
@@ -68,7 +73,7 @@ class UserManagementControllerSpec extends Specification {
             return [instanceList: userInstanceList, totalCount: userInstanceList.size()]
         }] as UserManagementService
 
-        when: 'index action is called'
+        when: 'index action is hit'
         controller.index()
 
         then: 'default values will be set in params'
@@ -76,7 +81,7 @@ class UserManagementControllerSpec extends Specification {
         controller.params.max == 10
         controller.params.order == 'desc'
 
-        when: 'index action is called'
+        when: 'index action is hit'
         controller.params.max = 100
         controller.params.offset = 10
         controller.params.dbType = 'Mysql'
@@ -94,7 +99,7 @@ class UserManagementControllerSpec extends Specification {
             return [instanceList: userInstanceList, totalCount: userInstanceList.size()]
         }] as UserManagementService
 
-        when: 'Index action is called'
+        when: 'Index action is hit'
         controller.params.max = 15
         controller.params.offset = 0
         controller.params.dbType = 'Mysql'
@@ -112,10 +117,8 @@ class UserManagementControllerSpec extends Specification {
     void 'test if an ADMIN user tries to Modify another ADMIN user\'s role'() {
         given: 'ADMIN user logged-in for role modification'
         UserRole.create(managerUser, adminRole, true)
-        controller.request.json = [
-                userIds       : [managerUser.id],
-                roleIds       : [adminRole.id, userManagerRole.id, userRole.id],
-                roleActionType: 'refresh'
+        controller.request.json = [ userIds : [managerUser.id], roleIds : [adminRole.id, userManagerRole.id, userRole.id],
+        roleActionType: 'refresh'
         ] as JSON
         controller.request.method = 'POST'
         SpringSecurityUtils.metaClass.'static'.ifAnyGranted = { String role ->
@@ -149,11 +152,7 @@ class UserManagementControllerSpec extends Specification {
         SpringSecurityUtils.metaClass.'static'.ifAnyGranted = { String role ->
             return true
         }
-        controller.request.json = [
-                roleActionType: '',
-                userIds       : [normalUser.id],
-                roleIds       : [userManagerRole.id, userRole.id]
-        ]
+        controller.request.json = [roleActionType: '', userIds : [normalUser.id], roleIds : [userManagerRole.id, userRole.id]]
         controller.request.method = 'POST'
         controller.userManagementService = [getAppropiateIdList: { List ids ->
             return [normalUser.id, userManagerRole.id]
@@ -177,18 +176,15 @@ class UserManagementControllerSpec extends Specification {
         SpringSecurityUtils.metaClass.'static'.ifAnyGranted = { String role ->
             return false
         }
-        UserRole.create(adminUser, adminRole, true) //assigning admin role to admin user
-        UserRole.create(normalUser, userManagerRole, true)  //assigning userManagerRole to normalUser
-        UserRole.create(trialUser, userManagerRole, true) ////assigning userManagerRole to trialUser
+        UserRole.create(adminUser, adminRole, true) // assigning admin role to admin user
+        UserRole.create(normalUser, userManagerRole, true)  // assigning userManagerRole to normalUser
+        UserRole.create(trialUser, userManagerRole, true) // assigning userManagerRole to trialUser
 
-        controller.request.json = [
-                roleActionType: 'refresh',
-                userIds       : [adminUser.id, trialUser.id, normalUser.id],
-                roleIds       : [userRole.id]
-        ]
+        controller.request.json = [ roleActionType: 'refresh', userIds : [adminUser.id, trialUser.id, normalUser.id],
+        roleIds : [userRole.id]]
         controller.request.method = 'POST'
-        //In request, 3 userIds are passed so countUserIds is initialised to 3
-        //In request, 1 roleId is passed so countRoleIds is initialised to 1
+        // In request, 3 userIds are passed so countUserIds is initialised to 3
+        // In request, 1 roleId is passed so countRoleIds is initialised to 1
         int countUserIds = 3
         int countRoleIds = 1
         controller.userManagementService = [getAppropiateIdList: { List ids ->
@@ -224,18 +220,15 @@ class UserManagementControllerSpec extends Specification {
         SpringSecurityUtils.metaClass.'static'.ifAnyGranted = { String role ->
             return false
         }
-        UserRole.create(adminUser, adminRole, true) //assigning admin role to admin user
-        UserRole.create(normalUser, adminRole, true)  //assigning adminRole to normalUser
-        UserRole.create(trialUser, adminRole, true) ////assigning adminRole to trialUser
+        UserRole.create(adminUser, adminRole, true) // assigning admin role to admin user
+        UserRole.create(normalUser, adminRole, true)  // assigning adminRole to normalUser
+        UserRole.create(trialUser, adminRole, true) // assigning adminRole to trialUser
 
-        controller.request.json = [
-                roleActionType: 'refresh',
-                userIds       : [adminUser.id, trialUser.id, normalUser.id],
-                roleIds       : [userRole.id]
-        ]
+        controller.request.json = [ roleActionType: 'refresh', userIds : [adminUser.id, trialUser.id, normalUser.id],
+        roleIds : [userRole.id]]
         controller.request.method = 'POST'
-        //In request, 3 userIds are passed so countUserIds is initialised to 3
-        //In request, 1 roleId is passed so countRoleIds is initialised to 1
+        // In request, 3 userIds are passed so countUserIds is initialised to 3
+        // In request, 1 roleId is passed so countRoleIds is initialised to 1
         int countUserIds = 3
         int countRoleIds = 1
         controller.userManagementService = [getAppropiateIdList: { List ids ->
@@ -262,18 +255,15 @@ class UserManagementControllerSpec extends Specification {
             return false
         }
 
-        UserRole.create(adminUser, adminRole, true) //assigning admin role to admin user
-        UserRole.create(normalUser, userRole, true)  //assigning adminRole to normalUser
-        UserRole.create(trialUser, userRole, true) ////assigning adminRole to trialUser
+        UserRole.create(adminUser, adminRole, true) // assigning admin role to admin user
+        UserRole.create(normalUser, userRole, true)  // assigning adminRole to normalUser
+        UserRole.create(trialUser, userRole, true) // assigning adminRole to trialUser
 
-        controller.request.json = [
-                roleActionType: 'refresh',
-                userIds       : [adminUser.id, trialUser.id, normalUser.id],
-                roleIds       : [adminRole.id]
-        ]
+        controller.request.json = [ roleActionType: 'refresh', userIds : [adminUser.id, trialUser.id, normalUser.id],
+        roleIds : [adminRole.id]]
         controller.request.method = 'POST'
-        //In request, 3 userIds are passed so countUserIds is initialised to 3
-        //In request, 1 roleId is passed so countRoleIds is initialised to 1
+        // In request, 3 userIds are passed so countUserIds is initialised to 3
+        // In request, 1 roleId is passed so countRoleIds is initialised to 1
         int countUserIds = 3
         int countRoleIds = 1
         controller.userManagementService = [getAppropiateIdList: { List ids ->
@@ -299,14 +289,12 @@ class UserManagementControllerSpec extends Specification {
         SpringSecurityUtils.metaClass.'static'.ifAnyGranted = { String role ->
             return true
         }
-        UserRole.create(adminUser, adminRole, true) //assigning admin role to admin user
-        UserRole.create(normalUser, userRole, true)  //assigning userRole to normalUser
-        UserRole.create(trialUser, userRole, true) ////assigning userRole to trialUser
+        UserRole.create(adminUser, adminRole, true) // assigning admin role to admin user
+        UserRole.create(normalUser, userRole, true)  // assigning userRole to normalUser
+        UserRole.create(trialUser, userRole, true) // assigning userRole to trialUser
 
-        controller.request.json = [
-                roleActionType: 'refresh',
-                userIds       : [adminUser.id, trialUser.id, normalUser.id],
-                roleIds       : [adminRole.id]
+        controller.request.json = [ roleActionType: 'refresh', userIds : [adminUser.id, trialUser.id, normalUser.id],
+        roleIds : [adminRole.id]
         ]
         controller.request.method = 'POST'
 
@@ -314,8 +302,8 @@ class UserManagementControllerSpec extends Specification {
             return null
         }
 
-        //In request, 3 userIds are passed so countUserIds is initialised to 3
-        //In request, 1 roleId is passed so countRoleIds is initialised to 1
+        // In request, 3 userIds are passed so countUserIds is initialised to 3
+        // In request, 1 roleId is passed so countRoleIds is initialised to 1
         int countUserIds = 3
         int countRoleIds = 1
         controller.userManagementService = [getAppropiateIdList: { List ids ->
@@ -343,9 +331,9 @@ class UserManagementControllerSpec extends Specification {
             return false
         }
 
-        UserRole.create(adminUser, adminRole, true) //assigning admin role to admin user
-        UserRole.create(normalUser, userRole, true)  //assigning userRole to normalUser
-        UserRole.create(trialUser, userRole, true) ////assigning userRole to trialUser
+        UserRole.create(adminUser, adminRole, true) // assigning admin role to admin user
+        UserRole.create(normalUser, userRole, true)  // assigning userRole to normalUser
+        UserRole.create(trialUser, userRole, true) // assigning userRole to trialUser
 
         controller.request.json = [selectedIds: [adminUser.id, trialUser.id, normalUser.id], type: 'inactive']
         controller.request.method = 'POST'
@@ -354,7 +342,7 @@ class UserManagementControllerSpec extends Specification {
             return [adminUser.id, trialUser.id, normalUser.id]
         }] as UserManagementService
 
-        when: 'Action is called'
+        when: 'Action is hit'
         controller.makeUserActiveInactive()
 
         then: 'Admin users must be removed from the current ID list'
@@ -369,7 +357,7 @@ class UserManagementControllerSpec extends Specification {
         controller.request.json = [selectedIds: [adminUser.id, normalUser.id, trialUser.id]]
         controller.request.method = 'POST'
 
-        when: 'Action is called'
+        when: 'Action is hit'
         controller.makeUserActiveInactive()
 
         then: 'Error message must be displayed'
@@ -381,14 +369,13 @@ class UserManagementControllerSpec extends Specification {
     @ConfineMetaClassChanges(SpringSecurityUtils)
     void 'test makeUserInactive() when non-admin user tries to change active status of all admin users'() {
         given: 'Deactivation request for 3 admin users'
-
         SpringSecurityUtils.metaClass.'static'.ifAnyGranted = { String role ->
             return false
         }
 
-        UserRole.create(adminUser, adminRole, true) //assigning admin role to admin user
-        UserRole.create(normalUser, adminRole, true)  //assigning adminRole to adminUser2
-        UserRole.create(trialUser, adminRole, true) ////assigning adminRole to adminUser3
+        UserRole.create(adminUser, adminRole, true) // assigning admin role to admin user
+        UserRole.create(normalUser, adminRole, true)  // assigning adminRole to adminUser2
+        UserRole.create(trialUser, adminRole, true) // assigning adminRole to adminUser3
 
         controller.request.json = [selectedIds: [adminUser.id, normalUser.id, trialUser.id], type: 'inactive']
         controller.request.method = 'POST'
@@ -397,7 +384,7 @@ class UserManagementControllerSpec extends Specification {
             return [adminUser.id, normalUser.id, trialUser.id]
         }] as UserManagementService
 
-        when: 'Action is called'
+        when: 'Action is hit'
         controller.makeUserActiveInactive()
 
         then: 'Admin users must be removed from the current ID list'
@@ -430,7 +417,7 @@ class UserManagementControllerSpec extends Specification {
             return [adminUser.id, trialUser.id, normalUser.id]
         }] as UserManagementService
 
-        when: 'Action is called'
+        when: 'Action is hit'
         controller.makeUserActiveInactive()
 
         then: 'Deactivaion is allowed on all Users'
@@ -455,7 +442,7 @@ class UserManagementControllerSpec extends Specification {
 
         controller.request.method = 'POST'
 
-        when: 'Action is called'
+        when: 'Action is hit'
         controller.makeUserActiveInactive()
 
         then: 'Action should be aborted and error message should be sent'
@@ -466,7 +453,6 @@ class UserManagementControllerSpec extends Specification {
     @ConfineMetaClassChanges(SpringSecurityUtils)
     void 'test if selectedUserId list is blank in modifyRoles action'() {
         when: 'Selected Ids are empty or Id is removed because of ADMIN permission'
-
         SpringSecurityUtils.metaClass.'static'.ifAnyGranted = { String role ->
             return true
         }
@@ -483,7 +469,7 @@ class UserManagementControllerSpec extends Specification {
             return
         }] as UserManagementService
 
-        and: 'Modify action is called'
+        and: 'Modify action is hit'
         controller.modifyRoles()
 
         then: 'Error message is thrown'
@@ -494,16 +480,13 @@ class UserManagementControllerSpec extends Specification {
     @ConfineMetaClassChanges(SpringSecurityUtils)
     void 'test modifyRole() if RoleIds are removed during authentication'() {
         given: 'Admin role id for modification'
-
         SpringSecurityUtils.metaClass.'static'.ifAnyGranted = { String role ->
             return true
         }
 
-        controller.request.json = [
-                userIds: [trialUser.id, normalUser.id],
-                roleIds: [adminRole.id, userManagerRole.id, userRole.id]
+        controller.request.json = [ userIds: [trialUser.id, normalUser.id],
+        roleIds: [adminRole.id, userManagerRole.id, userRole.id]
         ]
-
         controller.request.method = 'POST'
 
         int index = 1
@@ -512,7 +495,7 @@ class UserManagementControllerSpec extends Specification {
                 index++
                 return [trialUser.id]
             } else {
-                return //[adminRole.id]
+                return // [adminRole.id]
             }
         }] as UserManagementService
 
@@ -527,9 +510,7 @@ class UserManagementControllerSpec extends Specification {
     @ConfineMetaClassChanges(SpringSecurityUtils)
     void 'test modifyRole() if ADMIN user tries to assign Admin RoleIds in Refresh mode'() {
         given: 'Admin roleId for role modification'
-
-        controller.request.json = [roleIds       : [adminRole.id], userIds: [normalUser.id, trialUser.id],
-                                   roleActionType: 'refresh']
+        controller.request.json = [roleIds : [adminRole.id], userIds: [normalUser.id, trialUser.id], roleActionType: 'refresh']
         SpringSecurityUtils.metaClass.'static'.ifAnyGranted = { String role ->
             return true
         }
@@ -565,8 +546,7 @@ class UserManagementControllerSpec extends Specification {
     void 'test modifyRole() if ADMIN user tries to assign Admin RoleIds in Append mode'() {
         given: 'Admin role id for modification'
 
-        controller.request.json = [roleIds       : [adminRole.id], userIds: [normalUser.id, trialUser.id],
-                                   roleActionType: 'refresh']
+        controller.request.json = [roleIds : [adminRole.id], userIds: [normalUser.id, trialUser.id], roleActionType: 'refresh']
         SpringSecurityUtils.metaClass.'static'.ifAnyGranted = { String role ->
             return true
         }
@@ -624,7 +604,7 @@ class UserManagementControllerSpec extends Specification {
         and: 'Request userIds for activation and deactivation'
         controller.request.json = [selectedIds: [adminUser.id, trialUser.id, normalUser.id], type: 'inactive']
 
-        when: 'Action is called'
+        when: 'Action is hit'
         controller.makeUserActiveInactive()
 
         then: 'Error message is displayed'
@@ -661,7 +641,7 @@ class UserManagementControllerSpec extends Specification {
         and: 'Request userIds for activation and deactivation'
         controller.request.json = [selectedIds: [adminUser.id, trialUser.id, normalUser.id], type: 'active']
 
-        when: 'Action is called'
+        when: 'Action is hit'
         controller.makeUserActiveInactive()
 
         then: 'Success message is displayed'
@@ -685,7 +665,6 @@ class UserManagementControllerSpec extends Specification {
             return ['507f191e810c19729de860ea', '4cdfb11e1f3c000000007822', '4abcd11e1f3c000000007823']
         }] as UserManagementService
 
-
         User.metaClass.'static'.getCollection = {
            return ['update' : { def query, def update, final boolean upsert, final boolean multi ->
                [adminUser, normalUser, trialUser].each { User userInstance ->
@@ -695,15 +674,13 @@ class UserManagementControllerSpec extends Specification {
                return [n: 3]
            }]
         }
-
         grailsApplication.config.cc.plugins.crm.persistence.provider = 'mongodb'
-
         controller.request.method = 'POST'
 
         and: 'Request userIds for activation and deactivation'
         controller.request.json = [selectedIds: ['507f191e810c19729de860ea', '4cdfb11e1f3c000000007822', '4abcd11e1f3c000000007823'], type: 'inactive']
 
-        when: 'Action is called'
+        when: 'Action is hit'
         controller.makeUserActiveInactive()
 
         then: 'Users are disabled'
@@ -715,9 +692,7 @@ class UserManagementControllerSpec extends Specification {
 
     void 'test export action'() {
         given: 'User details for export'
-
         controller.userManagementService = [getSelectedItemList: { boolean selectAll, String selectedIds, Map args ->
-
             if (selectAll) {
                 return [adminUser, normalUser, managerUser, trialUser]
             } else {
@@ -727,17 +702,18 @@ class UserManagementControllerSpec extends Specification {
 
         controller.exportService = [export: { String type, OutputStream outputStream, List objects, List fields,
                                               Map labels, Map formatters, Map parameters ->
-            return true
-        }]
-        when: 'Action is called'
-        //boolean value indicates whether all users should be selected or not
-        //if no argument is given then default false is considered
-        //true - all users should be selected, false - only selected users should be selected
-        boolean result = controller.export()
+            return
+        }] as ExportService
+
+
+        when: 'Action is hit'
+        // boolean value indicates whether all users should be selected or not
+        // if no argument is given then default false is considered
+        // true - all users should be selected, false - only selected users should be selected
+        controller.export()
 
         then: 'OK response is generated'
         controller.response.status == 200
-        result == true
     }
 
     void 'test updateEmail action for invalid or missing data'() {
@@ -745,24 +721,22 @@ class UserManagementControllerSpec extends Specification {
         controller.request.json = ['id': null, 'newEmail': null, 'confirmNewEmail': null]
         controller.request.method = 'POST'
 
-        when: 'Action is called'
+        when: 'Action is hit'
         controller.updateEmail()
 
         then: 'Error message must be displayed'
         controller.response.status == HttpStatus.NOT_ACCEPTABLE.value()
         controller.response.json.message.contains('Please select a user and enter new & confirmation email.')
-
     }
 
     void 'test updateEmail action when email does not match the confirm email'() {
         given: 'request with different email and confirm email'
-        controller.request.json = ['id'             : adminUser.id,
-                                   'newEmail'       : 'admin@causecode.com',
-                                   'confirmNewEmail': 'adm@causecode.com'
+        controller.request.json = ['id' : adminUser.id, 'newEmail' : 'admin@causecode.com',
+        'confirmNewEmail': 'adm@causecode.com'
         ]
         controller.request.method = 'POST'
 
-        when: 'Action is called'
+        when: 'Action is hit'
         controller.updateEmail()
 
         then: 'Error message must be displayed'
@@ -773,9 +747,8 @@ class UserManagementControllerSpec extends Specification {
     @ConfineMetaClassChanges(User)
     void 'test updateEmail when user with entered email already exist'() {
         given: 'request with different email and confirm email'
-        controller.request.json = ['id'             : adminUser.id,
-                                   'newEmail'       : 'admin@causecode.com',
-                                   'confirmNewEmail': 'admin@causecode.com'
+        controller.request.json = ['id': adminUser.id, 'newEmail' : 'admin@causecode.com',
+        'confirmNewEmail': 'admin@causecode.com'
         ]
         controller.request.method = 'POST'
 
@@ -783,7 +756,7 @@ class UserManagementControllerSpec extends Specification {
             return true
         }
 
-        when: 'Action is called'
+        when: 'Action is hit'
         controller.updateEmail()
 
         then: 'Error message must be displayed'
@@ -794,9 +767,8 @@ class UserManagementControllerSpec extends Specification {
     @ConfineMetaClassChanges(User)
     void 'test updateEmail when user with entered email is not found'() {
         given: 'request with different email and confirm email'
-        controller.request.json = ['id'             : adminUser.id,
-                                   'newEmail'       : 'admin@causecode.com',
-                                   'confirmNewEmail': 'admin@causecode.com'
+        controller.request.json = ['id' : adminUser.id, 'newEmail' : 'admin@causecode.com',
+        'confirmNewEmail': 'admin@causecode.com'
         ]
         controller.request.method = 'POST'
 
@@ -804,7 +776,7 @@ class UserManagementControllerSpec extends Specification {
             return null
         }
 
-        when: 'Action is called'
+        when: 'Action is hit'
         controller.updateEmail()
 
         then: 'Error message must be displayed'
@@ -814,13 +786,10 @@ class UserManagementControllerSpec extends Specification {
 
     void 'test updateEmail when userInstance is invalid'() {
         given: 'request with different email and confirm email'
-        controller.request.json = ['id'             : adminUser.id,
-                                   'newEmail'       : ' ',
-                                   'confirmNewEmail': ' '
-        ]
+        controller.request.json = ['id' : adminUser.id, 'newEmail' : ' ', 'confirmNewEmail': ' ']
         controller.request.method = 'POST'
 
-        when: 'Action is called'
+        when: 'Action is hit'
         controller.updateEmail()
 
         then: 'Error message must be displayed'
@@ -830,13 +799,11 @@ class UserManagementControllerSpec extends Specification {
 
     void 'test updateEmail when userInstance is valid'() {
         given: 'request with different email and confirm email'
-        controller.request.json = ['id'             : adminUser.id,
-                                   'newEmail'       : 'admin@causecode.com',
-                                   'confirmNewEmail': 'admin@causecode.com'
-        ]
+        controller.request.json = ['id' : adminUser.id, 'newEmail' : 'admin@causecode.com',
+        'confirmNewEmail': 'admin@causecode.com']
         controller.request.method = 'POST'
 
-        when: 'Action is called'
+        when: 'Action is hit'
         controller.updateEmail()
 
         then: 'Success message is displayed'

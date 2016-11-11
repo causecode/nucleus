@@ -7,6 +7,7 @@
  */
 package com.causecode.user
 
+import grails.plugins.export.ExportService
 import org.springframework.http.HttpStatus
 import grails.converters.JSON
 import grails.plugin.springsecurity.SpringSecurityUtils
@@ -23,7 +24,7 @@ class UserManagementController {
     /**
      * Dependency Injection for the exportService.
      */
-    def exportService
+    ExportService exportService
 
     /**
      * Dependency Injection for the userManagementService.

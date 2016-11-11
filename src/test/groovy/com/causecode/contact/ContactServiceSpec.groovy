@@ -14,15 +14,11 @@ import com.causecode.user.User
 import grails.plugin.springsecurity.SpringSecurityService
 import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
-import grails.test.mixin.TestMixin
-import grails.test.mixin.services.ServiceUnitTestMixin
-import grails.test.mixin.support.GrailsUnitTestMixin
 import org.springframework.mock.web.MockHttpServletRequest
 import spock.lang.Specification
 
 @Mock([User, Phone, PhoneCountryCode, Contact, Location, Country, City, SpringSecurityService])
 @TestFor(ContactService)
-@TestMixin([GrailsUnitTestMixin, ServiceUnitTestMixin])
 class ContactServiceSpec extends Specification {
 
     ContactService contactService
@@ -47,13 +43,14 @@ class ContactServiceSpec extends Specification {
         request.setPreferredLocales(localeList)
     }
 
-    def 'test resolve parameters method'() {
+    void 'test resolve parameters method'() {
         given: 'Map containing various key-value pairs for contact'
         Map args = [city             : 'Pune', state: 'Maharashtra',
                     cityState        : 'Pune,Maharashtra', cityStateCountry: 'Pune,Maharashtra,India',
                     countryId        : 1,
                     email            : 'admin@causecode.com', altEmail: 'admin@gmail.com',
-                    mobileCountryCode: '91', phoneNumber: '9876543210']
+                    mobileCountryCode: '91', phoneNumber: '9876543210'
+        ]
 
         when: 'resolveParameters is called'
         boolean result = contactService.resolveParameters(args, request, 'contact')
@@ -67,11 +64,11 @@ class ContactServiceSpec extends Specification {
         args['contact.address.city.id'] == 1
     }
 
-    def 'test resolve parameters method when mobileCountryCode,phoneNumber is not provided'() {
+    void 'test resolve parameters method when mobileCountryCode,phoneNumber is not provided'() {
         given: 'Map containing various key-value pairs'
         Map args = [city            : 'Pune', state: 'Maharashtra',
                     cityStateCountry: 'Pune,India',
-                    longitude       : '73°51`19` E', latitude: '18°31′10` N'
+                    longitude       : '73°51`19` E', latitude: '18°31`10` N'
         ]
 
         when: 'resolveParameters is called'
@@ -80,11 +77,11 @@ class ContactServiceSpec extends Specification {
         then: 'resolveParameters must return true and arg map must satisfy conditions for given values'
         result == true
         args['contact.address.longitude'] == '73°51`19` E'
-        args['contact.address.latitude'] == '18°31′10` N'
+        args['contact.address.latitude'] == '18°31`10` N'
         args['contact.address.city.id'] == 1
     }
 
-    def 'test resolve parameters method when country field is missing'() {
+    void 'test resolve parameters method when country field is missing'() {
         given: 'Map containing various key-value pairs'
         Map args = [city             : 'Pune', state: 'Maharashtra',
                     cityState        : 'Pune,Maharashtra',
@@ -92,7 +89,8 @@ class ContactServiceSpec extends Specification {
                     countryId        : 1,
                     cityState        : 'Pune,Maharashtra', zip: '366366',
                     twitter          : '@causecode', facebook: 'https://www.facebook.com/causecode',
-                    mobileCountryCode: '91', phoneNumber: '9876543210']
+                    mobileCountryCode: '91', phoneNumber: '9876543210'
+        ]
 
         when: 'resolveParameters is called'
         boolean result = contactService.resolveParameters(args, request, 'contact')
@@ -103,14 +101,15 @@ class ContactServiceSpec extends Specification {
         args['contact.facebook'] == 'https://www.facebook.com/causecode'
     }
 
-    def 'test resolve parameters method when country id and country both fields are missing'() {
+    void 'test resolve parameters method when country id and country both fields are missing'() {
         given: 'Map containing various key-value pairs'
         Map args = [city             : 'Pune', state: 'Maharashtra',
                     cityState        : 'Pune,Maharashtra',
                     country          : null,
                     cityState        : 'Pune,Maharashtra', zip: '366366',
                     twitter          : '@causecode', facebook: 'https://www.facebook.com/causecode',
-                    mobileCountryCode: '91', phoneNumber: '9876543210']
+                    mobileCountryCode: '91', phoneNumber: '9876543210'
+        ]
 
         when: 'resolveParameters is called'
         boolean result = contactService.resolveParameters(args, request, 'contact')
@@ -121,9 +120,8 @@ class ContactServiceSpec extends Specification {
         args['contact.facebook'] == 'https://www.facebook.com/causecode'
     }
 
-    def 'test hashErrors method when instance does not have any errors'() {
+    void 'test hashErrors method when instance does not have any errors'() {
         given: 'Map containing various key-value pairs'
-
         Country india = new Country(name: 'India', code: 'IND')
         PhoneCountryCode indiaCode = new PhoneCountryCode(country: india, code: '91')
         Phone phone = new Phone(number: '9876543210', countryCode: indiaCode)
@@ -139,7 +137,7 @@ class ContactServiceSpec extends Specification {
         result == false
     }
 
-    def 'test hashErrors method when instance have errors'() {
+    void 'test hashErrors method when instance have errors'() {
         given: 'Map containing various key-value pairs'
         Country india = new Country(code: 'IND')
         PhoneCountryCode indiaCode = new PhoneCountryCode(code: '91',country: india)

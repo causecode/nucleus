@@ -43,7 +43,6 @@ class RenderTagLib {
 
         Encoder htmlEncoder = codecLookup.lookupEncoder('HTML')
 
-        //out << """<div style="background: #F5F5F5; padding: 10px; border-radius: 5px; margin-bottom: 10px;">"""
         out << '<div style="background:#F5F5F5; padding: 10px; border-radius: 5px; margin-bottom: 10px;">'
         def root = ExceptionUtils.getRootCause(exception)
         out << "<div><strong>Class</strong> &nbsp; ${root?.getClass()?.name ?: exception.getClass().name}</div>"

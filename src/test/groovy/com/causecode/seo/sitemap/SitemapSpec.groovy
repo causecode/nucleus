@@ -15,7 +15,7 @@ import spock.lang.Specification
 @TestFor(Sitemap)
 class SitemapSpec extends Specification {
 
-    def 'test Sitemap relationship with Url'() {
+    void 'test Sitemap relationship with Url'() {
         given:
         Sitemap causecodeSitemap = new Sitemap()
 
@@ -37,7 +37,7 @@ class SitemapSpec extends Specification {
         Url.count() == 3
     }
 
-    def 'test toString() method'() {
+    void 'test toString() method'() {
         when: 'Sitemap instance is given and toString is called'
         Url user = new Url(changefreq: 'change', loc: 'https://causecode.com/users', priority: 1.0f)
 

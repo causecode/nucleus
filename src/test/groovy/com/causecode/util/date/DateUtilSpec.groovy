@@ -7,11 +7,8 @@
  */
 package com.causecode.util.date
 
-import grails.test.mixin.TestMixin
-import grails.test.mixin.support.GrailsUnitTestMixin
 import spock.lang.Specification
 
-@TestMixin(GrailsUnitTestMixin)
 class DateUtilSpec extends Specification {
 
     DateUtil dateUtil

@@ -8,15 +8,15 @@
 package com.causecode.user
 
 import grails.databinding.BindingFormat
+import grails.plugin.springsecurity.SpringSecurityService
 
 /**
  * User groovy class used to specify person entity with default information.
  */
-@SuppressWarnings(['GrailsDomainHasEquals', 'GrailsDomainWithServiceReference', 'UnnecessaryTransientModifier'])
+@SuppressWarnings(['GrailsDomainHasEquals', 'GrailsDomainWithServiceReference'])
 class User {
 
-    transient springSecurityService
-    static final int NAME_MAX_LENGTH = 100
+    SpringSecurityService springSecurityService
     boolean accountExpired
     boolean accountLocked
     boolean enabled = true
@@ -47,6 +47,8 @@ class User {
         firstName maxSize: 100, nullable: true
         lastName maxSize: 100, nullable: true
         pictureURL nullable: true
+        firstName maxSize: 100
+        lastName maxSize: 100
     }
 
     static mapping = {

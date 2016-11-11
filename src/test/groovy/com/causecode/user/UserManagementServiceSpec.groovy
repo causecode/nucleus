@@ -1,12 +1,14 @@
 package com.causecode.user
 
+import grails.plugin.springsecurity.SpringSecurityService
 import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
-import spock.lang.*
+import spock.lang.Specification
+import spock.util.mop.ConfineMetaClassChanges
 
 
 @TestFor(UserManagementService)
-@Mock([User, Role, UserRole])
+@Mock([User, Role, UserRole, SpringSecurityService])
 class UserManagementServiceSpec extends Specification {
 
     User adminUser
@@ -14,29 +16,28 @@ class UserManagementServiceSpec extends Specification {
     User managerUser
     Role userRole
     Role adminRole
-    def springSecurityServiceForAdminUser
-    def springSecurityServiceForNormalUser
-    def springSecurityServiceForManagerUser
+    SpringSecurityService springSecurityServiceForAdminUser, springSecurityServiceForNormalUser,
+    springSecurityServiceForManagerUser
 
     def setup() {
 
         adminUser = new User([username : "admin", password: "admin@13", email: "bootstrap@causecode.com",
                               firstName: "adminCausecode", lastName: "adminCausecode", gender: "male", enabled: true])
-        springSecurityServiceForAdminUser = new Object()
+        springSecurityServiceForAdminUser = new SpringSecurityService()
         springSecurityServiceForAdminUser.metaClass.encodePassword = { String password -> "ENCODED_PASSWORD" }
         adminUser.springSecurityService = springSecurityServiceForAdminUser
         assert adminUser.save(flush: true)
 
         normalUser = new User([username : "normalUser", password: "normalUser@132", email: "normalUserbootstrap@causecode.com",
                                firstName: "normalUserCauseCode", lastName: "normalUserTechnologies", gender: "male", enabled: true])
-        springSecurityServiceForNormalUser = new Object()
+        springSecurityServiceForNormalUser = new SpringSecurityService()
         springSecurityServiceForNormalUser.metaClass.encodePassword = { String password -> "ENCODED_PASSWORD" }
         normalUser.springSecurityService = springSecurityServiceForNormalUser
         assert normalUser.save(flush: true)
 
         managerUser = new User([username : "managerUser", password: "managerUser@134", email: "managerUserbootstrap@causecode.com",
                                 firstName: "managerUserCauseCode", lastName: "managerUserTechnologies", gender: "male", enabled: true])
-        springSecurityServiceForManagerUser = new Object()
+        springSecurityServiceForManagerUser = new SpringSecurityService()
         springSecurityServiceForManagerUser.metaClass.encodePassword = { String password -> "ENCODED_PASSWORD" }
         managerUser.springSecurityService = springSecurityServiceForManagerUser
         assert managerUser.save(flush: true)
@@ -45,6 +46,7 @@ class UserManagementServiceSpec extends Specification {
         userRole = Role.findOrSaveByAuthority('ROLE_USER')
     }
 
+    @ConfineMetaClassChanges(UserRole)
     void "test listForMysql with params roleType anyGranted"() {
         given:
         Map params = [
@@ -65,13 +67,14 @@ class UserManagementServiceSpec extends Specification {
         assert !result.isEmpty()
     }
 
+    @ConfineMetaClassChanges(UserRole)
     void "test listForMysql with params roleType allGranted"() {
         given:
         Map params = [
                 offset    : 0,
                 max       : 15,
                 roleFilter: [userRole.id.toString()],
-                roleType  : "All Granted"
+                roleType  : 'All Granted'
         ]
 
         UserRole.metaClass.'static'.executeQuery = { String query, Map stringQueryParams, Map params1 ->
@@ -85,43 +88,50 @@ class UserManagementServiceSpec extends Specification {
         assert !result.isEmpty()
     }
 
-/*
+    @ConfineMetaClassChanges([UserRole, User])
     void 'test getList with mongo as parameter'() {
         given:
+        assert UserRole.create(adminUser, adminRole, true);
+        assert UserRole.create(normalUser, userRole, true);
+
+        UserRole.metaClass.'static'.createCriteria = { return ['list': { Map map, Closure closure ->
+                return [adminUser];
+            }]
+        }
+        User.metaClass.'static'.createCriteria = { return ['list': { Map map, Closure closure ->
+                return [adminUser];
+             }]
+        }
+        when: 'getList method is called and roleFilter is passed as List'
         Map params = [
                 offset    : 0,
                 max       : 15,
                 dbType    : 'Mongo',
-                letter    : 'a',
-                query     : 'adm',
                 roleFilter: [adminRole.id.toString()],
                 roleType  : 'Any Granted'
         ]
-        when: 'getList method is called'
         Map result = service.getList(params)
 
         then: 'Result map is returned'
         result['totalCount'] == 1
         result['instanceList'].get(0) == adminUser
-    }
 
-    void 'test getList with mongo when roleFilter is passed as String'() {
-        given:
-        Map params = [
+        when: 'getList method is called and roleFilter is passed as String'
+        params = [
                 offset    : 0,
                 max       : 15,
                 dbType    : 'Mongo',
                 roleFilter: adminRole.id.toString(),
-                roleType  : 'All Granted'
+                roleType  : 'Any Granted'
         ]
-        when: 'getList method is called'
-        Map result = service.getList(params)
+        result = service.getList(params)
 
         then: 'Result map is returned'
         result['totalCount'] == 1
         result['instanceList'].get(0) == adminUser
     }
 
+    @ConfineMetaClassChanges([UserRole, User])
     void 'test getList with mongo when roleType is not passed at all'() {
         given:
         Map params = [
@@ -130,24 +140,48 @@ class UserManagementServiceSpec extends Specification {
                 dbType    : 'Mongo',
                 roleFilter: adminRole.id.toString(),
         ]
+        assert UserRole.create(adminUser, adminRole, true);
+        assert UserRole.create(normalUser, userRole, true);
+
+        UserRole.metaClass.'static'.createCriteria = { return ['list': { Map map, Closure closure ->
+                 return [adminUser, normalUser];
+            }]
+        }
+        User.metaClass.'static'.createCriteria = { return ['list': { Map map, Closure closure ->
+                return [adminUser, normalUser];
+            }]
+        }
 
         when: 'getList method is called'
         Map result = service.getList(params)
 
         then: 'Result map is returned'
-        result['totalCount'] == 0
-        result['instanceList'].size() == 0
+        result['totalCount'] == 2
+        result['instanceList'].size() == 2
     }
 
+    @ConfineMetaClassChanges([UserRole, User])
     void 'test getList when roleFilter is not passed at all'() {
         given:
         Map params = [
                 offset: 0,
                 max   : 15,
                 letter: 'a',
+                roleFilter: adminRole.id.toString(),
                 query : 'adm',
                 dbType: 'Mongo'
         ]
+        assert UserRole.create(adminUser, adminRole, true);
+        assert UserRole.create(normalUser, adminRole, true);
+
+        UserRole.metaClass.'static'.createCriteria = { return ['list': { Map map, Closure closure ->
+                 return [adminUser, normalUser];
+            }]
+        }
+        User.metaClass.'static'.createCriteria = { return ['list': { Map map, Closure closure ->
+                 return [adminUser];
+            }]
+        }
 
         when: 'getList method is called'
         Map result = service.getList(params)
@@ -156,11 +190,10 @@ class UserManagementServiceSpec extends Specification {
         result['totalCount'] == 1
         result['instanceList'].get(0) == adminUser
     }
-*/
 
     void "test getAppropriatedList with params"() {
         given:
-        List ids = [adminUser.id, normalUser.id, managerUser.id] //["adminUser"] Fails
+        List ids = [adminUser.id, normalUser.id, managerUser.id] // ["adminUser"] Fails
 
         when: "getAppropriatedList method called"
         List result = service.getAppropiateIdList(ids)

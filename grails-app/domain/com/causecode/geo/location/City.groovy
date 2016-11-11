@@ -14,7 +14,7 @@ import groovy.transform.EqualsAndHashCode
  *
  */
 @EqualsAndHashCode
-@SuppressWarnings(['GrailsDomainReservedSqlKeywordName', 'UnnecessaryTransientModifier'])
+@SuppressWarnings(['GrailsDomainReservedSqlKeywordName'])
 class City {
 
     Date dateCreated

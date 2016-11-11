@@ -1,3 +1,4 @@
+import grails.core.GrailsApplication
 import grails.util.Environment
 
 import com.causecode.user.Role
@@ -10,7 +11,7 @@ import com.causecode.user.UserRole
 @SuppressWarnings(['Instanceof'])
 class NucleusDevBootStrap {
 
-    def grailsApplication
+    GrailsApplication grailsApplication
 
     def init = { servletContext  ->
         if (Environment.isDevelopmentMode()) {

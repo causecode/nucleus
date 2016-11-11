@@ -7,18 +7,20 @@
  */
 package com.causecode.geo.location
 
+import groovy.transform.EqualsAndHashCode
+
 /**
  * Used to store country code and name information.
  *
  */
-@SuppressWarnings(['GrailsDomainHasEquals'])
+@EqualsAndHashCode
 class Country {
 
     String code
     String name
 
-    //TODO CDN Google inject issue on build
-    //UFile flag
+    // TODO CDN Google inject issue on build
+    // UFile flag
 
     Date dateCreated
     Date lastUpdated

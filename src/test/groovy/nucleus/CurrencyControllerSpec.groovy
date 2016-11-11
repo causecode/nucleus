@@ -12,23 +12,17 @@ import com.causecode.currency.Currency
 import com.causecode.util.NucleusUtils
 import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
-import grails.test.mixin.TestMixin
-import grails.test.mixin.support.GrailsUnitTestMixin
 import org.springframework.dao.DataIntegrityViolationException
-import spock.lang.*
+import spock.lang.Specification
 import spock.util.mop.ConfineMetaClassChanges
 
 import static org.springframework.http.HttpStatus.NOT_FOUND
 
-/**
- * See the API for {@link grails.test.mixin.support.GrailsUnitTestMixin} for usage instructions
- */
-@TestMixin([GrailsUnitTestMixin])
 @TestFor(CurrencyController)
 @Mock(Currency)
 class CurrencyControllerSpec extends Specification {
 
-    def 'test list action with valid parameter'() {
+    void 'test list action with valid parameter'() {
         when: 'action list is called with parameter greater than 100'
         controller.params.max = 1000
         controller.request.method = 'POST'
@@ -46,7 +40,7 @@ class CurrencyControllerSpec extends Specification {
         params.max == 10
     }
 
-    def 'test redirect from index to list'() {
+    void 'test redirect from index to list'() {
         when: 'user visits the base url'
         controller.index()
 
@@ -62,14 +56,14 @@ class CurrencyControllerSpec extends Specification {
         view == '/currency/create'
     }
 
-    def 'test save action'() {
+    void 'test save action'() {
         given: 'valid currency instance to save'
         int currencyTotal = Currency.count()
 
         when: 'action create is called'
         controller.request.method = 'POST'
         controller.params.currencyInstance = [dateCreated: new Date(), dateUpdated: new Date(), code: 'GBP',
-                                              name       : 'Pound']
+        name : 'Pound']
         controller.save()
 
         then: 'user must be redirected to action list'
@@ -103,7 +97,7 @@ class CurrencyControllerSpec extends Specification {
         Currency.count() == currencyTotal
     }
 
-    def 'test edit with null instance of Currency'() {
+    void 'test edit with null instance of Currency'() {
         when: 'action edit is called'
         controller.request.method = 'PUT'
         controller.edit()
@@ -126,7 +120,7 @@ class CurrencyControllerSpec extends Specification {
         controller.modelAndView.model.currencyInstance.code == 'USD'
     }
 
-    def 'test show with null instance of Currency'() {
+    void 'test show with null instance of Currency'() {
         when: 'action show is called'
         controller.request.method = 'GET'
         controller.show()
@@ -135,7 +129,7 @@ class CurrencyControllerSpec extends Specification {
         response.status == NOT_FOUND.value()
     }
 
-    def 'test show action for valid instance of Currency'() {
+    void 'test show action for valid instance of Currency'() {
         when: 'action show is called'
         Currency currency = new Currency([dateCreated: new Date(), dateUpdated: new Date(), code: 'USD', name: 'US Dollar'])
         assert currency.save(failOnError: true, flush: true)
@@ -147,7 +141,7 @@ class CurrencyControllerSpec extends Specification {
         response.json.currencyInstance.code == 'USD'
     }
 
-    def 'test update action for null instance of Currency'() {
+    void 'test update action for null instance of Currency'() {
         when: 'action update is called'
         controller.request.method = 'PUT'
         controller.update()
@@ -175,7 +169,7 @@ class CurrencyControllerSpec extends Specification {
         view == '/currency/edit'
     }
 
-    def 'test update action for valid instance of Currency'() {
+    void 'test update action for valid instance of Currency'() {
         given: 'Valid instance of Currency'
         Currency currency = new Currency([dateCreated: new Date(), dateUpdated: new Date(), code: 'INR', name: 'Indian Rupees'])
         assert currency.save(failOnError: true, flush: true)
@@ -190,7 +184,7 @@ class CurrencyControllerSpec extends Specification {
         Currency.countByCode('INR') == 1
     }
 
-    def 'test delete with null instance of Currency'() {
+    void 'test delete with null instance of Currency'() {
         when: 'action delete is called'
         controller.request.method = 'DELETE'
         controller.request.json = [id: null]
@@ -200,7 +194,7 @@ class CurrencyControllerSpec extends Specification {
         response.redirectedUrl == '/currency/list'
     }
 
-    def 'test delete action for invalid instance of Currency'() {
+    void 'test delete action for invalid instance of Currency'() {
         given: 'non-existing currency instance to delete'
         int currencyTotal = Currency.count()
 
@@ -215,13 +209,13 @@ class CurrencyControllerSpec extends Specification {
     }
 
 
-    def 'test delete action for valid instance of Currency'() {
+    void 'test delete action for valid instance of Currency'() {
         given: 'existing instance of Currency'
 
         new Currency([dateCreated: new Date(), dateUpdated: new Date(),code: 'GBP',name: 'Pound']).save(failOnError: true, flush: true)
 
         Currency currencyInstance = new Currency([dateCreated: new Date(), dateUpdated: new Date(),
-                                                  code: 'eu', name: 'Euro']).save(failOnError: true, flush: true)
+        code: 'eu', name: 'Euro']).save(failOnError: true, flush: true)
 
         int currencyTotal = Currency.count()
 
@@ -235,7 +229,7 @@ class CurrencyControllerSpec extends Specification {
         Currency.count() == currencyTotal - 1
     }
 
-    def 'test delete action when exception is thrown'() {
+    void 'test delete action when exception is thrown'() {
          given: 'CurrencyInstance to delete'
          Currency currencyInstance = new Currency([dateCreated: new Date(), dateUpdated: new Date(),
                        code: 'GBP', name: 'Pound']).save(failOnError: true, flush: true)

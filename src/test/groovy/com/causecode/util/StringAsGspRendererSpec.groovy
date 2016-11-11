@@ -9,19 +9,22 @@ package com.causecode.util
 
 import com.causecode.user.User
 import grails.gsp.PageRenderer
+import grails.plugin.springsecurity.SpringSecurityService
 import grails.test.mixin.Mock
+import grails.test.mixin.TestFor
 import org.apache.commons.logging.Log
 import spock.lang.Specification
 import spock.util.mop.ConfineMetaClassChanges
 
-@Mock(User)
+@Mock([User, SpringSecurityService])
 class StringAsGspRendererSpec extends Specification{
+
     User adminUser
     StringAsGspRenderer stringAsGspRenderer
     def setup() {
         adminUser = new User([username : "dummy1", password: "dummy@13", email: "dummy@something.com",
                               firstName: "Dummy", lastName: "User", gender: "male"])
-        def springSecurityServiceForAdminUser = new Object()
+        SpringSecurityService springSecurityServiceForAdminUser = new SpringSecurityService()
         springSecurityServiceForAdminUser.metaClass.encodePassword = { String password -> 'ENCODED_PASSWORD' }
         adminUser.springSecurityService = springSecurityServiceForAdminUser
         assert adminUser.save(flush: true, failOnError: true)

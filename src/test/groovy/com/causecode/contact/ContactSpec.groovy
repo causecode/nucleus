@@ -18,7 +18,7 @@ import spock.lang.Specification
 @TestFor(Contact)
 class ContactSpec extends Specification {
 
-    def 'test toString() method'() {
+    void 'test toString() method'() {
         when: 'Contact instance is created and toString is called'
         Country india = new Country(code: 'IND', name: 'India')
         assert india.save(flush: true, failOnError: true)

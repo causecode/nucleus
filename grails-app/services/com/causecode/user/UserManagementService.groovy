@@ -7,7 +7,7 @@ import grails.transaction.Transactional
  * @author Shashank Agrawal
  *
  */
-//TODO remove Instanceof check
+// TODO remove Instanceof check
 @SuppressWarnings(['Instanceof', 'ClassForName'])
 @Transactional
 class UserManagementService {
@@ -22,18 +22,37 @@ class UserManagementService {
     private static final String ANY_GRANTED = 'Any Granted'
     private static final String ALL_GRANTED = 'All Granted'
 
-    //TODO Ignored for unit test - Architecture will be made separated for Mongo and Mysql
+    // TODO Ignored for unit test - Architecture will be made separated for Mongo and Mysql
     List fetchListForMongo(Map params) {
         List roleFilterList = []
         String firstName = 'firstName'
-        String roleIds = 'roleids'
+        String role = 'role'
         if (params.roleFilter instanceof String) {
             roleFilterList = params.roleFilter.tokenize(COMMA_TOKENIZER)
         } else {
             roleFilterList = params.roleFilter as List
         }
 
+        List userList = UserRole.createCriteria().list(params) {
+            if (params.roleFilter) {
+                switch (params.roleType) {
+                    case ANY_GRANTED:
+                         'in'(role, getAppropiateIdList(roleFilterList))
+                        break
+                    case ALL_GRANTED:
+                        and {
+                            getAppropiateIdList(roleFilterList).each { roleId ->
+                                eq(role, roleId)
+                            }
+                        }
+                        break
+                    default:
+                        eq(role, getAppropiateIdList(roleFilterList).sort())
+                }
+            }
+        }
         List result = User.createCriteria().list(params) {
+            'in'('id', userList)
             if (params.letter) {
                 ilike(firstName, "${params.letter}%")
             }
@@ -42,28 +61,6 @@ class UserManagementService {
                     [firstName, 'lastName', 'username', 'email'].each { userField ->
                         ilike(userField, "%${params.query}%")
                     }
-                }
-            }
-            if (params.roleFilter) {
-                switch (params.roleFilter) {
-                    case ANY_GRANTED:
-                        or {
-                            getAppropiateIdList(roleFilterList).each { roleId ->
-                                 'in'(roleIds, [roleId])
-                            }
-                        }
-                        break
-                    case ALL_GRANTED:
-                        or {
-                            getAppropiateIdList(roleFilterList).each { roleId ->
-                                'in'(roleIds, [roleId])
-                            }
-                        }
-                        break
-                    default:
-                        and {
-                            eq(roleIds, getAppropiateIdList(roleFilterList).sort())
-                        }
                 }
             }
         }
@@ -101,7 +98,7 @@ class UserManagementService {
      */
     Map listForMongo(Map params) {
         List result = fetchListForMongo(params)
-        [instanceList: result, totalCount: result.totalCount]
+        [instanceList: result, totalCount: result?.size()]
     }
 
     /**

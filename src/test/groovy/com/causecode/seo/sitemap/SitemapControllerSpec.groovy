@@ -9,11 +9,8 @@ package com.causecode.seo.sitemap
 
 import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
-import grails.test.mixin.TestMixin
-import grails.test.mixin.support.GrailsUnitTestMixin
 import spock.lang.Specification
 
-@TestMixin(GrailsUnitTestMixin)
 @TestFor(SitemapController)
 @Mock([Sitemap, Url])
 class SitemapControllerSpec extends Specification {

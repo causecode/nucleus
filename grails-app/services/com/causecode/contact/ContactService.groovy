@@ -7,6 +7,8 @@
  */
 package com.causecode.contact
 
+import grails.plugin.springsecurity.SpringSecurityService
+
 import javax.servlet.http.HttpServletRequest
 
 import com.causecode.geo.location.City
@@ -23,7 +25,7 @@ class ContactService {
     /**
      * Dependency injection for the springSecurityService.
      */
-    def springSecurityService
+    SpringSecurityService springSecurityService
     private final static String ANONYMOUS = 'Anonymous'
     private static final String CITY_NAME = 'city'
     private static final String STATE_NAME = 'state'
@@ -40,9 +42,6 @@ class ContactService {
         String state = args[STATE_NAME]
         String country = args[COUNTRY_NAME]
         PhoneCountryCode countryCodeInstance
-        //User currentUserInstance = springSecurityService.currentUser
-        //logText = "User [${currentUserInstance?.email ?: ANONYMOUS}]"
-        //String logText = "User [${currentUserInstance?.email ?: ANONYMOUS}]"
 
         Map locationMap = getCityStateCountry(args)
         city = locationMap.containsKey(CITY_NAME) ? locationMap[CITY_NAME] : city
@@ -124,7 +123,6 @@ class ContactService {
         String tempCountry = country
         String strCountryId = 'countryId'
         if (!args[strCountryId] && !tempCountry) {
-            //log.warn "$logText no country found in params. Setting [${request.locale.displayCountry}]"
             log.warn "User [${springSecurityService.currentUser?.email ?: ANONYMOUS}] no country found in params." +
                     "Setting [${request.locale.displayCountry}]"
             tempCountry = request.locale.displayCountry

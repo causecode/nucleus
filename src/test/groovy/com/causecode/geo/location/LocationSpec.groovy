@@ -9,16 +9,13 @@ package com.causecode.geo.location
 
 import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
-import grails.test.mixin.TestMixin
-import grails.test.mixin.domain.DomainClassUnitTestMixin
 import spock.lang.Specification
 
 @Mock([City, Country])
 @TestFor(Location)
-@TestMixin(DomainClassUnitTestMixin)
 class LocationSpec extends Specification {
 
-    def 'test getFullAddress() method'() {
+    void 'test getFullAddress() method'() {
         given: 'Location instance'
 
         Country india = new Country(name: 'India', code: 'IND')
@@ -35,19 +32,8 @@ class LocationSpec extends Specification {
 
         then: 'returned fullAddress must match the given value'
         fullAddress == 'Baner, Pune, Maharashtra, India - 343434'
-    }
 
-    def 'test toString method'() {
-        when: 'toString method is called by location instance'
-        Country india = new Country(code: 'IND', name: 'India')
-        assert india.save(flush: true, failOnError: true)
-
-        City pune = new City(city: 'Pune', country: india)
-        assert pune.save(flush: true, failOnError: true)
-
-        Location location = new Location(city: pune, address: 'Baner', zip: '343443')
-        assert location.save(flush: true, failOnError: true)
-
+        when: 'getString method is called'
         String result = location.toString()
 
         then: 'It must match with the provided string value'
