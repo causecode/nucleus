@@ -7,6 +7,7 @@
  */
 package com.causecode.user
 
+import com.causecode.util.NucleusUtils
 import grails.plugins.export.ExportService
 import org.springframework.http.HttpStatus
 import grails.converters.JSON
@@ -44,11 +45,11 @@ class UserManagementController {
      * @return Result in JSON format.
      */
     def index(Integer max, int offset, String dbType) {
+        String tempDbType = dbType
         params.offset = offset ?: 0
         params.max = Math.min(max ?: 10, 100)
         params.sort = params.sort ?: DATE_CREATED
         params.order = params.order ?: 'desc'
-        String tempDbType = dbType
         tempDbType = tempDbType ?: 'Mysql'
         log.info "Params received to fetch users :$params"
 
@@ -279,16 +280,12 @@ class UserManagementController {
         }
 
         userInstance.email = params.newEmail
-        userInstance.save()
-        if (userInstance.hasErrors()) {
+        if (!NucleusUtils.save(userInstance, true)) {
             response.setStatus(HttpStatus.NOT_ACCEPTABLE.value())
-
             log.warn "Error saving $userInstance $userInstance.errors"
-
             respond([message: "Unable to update user's email.", error: userInstance.errors])
             return
         }
-
         respond([message: 'Email updated Successfully.'])
     }
 }

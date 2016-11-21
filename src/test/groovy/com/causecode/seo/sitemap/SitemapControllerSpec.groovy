@@ -26,9 +26,9 @@ class SitemapControllerSpec extends Specification {
     void 'test index action when Sitemap is not null'() {
         given: 'Sitemap instance is given'
         Sitemap causecodeSitemap = new Sitemap()
-        Url blog = new Url(changefreq: '10', loc: 'https://causecode.com/blogs', priority: 1.0f)
-        Url user = new Url(changefreq: '5', loc: 'https://causecode.com/users', priority: 1.0f)
-        Url job = new Url(changefreq: '2', loc: 'https://causecode.com/jobs', priority: 1.0f)
+        Url blog = new Url([changefreq: '10', loc: 'https://causecode.com/blogs', priority: 1.0f])
+        Url user = new Url([changefreq: '5', loc: 'https://causecode.com/users', priority: 1.0f])
+        Url job = new Url([changefreq: '2', loc: 'https://causecode.com/jobs', priority: 1.0f])
         causecodeSitemap.addToUrlset(blog)
         causecodeSitemap.addToUrlset(user)
         causecodeSitemap.addToUrlset(job)

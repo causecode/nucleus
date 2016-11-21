@@ -94,7 +94,7 @@ class NucleusUtils {
         tempModel['exceptions'] = exceptions
 
         String messageBody = getBean('groovyPageRenderer').render([template: '/email-templates/error',
-                                                                   plugin: 'nucleus', model: tempModel])
+                plugin: 'nucleus', model: tempModel])
 
         String messageSubject = "[$appName][${Environment.current.name}] Internal Server Error"
 

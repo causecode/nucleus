@@ -26,7 +26,8 @@ class CustomUserDetailsServiceSpec extends Specification {
     @ConfineMetaClassChanges(SpringSecurityService)
     void 'test loadUserByUsername method when user is found'() {
         given: 'User instance'
-        User adminUser = new User(firstName: 'admin', lastName: 'admin', username: 'admin', password: 'admin@123', email: 'admin@causecode.com')
+        User adminUser = new User([firstName: 'admin', lastName: 'admin', username: 'admin', password: 'admin@123',
+                email: 'admin@causecode.com'])
 
         SpringSecurityService springSecurityServiceForAdminUser = new SpringSecurityService()
         springSecurityServiceForAdminUser.metaClass.encodePassword = { String password -> 'ENCODED_PASSWORD' }

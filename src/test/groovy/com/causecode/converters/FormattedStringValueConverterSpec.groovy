@@ -12,6 +12,7 @@ import spock.lang.Specification
 class FormattedStringValueConverterSpec extends Specification{
 
     FormattedStringValueConverter converter
+
     def setup(){
         converter = new FormattedStringValueConverter()
     }

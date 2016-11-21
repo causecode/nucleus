@@ -36,13 +36,13 @@ class PhoneSpec extends Specification {
 
     void 'test getFullPhoneNumber() '() {
         given: 'PhoneCountry instance'
-        Country india = new Country(code: 'IND', name: 'India')
+        Country india = new Country([code: 'IND', name: 'India'])
         assert india.save(flush:true ,failOnError: true)
 
-        PhoneCountryCode indiaCode = new PhoneCountryCode(code: '91', country: india)
+        PhoneCountryCode indiaCode = new PhoneCountryCode([code: '91', country: india])
         assert indiaCode.save(flush: true, failOnError:true)
 
-        Phone phone = new Phone(countryCode: indiaCode, number: '9876543210')
+        Phone phone = new Phone([countryCode: indiaCode, number: '9876543210'])
 
         when: 'getFullPhoneNumber() is called'
         String result = phone.getFullPhoneNumber()
@@ -53,13 +53,13 @@ class PhoneSpec extends Specification {
 
     void 'test toString() method'() {
         given: 'Phone, PhoneCountryCode and Country instances'
-        Country india = new Country(code: 'IND', name: 'India')
+        Country india = new Country([code: 'IND', name: 'India'])
         assert india.save(flush: true, failOnError: true)
 
-        PhoneCountryCode phoneCountryCode = new PhoneCountryCode(code: '91',country:  india)
+        PhoneCountryCode phoneCountryCode = new PhoneCountryCode([code: '91',country:  india])
         assert phoneCountryCode.save(flush: true, failOnError: true)
 
-        Phone phoneInstance = new Phone(number: '9876543210', countryCode: phoneCountryCode)
+        Phone phoneInstance = new Phone([number: '9876543210', countryCode: phoneCountryCode])
         assert phoneInstance.save(flush: true, failOnError: true)
 
         when: 'toString is called for country instance'

@@ -28,6 +28,7 @@ apply plugin: "org.grails.grails-plugin-publish"
 apply plugin: "org.grails.grails-gsp"
 apply plugin: "jacoco"
 apply plugin: "codenarc"
+
 ext {
     grailsVersion = project.grailsVersion
     gradleWrapperVersion = project.gradleWrapperVersion
@@ -155,13 +156,7 @@ jacocoTestReport {
     afterEvaluate {
         classDirectories = files(classDirectories.files.collect {
             fileTree(dir: it,
-                    exclude: ['**/FriendlyUrlService*/**',
-                              '**/Scraper*/**',
-                              '**/Application*/**',
-                              '**/Scraper*/**',
-                              '**/BlogTagLib*/**',
-                              '**/NucleusTagLib*/**',
-                              '**/PageTagLib*/**',
+                    exclude: ['**/NucleusTagLib*/**',
                               '**/RenderTagLib*/**',
                               '**/NucleusBootStrap*/**',
                               '**/NucleusDevBootStrap*/**',
@@ -170,11 +165,7 @@ jacocoTestReport {
                               '**/UrlMappings*/**',
                               '**/CustomValidationErrorMarshaller*/**',
                               '**/SitemapMarshaller*/**',
-                              '**/Hashids*/**',
-                              'com/causecode/marshaller/**',
-                              'com/causecode/content/navigation/**',
-                              'com/causecode/content/news/**',
-                              'com/causecode/content/inputWidget/**',
+                              '**/Hashids*/**'
                     ])
         })
     }

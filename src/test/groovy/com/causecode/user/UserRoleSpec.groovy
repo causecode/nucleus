@@ -10,8 +10,8 @@ package com.causecode.user
 import grails.plugin.springsecurity.SpringSecurityService
 import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
+import grails.test.runtime.DirtiesRuntime
 import spock.lang.Specification
-import spock.util.mop.ConfineMetaClassChanges
 
 @Mock([User, Role, SpringSecurityService])
 @TestFor(UserRole)
@@ -20,28 +20,29 @@ class UserRoleSpec extends Specification {
     User admin, normalUser
     Role adminRole, normalUserRole
     UserRole adminUserRole, userRole
+
     def setup() {
-        admin = new User(firstName: 'admin', lastName: 'admin', username: 'admin', password: 'admin@123', email: 'admin@causecode.com')
+        admin = new User([firstName: 'admin', lastName: 'admin', username: 'admin', password: 'admin@123', email: 'admin@causecode.com'])
 
         SpringSecurityService springSecurityServiceForAdminUser = new SpringSecurityService()
         springSecurityServiceForAdminUser.metaClass.encodePassword = { String password -> 'ENCODED_PASSWORD' }
         admin.springSecurityService = springSecurityServiceForAdminUser
         assert admin.save(flush: true, failOnError: true)
 
-        adminRole = new Role(authority: 'ROLE_ADMIN')
+        adminRole = new Role([authority: 'ROLE_ADMIN'])
         assert adminRole.save(flush: true, failOnError: true)
 
         adminUserRole = UserRole.create(admin, adminRole, true)
         assert adminUserRole
 
-        normalUser = new User(firstName: 'normal', lastName: 'normal', username: 'normal', password: 'normal@123', email: 'normal@causecode.com')
+        normalUser = new User([firstName: 'normal', lastName: 'normal', username: 'normal', password: 'normal@123', email: 'normal@causecode.com'])
 
         SpringSecurityService springSecurityServiceForNormalUser = new SpringSecurityService()
         springSecurityServiceForNormalUser.metaClass.encodePassword = { String password -> 'ENCODED_PASSWORD' }
         normalUser.springSecurityService = springSecurityServiceForNormalUser
         assert normalUser.save(flush: true, failOnError: true)
 
-        normalUserRole = new Role(authority: 'ROLE_USER')
+        normalUserRole = new Role([authority: 'ROLE_USER'])
         assert normalUserRole.save(flush: true, failOnError: true)
 
         userRole = UserRole.create(normalUser, normalUserRole, true)
@@ -101,21 +102,16 @@ class UserRoleSpec extends Specification {
         when: 'get(long userId, long roleId) method is called'
         UserRole userRole = UserRole.get(0L, 0L)
 
-        then: 'No result must be returned'
+        then: 'null result'
         userRole == null
     }
 
-    @ConfineMetaClassChanges(SpringSecurityService)
+    @DirtiesRuntime
     void 'test create method when passed role as a Instance is passed'() {
         given: 'User and Role instance'
         int userRoleCount = UserRole.count()
         assert userRoleCount == 2
-        User newAdmin = new User(firstName: 'admin', lastName: 'admin', username: 'sysadmin', password: 'admin@123', email: 'sysadmin@causecode.com')
-
-        SpringSecurityService springSecurityServiceForAdminUser = new SpringSecurityService()
-        springSecurityServiceForAdminUser.metaClass.encodePassword = { String password -> 'ENCODED_PASSWORD' }
-        newAdmin.springSecurityService = springSecurityServiceForAdminUser
-        assert newAdmin.save(flush: true, failOnError: true)
+        User newAdmin = createAdminUser()
 
         when: 'create(User admin, Role role, true) is called'
         UserRole newAdminUserRole = UserRole.create(newAdmin, adminRole, true)
@@ -132,24 +128,18 @@ class UserRoleSpec extends Specification {
 
     void 'test create method when passed user or role instance is null'() {
         when: 'create method is called with null user or role'
-        User user = null
-        Role role = null
-        UserRole.create(user, role, true)
+        UserRole.create(null, null, true)
 
         then: 'Exception is thrown'
         thrown(Exception)
     }
 
-    @ConfineMetaClassChanges(SpringSecurityService)
+    @DirtiesRuntime
     void 'test create method when role is not passed at all'() {
         given: 'User instance'
         int userRoleCount = UserRole.count()
         assert userRoleCount == 2
-        User newAdmin = new User(firstName: 'admin', lastName: 'admin', username: 'sysadmin', password: 'admin@123', email: 'sysadmin@causecode.com')
-        SpringSecurityService springSecurityServiceForAdminUser = new SpringSecurityService()
-        springSecurityServiceForAdminUser.metaClass.encodePassword = { String password -> 'ENCODED_PASSWORD' }
-        newAdmin.springSecurityService = springSecurityServiceForAdminUser
-        assert newAdmin.save(flush: true, failOnError: true)
+        User newAdmin = createAdminUser()
 
         when: 'Create method is called'
         UserRole createdUserRole = UserRole.create(newAdmin)
@@ -162,16 +152,12 @@ class UserRoleSpec extends Specification {
         UserRole.count() == userRoleCount + 1
     }
 
-    @ConfineMetaClassChanges(SpringSecurityService)
+    @DirtiesRuntime
     void 'test create method when passed role as as String is passed'() {
         given: 'User instance'
         int userRoleCount = UserRole.count()
         assert userRoleCount == 2
-        User newAdmin = new User(firstName: 'admin', lastName: 'admin', username: 'sysadmin', password: 'admin@123', email: 'sysadmin@causecode.com')
-        SpringSecurityService springSecurityServiceForAdminUser = new SpringSecurityService()
-        springSecurityServiceForAdminUser.metaClass.encodePassword = { String password -> 'ENCODED_PASSWORD' }
-        newAdmin.springSecurityService = springSecurityServiceForAdminUser
-        assert newAdmin.save(flush: true, failOnError: true)
+        User newAdmin = createAdminUser()
         String role = 'ROLE_ADMIN'
 
         when: 'create method is called'
@@ -188,17 +174,15 @@ class UserRoleSpec extends Specification {
     }
 
     void 'test remove method'() {
-        given: 'UserRole count'
-        assert UserRole.count() == 2
-
         when: 'Remove method is called and user, role exist'
+        assert UserRole.count() == 2
         boolean result = UserRole.remove(admin, adminRole)
 
         then: 'true value must be returned indicating successful deletion'
         result == true
         UserRole.count() == 1
 
-        when: 'Remove method is called and user, role don\'t exist'
+        when: 'Remove method is called and user, role do not exist'
         User user = new User()
         Role role = new Role()
         result = UserRole.remove(user, role)
@@ -209,7 +193,7 @@ class UserRoleSpec extends Specification {
 
     void 'test removeAll method to delete all user roles by passing user instance'() {
         given: 'UserRole instance'
-        Role managerRole = new Role(authority: 'ROLE_USER_MANAGER')
+        Role managerRole = new Role([authority: 'ROLE_USER_MANAGER'])
         assert managerRole.save(flush: true, failOnError: true)
 
         UserRole adminUserRole = UserRole.create(admin, adminRole, true)
@@ -226,17 +210,17 @@ class UserRoleSpec extends Specification {
         UserRole.get(admin.id, managerRole.id) == null
     }
 
-    @ConfineMetaClassChanges(SpringSecurityService)
+    @DirtiesRuntime
     void 'test removeAll method to delete all user roles by passing role instance'() {
         given: 'UserRole instance for two users'
-        User adminOne = new User(firstName: 'adminOne', lastName: 'adminOne', username: 'adminOne', password: 'admin@123', email: 'adminOne@causecode.com')
+        User adminOne = new User([firstName: 'adminOne', lastName: 'adminOne', username: 'adminOne', password: 'admin@123', email: 'adminOne@causecode.com'])
 
         SpringSecurityService springSecurityServiceForAdminOne = new SpringSecurityService()
         springSecurityServiceForAdminOne.metaClass.encodePassword = { String password -> 'ENCODED_PASSWORD' }
         adminOne.springSecurityService = springSecurityServiceForAdminOne
         assert adminOne.save(flush: true, failOnError: true)
 
-        User adminTwo = new User(firstName: 'adminTwo', lastName: 'adminTwo', username: 'adminTwo', password: 'admin@123', email: 'adminTwo@causecode.com')
+        User adminTwo = new User([firstName: 'adminTwo', lastName: 'adminTwo', username: 'adminTwo', password: 'admin@123', email: 'adminTwo@causecode.com'])
 
         SpringSecurityService springSecurityServiceForAdminTwo = new SpringSecurityService()
         springSecurityServiceForAdminTwo.metaClass.encodePassword = { String password -> 'ENCODED_PASSWORD' }
@@ -279,5 +263,14 @@ class UserRoleSpec extends Specification {
 
         then:
         result == 'UserRole [1]'
+    }
+
+    User createAdminUser() {
+        User newAdmin = new User([firstName: 'admin', lastName: 'admin', username: 'sysadmin', password: 'admin@123', email: 'sysadmin@causecode.com'])
+        SpringSecurityService springSecurityServiceForAdminUser = new SpringSecurityService()
+        springSecurityServiceForAdminUser.metaClass.encodePassword = { String password -> 'ENCODED_PASSWORD' }
+        newAdmin.springSecurityService = springSecurityServiceForAdminUser
+        assert newAdmin.save(flush: true, failOnError: true)
+        return newAdmin
     }
 }

@@ -11,19 +11,19 @@ import com.causecode.user.User
 import grails.gsp.PageRenderer
 import grails.plugin.springsecurity.SpringSecurityService
 import grails.test.mixin.Mock
-import grails.test.mixin.TestFor
+import grails.test.runtime.DirtiesRuntime
 import org.apache.commons.logging.Log
 import spock.lang.Specification
-import spock.util.mop.ConfineMetaClassChanges
 
 @Mock([User, SpringSecurityService])
 class StringAsGspRendererSpec extends Specification{
 
     User adminUser
     StringAsGspRenderer stringAsGspRenderer
+
     def setup() {
         adminUser = new User([username : "dummy1", password: "dummy@13", email: "dummy@something.com",
-                              firstName: "Dummy", lastName: "User", gender: "male"])
+                firstName: "Dummy", lastName: "User", gender: "male"])
         SpringSecurityService springSecurityServiceForAdminUser = new SpringSecurityService()
         springSecurityServiceForAdminUser.metaClass.encodePassword = { String password -> 'ENCODED_PASSWORD' }
         adminUser.springSecurityService = springSecurityServiceForAdminUser
@@ -128,7 +128,7 @@ class StringAsGspRendererSpec extends Specification{
 
     }
 
-    @ConfineMetaClassChanges(PageRenderer)
+    @DirtiesRuntime
     void 'test render method'() {
         given: 'PageTemplateCacheMap with required entries'
         assert stringAsGspRenderer.pageTemplateURLCache.size() == 0
@@ -145,7 +145,7 @@ class StringAsGspRendererSpec extends Specification{
         stringAsGspRenderer.pageTemplateURLCache.size() == 1
     }
 
-    @ConfineMetaClassChanges(PageRenderer)
+    @DirtiesRuntime
     void 'test renderFromDomain method'() {
         given: 'user instance and pageID'
         adminUser.version = 1

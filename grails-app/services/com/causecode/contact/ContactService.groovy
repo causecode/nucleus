@@ -13,7 +13,6 @@ import javax.servlet.http.HttpServletRequest
 
 import com.causecode.geo.location.City
 import com.causecode.geo.location.Country
-import com.causecode.user.User
 
 /**
  * ContactService resolves location and contact information parameters and validates instances.
@@ -26,10 +25,12 @@ class ContactService {
      * Dependency injection for the springSecurityService.
      */
     SpringSecurityService springSecurityService
+
     private final static String ANONYMOUS = 'Anonymous'
     private static final String CITY_NAME = 'city'
     private static final String STATE_NAME = 'state'
     private static final String COUNTRY_NAME = 'country'
+
     /**
      * Resolves location and contact information and save user instance with resolved parameter.
      * @param args list of location and contact parameters
@@ -42,6 +43,8 @@ class ContactService {
         String state = args[STATE_NAME]
         String country = args[COUNTRY_NAME]
         PhoneCountryCode countryCodeInstance
+        String mCountryCode = 'mobileCountryCode'
+        String phoneNumber = 'phoneNumber'
 
         Map locationMap = getCityStateCountry(args)
         city = locationMap.containsKey(CITY_NAME) ? locationMap[CITY_NAME] : city
@@ -55,12 +58,10 @@ class ContactService {
         if (cityInstance.hasErrors()) {
             log.warn "Error saving city instance: $cityInstance.errors"
         }
-        String mCountryCode = 'mobileCountryCode'
         if (args[mCountryCode]) {
             countryCodeInstance = PhoneCountryCode.findOrSaveWhere(code: args[mCountryCode], country: countryInstance)
             args["${fieldName}.phone.countryCode.id"] = countryCodeInstance.id
         }
-        String phoneNumber = 'phoneNumber'
         if (args[phoneNumber]) {
             args["${fieldName}.phone.number"] = args[phoneNumber]
         }

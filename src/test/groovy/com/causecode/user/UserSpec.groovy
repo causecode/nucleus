@@ -20,7 +20,7 @@ class UserSpec extends Specification {
 
     def 'test email update'() {
         given: 'An email address already stored in database'
-        User adminUser = new User(firstName: 'admin', lastName: 'admin', username: 'admin', password: 'admin@123', email: 'admin@causecode.com')
+        User adminUser = new User([firstName: 'admin', lastName: 'admin', username: 'admin', password: 'admin@123', email: 'admin@causecode.com'])
 
         SpringSecurityService springSecurityServiceForAdminUser = new SpringSecurityService()
         springSecurityServiceForAdminUser.metaClass.encodePassword = { String password -> 'ENCODED_PASSWORD' }
@@ -31,14 +31,16 @@ class UserSpec extends Specification {
         adminUser.email = 'ADMIN@CAUSECODE.COM'
         adminUser.save(flush: true)
 
-        then: 'Before update method is called'
+        then: 'beforeUpdate() method is called'
         adminUser.email == 'admin@causecode.com'
     }
 
     @Unroll("person #field is #test using #value")
     void 'test user gender constraints'() {
         when: 'User instance is created with provided gender values'
-        User userInstance = new User(firstName: 'admin', lastName: 'admin', username: 'admin', password: 'admin@123', email: 'admin@causecode.com', "$field": value)
+        User userInstance = new User([firstName: 'admin', lastName: 'admin', username: 'admin', password: 'admin@123',
+                email: 'admin@causecode.com', "$field": value
+        ])
 
         then: 'User instance is validated against constraints'
         validateConstraints(userInstance, field, test)
@@ -57,7 +59,8 @@ class UserSpec extends Specification {
     void 'test birth date constraints'() {
 
         when: 'User instance is created with provided birthdate'
-        User userInstance = new User(firstName: 'admin', lastName: 'admin', username: 'admin', password: 'admin', email: 'admin@causecode.com', "$field": value)
+        User userInstance = new User([firstName: 'admin', lastName: 'admin', username: 'admin', password: 'admin',
+        email: 'admin@causecode.com', "$field": value])
 
         then: 'User instance is validated against constraints'
         validateConstraints(userInstance, field, test)

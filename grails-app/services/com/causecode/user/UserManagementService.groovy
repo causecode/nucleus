@@ -18,7 +18,7 @@ class UserManagementService {
      * @param paginate Boolean value to specify whether to use pagination parameters or not.
      * @return Filtered list of user's with distinct email.
      */
-    private static final String COMMA_TOKENIZER = ','
+    private static final String COMMA = ','
     private static final String ANY_GRANTED = 'Any Granted'
     private static final String ALL_GRANTED = 'All Granted'
 
@@ -28,7 +28,7 @@ class UserManagementService {
         String firstName = 'firstName'
         String role = 'role'
         if (params.roleFilter instanceof String) {
-            roleFilterList = params.roleFilter.tokenize(COMMA_TOKENIZER)
+            roleFilterList = params.roleFilter.tokenize(COMMA)
         } else {
             roleFilterList = params.roleFilter as List
         }
@@ -37,7 +37,7 @@ class UserManagementService {
             if (params.roleFilter) {
                 switch (params.roleType) {
                     case ANY_GRANTED:
-                         'in'(role, getAppropiateIdList(roleFilterList))
+                        'in'(role, getAppropiateIdList(roleFilterList))
                         break
                     case ALL_GRANTED:
                         and {
@@ -98,7 +98,7 @@ class UserManagementService {
      */
     Map listForMongo(Map params) {
         List result = fetchListForMongo(params)
-        [instanceList: result, totalCount: result?.size()]
+        [instanceList: result, totalCount: result.totalCount]
     }
 
     /**
@@ -110,6 +110,7 @@ class UserManagementService {
         String roleType = params.roleType
         String where = ' where'
         Long userInstanceTotal = 0
+        int minusOne = -1
         List<User> userInstanceList = []
         Map queryStringParams = [:]
         StringBuilder query = new StringBuilder('select distinct ur1.user from UserRole ur1')
@@ -137,7 +138,6 @@ class UserManagementService {
             }
         }
 
-        int minusOne = -1
         if (params.letter) {
             if (query.indexOf(where.trim()) == minusOne) {
                 query.append(where)
@@ -184,7 +184,7 @@ class UserManagementService {
             return getList(args)['instanceList']
         }
         if (selectedIds) {
-            return User.getAll(getAppropiateIdList(selectedIds.tokenize(COMMA_TOKENIZER)))
+            return User.getAll(getAppropiateIdList(selectedIds.tokenize(COMMA)))
         }
         return []
     }

@@ -25,7 +25,7 @@ class CurrencyController {
     private static final String ACTION_LIST = 'list'
     private static final String VIEW_EDIT = 'edit'
     private static final String VIEW_CREATE = 'create'
-    static allowedMethods = [save: 'POST', update: 'PUT', delete: 'DELETE']
+    static allowedMethods = [save: 'POST', update: 'POST', delete: 'POST']
     private static final Map FLUSH_TRUE = [flush: true]
     private static final Map ACTION_LIST_MAP = [action: ACTION_LIST]
 
@@ -52,7 +52,7 @@ class CurrencyController {
     }
 
     def edit(Currency currencyInstance) {
-        if (currencyInstance) {
+        if (currencyInstance && currencyInstance.id) {
             render(view: VIEW_EDIT, model: [currencyInstance: currencyInstance])
         } else {
             redirect(ACTION_LIST_MAP)
@@ -60,7 +60,7 @@ class CurrencyController {
     }
 
     def show(Currency currencyInstance) {
-        if (currencyInstance) {
+        if (currencyInstance && currencyInstance.id) {
             respond([currencyInstance: currencyInstance])
             return
         }
@@ -68,7 +68,7 @@ class CurrencyController {
     }
 
     def update(Currency currencyInstance) {
-        if (currencyInstance) {
+        if (currencyInstance && currencyInstance.id) {
             if (!NucleusUtils.save(currencyInstance, true)) {
                 render(view: VIEW_EDIT, model: [currencyInstance: currencyInstance])
                 return
@@ -80,7 +80,7 @@ class CurrencyController {
     }
 
     def delete(Currency currencyInstance) {
-        if (currencyInstance) {
+        if (currencyInstance && currencyInstance.id) {
             try {
                 currencyInstance.delete(FLUSH_TRUE)
                 redirect(ACTION_LIST_MAP)

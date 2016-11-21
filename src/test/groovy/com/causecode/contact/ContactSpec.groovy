@@ -20,13 +20,13 @@ class ContactSpec extends Specification {
 
     void 'test toString() method'() {
         when: 'Contact instance is created and toString is called'
-        Country india = new Country(code: 'IND', name: 'India')
+        Country india = new Country([code: 'IND', name: 'India'])
         assert india.save(flush: true, failOnError: true)
 
-        City city = new City(city: 'Pune', state: 'Maharashtra', stateCode: 'MH', country: india)
+        City city = new City([city: 'Pune', state: 'Maharashtra', stateCode: 'MH', country: india])
         assert city.save(flush: true, failOnError: true)
 
-        Location location = new Location(name: 'Home Address', address: 'somewhere on earth', zip: '123456', city: city)
+        Location location = new Location([name: 'Home Address', address: 'somewhere on earth', zip: '123456', city: city])
         assert location.save(flush: true, failOnError: true)
 
         Contact contactInstance = new Contact(address: location)

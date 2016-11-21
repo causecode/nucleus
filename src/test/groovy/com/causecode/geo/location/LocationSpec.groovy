@@ -17,14 +17,13 @@ class LocationSpec extends Specification {
 
     void 'test getFullAddress() method'() {
         given: 'Location instance'
-
-        Country india = new Country(name: 'India', code: 'IND')
+        Country india = new Country([name: 'India', code: 'IND'])
         assert india.save(flush: true, failOnError: true)
 
-        City pune = new City(city: 'Pune', state: 'Maharashtra', stateCode: 'MH', country: india)
+        City pune = new City([city: 'Pune', state: 'Maharashtra', stateCode: 'MH', country: india])
         assert pune.save(flush: true, failOnError: true)
 
-        Location location = new Location(city: pune, address: 'Baner', zip: '343434')
+        Location location = new Location([city: pune, address: 'Baner', zip: '343434'])
         assert location.save(flush: true, failOnError: true)
 
         when: 'getFullAddress method is called'

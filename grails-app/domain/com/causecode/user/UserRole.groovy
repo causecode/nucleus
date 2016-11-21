@@ -34,11 +34,11 @@ class UserRole implements Serializable {
         def builder = new HashCodeBuilder()
         if (user) {
             builder.append(user.id)
-            if (role) {
-                builder.append(role.id)
-            }
-            builder.toHashCode()
         }
+        if (role) {
+            builder.append(role.id)
+        }
+        builder.toHashCode()
     }
 
     static UserRole get(long userId, long roleId) {

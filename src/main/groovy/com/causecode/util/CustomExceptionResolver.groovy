@@ -7,6 +7,7 @@
  */
 package com.causecode.util
 
+import grails.plugin.springsecurity.SpringSecurityService
 import grails.util.Environment
 
 import javax.servlet.http.HttpServletRequest
@@ -25,7 +26,7 @@ class CustomExceptionResolver extends GrailsExceptionResolver {
 
     @Override
     ModelAndView resolveException(HttpServletRequest request, HttpServletResponse response,
-                                  Object handler, Exception e) {
+        Object handler, Exception e) {
         if (Environment.isDevelopmentMode() || !NucleusUtils.mailService) {
             return super.resolveException(request, response, handler, e)
         }
@@ -41,7 +42,7 @@ class CustomExceptionResolver extends GrailsExceptionResolver {
         // Some angular based client side app may send header for current URL
         model['angularURL'] = request.getHeader('angular-url')
 
-        def springSecurityService = NucleusUtils.getBean('springSecurityService')
+        SpringSecurityService springSecurityService = NucleusUtils.getBean('springSecurityService')
         if (springSecurityService) {
             model['userInstance'] = springSecurityService.currentUser
         }

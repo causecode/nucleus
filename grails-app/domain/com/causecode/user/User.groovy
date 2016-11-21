@@ -47,8 +47,6 @@ class User {
         firstName maxSize: 100, nullable: true
         lastName maxSize: 100, nullable: true
         pictureURL nullable: true
-        firstName maxSize: 100
-        lastName maxSize: 100
     }
 
     static mapping = {

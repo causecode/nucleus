@@ -8,7 +8,7 @@
 package com.causecode.util
 
 import grails.gsp.PageRenderer
-
+import grails.util.Environment
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 
@@ -101,14 +101,14 @@ class StringAsGspRenderer {
      */
     private String getPageIdForDomain(Object domainInstance, String field, boolean previousVersion = false) {
         StringBuilder pageID = new StringBuilder(domainInstance.class.simpleName.toLowerCase())
-        String appendWith = '_'
-        pageID.append(appendWith)
+        String underscore = '_'
+        pageID.append(underscore)
         pageID.append(field)
-        pageID.append(appendWith)
+        pageID.append(underscore)
 
         if (domainInstance.id) {
             pageID.append(domainInstance.id.toString())
-            pageID.append(appendWith)
+            pageID.append(underscore)
             if (previousVersion) {
                 pageID.append((domainInstance.version - 1).toString())
             } else {

@@ -131,10 +131,10 @@ class CurrencyControllerSpec extends Specification {
 
     void 'test show action for valid instance of Currency'() {
         when: 'action show is called'
-        Currency currency = new Currency([dateCreated: new Date(), dateUpdated: new Date(), code: 'USD', name: 'US Dollar'])
+        Currency currency = new Currency([dateCreated: new Date(), dateUpdated: new Date(), code: 'USD', name: 'US Dollars'])
         assert currency.save(failOnError: true, flush: true)
+        controller.request.method = 'POST'
         controller.request.json = [id: currency.id.toString()]
-        controller.request.method = 'GET'
         controller.show()
 
         then: 'show view must be rendered'
@@ -143,7 +143,7 @@ class CurrencyControllerSpec extends Specification {
 
     void 'test update action for null instance of Currency'() {
         when: 'action update is called'
-        controller.request.method = 'PUT'
+        controller.request.method = 'POST'
         controller.update()
 
         then: 'user must be redirected to action list'
@@ -161,7 +161,7 @@ class CurrencyControllerSpec extends Specification {
         }
 
         when: 'action update is called'
-        controller.request.method = 'PUT'
+        controller.request.method = 'POST'
         controller.request.json = [id: currency.id.toString()]
         controller.update()
 
@@ -174,7 +174,7 @@ class CurrencyControllerSpec extends Specification {
         Currency currency = new Currency([dateCreated: new Date(), dateUpdated: new Date(), code: 'INR', name: 'Indian Rupees'])
         assert currency.save(failOnError: true, flush: true)
         controller.request.json = [id: currency.id.toString()]
-        controller.request.method = 'PUT'
+        controller.request.method = 'POST'
 
         when: 'action update is called'
         controller.update()
@@ -186,7 +186,7 @@ class CurrencyControllerSpec extends Specification {
 
     void 'test delete with null instance of Currency'() {
         when: 'action delete is called'
-        controller.request.method = 'DELETE'
+        controller.request.method = 'POST'
         controller.request.json = [id: null]
         controller.delete()
 
@@ -199,7 +199,7 @@ class CurrencyControllerSpec extends Specification {
         int currencyTotal = Currency.count()
 
         when: 'action delete is called'
-        controller.request.method = 'DELETE'
+        controller.request.method = 'POST'
         controller.request.params = [dateCreated: new Date(), dateUpdated: new Date(), code: 'GBP', name: 'Pound']
         controller.delete()
 
@@ -221,7 +221,7 @@ class CurrencyControllerSpec extends Specification {
 
         when: 'action delete is called'
         controller.request.json = [id: currencyInstance.id.toString()]
-        controller.request.method = 'DELETE'
+        controller.request.method = 'POST'
         controller.delete()
 
         then: 'user must be redirected to action list'
@@ -240,7 +240,7 @@ class CurrencyControllerSpec extends Specification {
          }
 
          when: 'action delete is called'
-         controller.request.method = 'DELETE'
+         controller.request.method = 'POST'
          controller.request.json = [id : currencyInstance.id.toString()]
          controller.delete()
 

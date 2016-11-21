@@ -1,3 +1,11 @@
+/*
+ * Copyright (c) 2011, CauseCode Technologies Pvt Ltd, India.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or
+ * without modification, are not permitted.
+ */
+
 import grails.core.GrailsApplication
 import grails.util.Environment
 
@@ -37,13 +45,13 @@ class NucleusDevBootStrap {
 
             if (!adminUser) {
                 adminUser = new User([username: userAdmin, password: defaultPassword, email: 'bootstrap@causecode.com',
-                    firstName: 'CauseCode', lastName: 'Technologies', gender: 'male', enabled: true,])
+                        firstName: 'CauseCode', lastName: 'Technologies', gender: 'male', enabled: true,])
                 adminUser.save(failOnError)
             }
 
             if (!normalUser) {
                 normalUser = new User([username: userJane, password: defaultPassword, email: 'jane@causecode.com',
-                    firstName: 'Jane', lastName: 'Doe', gender: 'female', enabled: true])
+                        firstName: 'Jane', lastName: 'Doe', gender: 'female', enabled: true])
                 normalUser.save(failOnError)
             }
             UserRole.findOrSaveByUserAndRole(adminUser, adminRole)

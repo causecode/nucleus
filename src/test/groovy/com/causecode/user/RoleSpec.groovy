@@ -15,7 +15,7 @@ class RoleSpec extends Specification{
 
     void 'test toString() method'() {
         when: 'UserRole instance is created and toString is called'
-        Role role = new Role(authority:'ROLE_ADMIN')
+        Role role = new Role([authority:'ROLE_ADMIN'])
         assert role.save(flush: true, failOnError: true)
         String result = role.toString()
 
