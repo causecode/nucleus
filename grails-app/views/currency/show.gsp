@@ -75,7 +75,7 @@
     <g:form>
         <fieldset class="form-actions">
             <g:hiddenField name="id" value="${currencyInstance?.id}" />
-            <g:link class="btn btn-primary" action="edit" id="${currencyInstance?.id}">
+            <g:link class="btn btn-primary" action="edit" params="${[currencyInstance: currencyInstance]}" id="${currencyInstance?.id}">
                 <g:message code="default.button.edit.label" default="Edit" />
             </g:link>
             <g:actionSubmit class="btn btn-danger" action="delete"

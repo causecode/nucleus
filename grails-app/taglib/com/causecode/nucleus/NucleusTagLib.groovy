@@ -7,9 +7,9 @@ package com.causecode.nucleus
  */
 class NucleusTagLib {
 
-    static namespace = "nucleus"
+    static namespace = 'nucleus'
 
-    static defaultEncodeAs = "raw"
+    static defaultEncodeAs = 'raw'
 
     /**
      * Renders HTML block for showing more detailed information about Pagination.
@@ -17,8 +17,8 @@ class NucleusTagLib {
      */
     def pagerInfo = { attrs, body ->
         long total = attrs.total
-        if(!total) {
-            out << """<i class="fa fa-meh-o"></i> Sorry, no records found."""
+        if (!total) {
+            out << '<i class="fa fa-meh-o"></i> Sorry, no records found.'
             return
         }
         params.offset = params.offset ?: 0
@@ -30,5 +30,4 @@ class NucleusTagLib {
                   </small>
                """
     }
-
 }
