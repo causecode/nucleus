@@ -8,11 +8,13 @@
 package com.causecode.currency
 
 import groovy.transform.EqualsAndHashCode
+import groovy.transform.ToString
 
 /**
  * Used to store currency code and name information.
  *
  */
+@ToString(includes = ['code'], includePackage = false)
 @EqualsAndHashCode
 class Currency {
 
@@ -27,10 +29,5 @@ class Currency {
         lastUpdated bindable: false
         code blank: false
         name blank: false
-    }
-
-    @Override
-    String toString() {
-        code
     }
 }

@@ -8,11 +8,13 @@
 package com.causecode.geo.location
 
 import groovy.transform.EqualsAndHashCode
+import groovy.transform.ToString
 
 /**
  * Used to store city, state and stateCode information.
  *
  */
+@ToString(includes = ['id'], includePackage = false)
 @EqualsAndHashCode
 @SuppressWarnings(['GrailsDomainReservedSqlKeywordName'])
 class City {
@@ -51,10 +53,5 @@ class City {
             }
         }
         return validFields.join(', ')
-    }
-
-    @Override
-    String toString() {
-        return "City [$id]"
     }
 }

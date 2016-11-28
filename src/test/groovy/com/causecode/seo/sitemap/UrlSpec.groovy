@@ -22,6 +22,6 @@ class UrlSpec extends Specification {
         String result = userUrl.toString()
 
         then: 'result must match with the given String'
-        result == 'Url [1]'
+        result == 'Url(1)'
     }
 }

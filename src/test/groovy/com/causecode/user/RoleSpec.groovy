@@ -20,6 +20,6 @@ class RoleSpec extends Specification{
         String result = role.toString()
 
         then: 'result must satisfy the following condition'
-        result == 'Role [1]'
+        result == 'Role(1)'
     }
 }

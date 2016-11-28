@@ -44,6 +44,6 @@ class SitemapSpec extends Specification {
         String result = causecodeSitemap.toString()
 
         then: 'result must match with the given String'
-        result == 'Sitemap [1]'
+        result == 'Sitemap(1)'
     }
 }

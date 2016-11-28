@@ -8,11 +8,13 @@
 package com.causecode.contact
 
 import groovy.transform.EqualsAndHashCode
+import groovy.transform.ToString
 
 /**
  * Used to store phone number and phone country code information.
  *
  */
+@ToString(includes = ['id'], includePackage = false)
 @EqualsAndHashCode
 class Phone {
 
@@ -31,9 +33,5 @@ class Phone {
 
     def getFullPhoneNumber() {
         return '+(' + countryCode.code + ')' + number
-    }
-    @Override
-    String toString() {
-        return "Phone [$id]"
     }
 }

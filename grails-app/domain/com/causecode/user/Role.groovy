@@ -8,10 +8,12 @@
 package com.causecode.user
 
 import groovy.transform.EqualsAndHashCode
+import groovy.transform.ToString
 
 /**
  * Role groovy class used to specify authority information.
  */
+@ToString(includes = ['id'], includePackage = false)
 @EqualsAndHashCode
 class Role {
 
@@ -23,10 +25,5 @@ class Role {
 
     static constraints = {
         authority blank: false, unique: true
-    }
-
-    @Override
-    String toString() {
-        return "Role [$id]"
     }
 }

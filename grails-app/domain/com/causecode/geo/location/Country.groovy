@@ -8,11 +8,13 @@
 package com.causecode.geo.location
 
 import groovy.transform.EqualsAndHashCode
+import groovy.transform.ToString
 
 /**
  * Used to store country code and name information.
  *
  */
+@ToString(includes = ['name'], includePackage = false)
 @EqualsAndHashCode
 class Country {
 
@@ -32,10 +34,4 @@ class Country {
         lastUpdated bindable: false
         name blank: false, unique: true
     }
-
-    @Override
-    String toString() {
-        name
-    }
-
 }

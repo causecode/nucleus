@@ -7,12 +7,14 @@
  */
 package com.causecode.user
 
+import groovy.transform.ToString
 import org.apache.commons.lang.builder.HashCodeBuilder
 
 /**
  * UserRole join groovy class specifies authority for user.
  */
 // TODO remove Instanceof check
+@ToString(includes = ['id'], includePackage = false)
 @SuppressWarnings(['Instanceof'])
 class UserRole implements Serializable {
 
@@ -86,10 +88,5 @@ class UserRole implements Serializable {
     static mapping = {
         id composite: ['role', 'user']
         version false
-    }
-
-    @Override
-    String toString() {
-        return "UserRole [$id]"
     }
 }

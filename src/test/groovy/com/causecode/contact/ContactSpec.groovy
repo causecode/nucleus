@@ -34,6 +34,6 @@ class ContactSpec extends Specification {
         String result = contactInstance.toString()
 
         then: 'result must match with given string'
-        result == 'Contact [1]'
+        result == 'Contact(1)'
     }
 }

@@ -32,7 +32,7 @@ class CitySpec extends Specification {
         result = newCity.toString(fields)
 
         then: 'Result must match the provided string value, result will contain India'
-        result == 'India, Pune, Maharashtra, MH'
+        result == 'Country(India), Pune, Maharashtra, MH'
     }
 
     void 'test toString method'() {
@@ -44,7 +44,7 @@ class CitySpec extends Specification {
         String result = city.toString()
 
         then: 'It must match with the provided string value'
-        result == 'City [1]'
+        result == 'City(1)'
     }
 
     void validateConstraints(obj, field, test) {

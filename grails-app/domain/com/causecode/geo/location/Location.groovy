@@ -8,11 +8,13 @@
 package com.causecode.geo.location
 
 import groovy.transform.EqualsAndHashCode
+import groovy.transform.ToString
 
 /**
  * Used to stores all location information.
  *
  */
+@ToString(includes = ['id'], includePackage = false)
 @EqualsAndHashCode
 class Location {
 
@@ -37,10 +39,5 @@ class Location {
 
     def getFullAddress() {
         return address + ', ' + city.cityStateCountry + ' - ' + zip
-    }
-
-    @Override
-    String toString() {
-        return "Location [$id]"
     }
 }

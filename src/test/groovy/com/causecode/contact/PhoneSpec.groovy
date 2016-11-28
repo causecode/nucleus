@@ -51,7 +51,7 @@ class PhoneSpec extends Specification {
         result == '+(91)9876543210'
     }
 
-    void 'test toString() method'() {
+    void "test toString() method"() {
         given: 'Phone, PhoneCountryCode and Country instances'
         Country india = new Country([code: 'IND', name: 'India'])
         assert india.save(flush: true, failOnError: true)
@@ -66,19 +66,19 @@ class PhoneSpec extends Specification {
         String result = india.toString()
 
         then: 'result must match with the provided string value'
-        result == 'India'
+        result == 'Country(India)'
 
         when: 'toString is called for phoneCountryCode instance'
         result = phoneCountryCode.toString()
 
         then: 'result must match with the provided string value'
-        result == 'PhoneCountryCode [1]'
+        result == 'PhoneCountryCode(1)'
 
         when: 'toString is called for phone instance'
         result = phoneInstance.toString()
 
         then: 'result must match the provided string value'
-        result == 'Phone [1]'
+        result == 'Phone(1)'
     }
 
     void validateConstraints(obj, field, test) {

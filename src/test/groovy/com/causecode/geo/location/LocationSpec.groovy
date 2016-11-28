@@ -36,6 +36,6 @@ class LocationSpec extends Specification {
         String result = location.toString()
 
         then: 'It must match with the provided string value'
-        result == 'Location [1]'
+        result == 'Location(1)'
     }
 }

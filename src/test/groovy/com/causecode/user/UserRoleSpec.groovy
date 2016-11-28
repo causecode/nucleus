@@ -262,7 +262,7 @@ class UserRoleSpec extends Specification {
         String result = adminUserRole.toString()
 
         then:
-        result == 'UserRole [1]'
+        result == 'UserRole(1)'
     }
 
     User createAdminUser() {

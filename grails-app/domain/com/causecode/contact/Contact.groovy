@@ -9,11 +9,13 @@ package com.causecode.contact
 
 import com.causecode.geo.location.Location
 import groovy.transform.EqualsAndHashCode
+import groovy.transform.ToString
 
 /**
  * Used to store location and contact information.
  *
  */
+@ToString(includes = ['id'], includePackage = false)
 @EqualsAndHashCode
 class Contact {
 
@@ -44,10 +46,5 @@ class Contact {
     static mapping = {
         address cascade: 'all'
         phone cascade: 'all'
-    }
-
-    @Override
-    String toString() {
-        return "Contact [$id]"
     }
 }
