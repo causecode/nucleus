@@ -33,11 +33,7 @@ class UserManagementController {
     UserManagementService userManagementService
 
     static responseFormats = ['json']
-    private static final String ROLE_ADMIN = 'ROLE_ADMIN'
-    private static final String SELECT_ATLEAST_ONE_USER = 'Please select at least one user.'
-    private static final String ROLE_ADMIN_EXCLUDED =
-            'Users with role Admin are excluded from selected list.'
-    private static final String DATE_CREATED = 'dateCreated'
+
     /**
      * List action used to fetch Role list and User's list with filters and pagination applied.
      * @param max Integer parameter used to set number of records to be returned.
@@ -48,7 +44,7 @@ class UserManagementController {
         String tempDbType = dbType
         params.offset = offset ?: 0
         params.max = Math.min(max ?: 10, 100)
-        params.sort = params.sort ?: DATE_CREATED
+        params.sort = params.sort ?: 'dateCreated'
         params.order = params.order ?: 'desc'
         tempDbType = tempDbType ?: 'Mysql'
         log.info "Params received to fetch users :$params"
@@ -78,8 +74,8 @@ class UserManagementController {
         List roleIds = userManagementService.getAppropiateIdList(requestData.roleIds)
         roleIds = roleIds*.toLong()
 
-        if (!SpringSecurityUtils.ifAnyGranted(ROLE_ADMIN)) {
-            Role adminRole = Role.findByAuthority(ROLE_ADMIN)
+        if (!SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
+            Role adminRole = Role.findByAuthority('ROLE_ADMIN')
             List adminUsersIds = UserRole.findAllByRole(adminRole)*.user*.id
             log.info "Removing admin user ids: $adminUsersIds."
 
@@ -94,9 +90,9 @@ class UserManagementController {
         }
 
         if (!userIds) {
-            String message = SELECT_ATLEAST_ONE_USER
-            if (!SpringSecurityUtils.ifAnyGranted(ROLE_ADMIN)) {
-                message += ROLE_ADMIN_EXCLUDED
+            String message = 'Please select at least one user.'
+            if (!SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
+                message += 'Users with role Admin are excluded from selected list.'
             }
             response.setStatus(HttpStatus.NOT_ACCEPTABLE.value())
             respond([success: false, message: message])
@@ -105,7 +101,7 @@ class UserManagementController {
 
         if (!roleIds) {
             String message = 'No Roles selected.'
-            if (!SpringSecurityUtils.ifAnyGranted(ROLE_ADMIN)) {
+            if (!SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
                 message += 'Only Users with Admin role can assign Admin roles.'
             }
             response.setStatus(HttpStatus.NOT_ACCEPTABLE.value())
@@ -166,17 +162,17 @@ class UserManagementController {
 
         List selectedUserIds = userManagementService.getAppropiateIdList(requestData.selectedIds)
 
-        if (!SpringSecurityUtils.ifAnyGranted(ROLE_ADMIN)) {
-            Role adminRole = Role.findByAuthority(ROLE_ADMIN)
+        if (!SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
+            Role adminRole = Role.findByAuthority('ROLE_ADMIN')
             List adminUsersIds = UserRole.findAllByRole(adminRole)*.user*.id
             selectedUserIds = selectedUserIds - adminUsersIds
             log.info "Removed admin users: $selectedUserIds"
         }
 
         if (!selectedUserIds) {
-            String message = SELECT_ATLEAST_ONE_USER
-            if (!SpringSecurityUtils.ifAnyGranted(ROLE_ADMIN)) {
-                message += ROLE_ADMIN_EXCLUDED
+            String message = 'Please select at least one user.'
+            if (!SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
+                message += 'Users with role Admin are excluded from selected list.'
             }
             response.setStatus(HttpStatus.NOT_ACCEPTABLE.value())
             respond([success: false, message: message])
@@ -222,8 +218,9 @@ class UserManagementController {
         List fields = [], columnWidthList = []
         List<User> userList = userManagementService.getSelectedItemList(selectAll, params.selectedIds, params)
         float pointOne = 0.1f, pointTwo = 0.2f, pointThree = 0.3f
-        String id = 'id', email = 'email', firstName = 'firstName', lastName = 'lastName', gender = 'gender',
-               birthdate = 'birthdate', dateCreated = DATE_CREATED, enabled = 'enabled', accountLocked = 'accountLocked'
+        String id = 'id', email = 'email', firstName = 'firstName', lastName = 'lastName',
+                gender = 'gender', birthdate = 'birthdate', dateCreated = 'dateCreated',
+                enabled = 'enabled', accountLocked = 'accountLocked'
         fields << id; labels.id = 'User Id'; columnWidthList << pointOne
         fields << email; labels.email = 'Email'; columnWidthList << pointThree
         fields << firstName; labels.firstName = 'First Name'; columnWidthList << pointTwo

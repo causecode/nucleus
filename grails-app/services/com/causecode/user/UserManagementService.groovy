@@ -18,9 +18,6 @@ class UserManagementService {
      * @param paginate Boolean value to specify whether to use pagination parameters or not.
      * @return Filtered list of user's with distinct email.
      */
-    private static final String COMMA = ','
-    private static final String ANY_GRANTED = 'Any Granted'
-    private static final String ALL_GRANTED = 'All Granted'
 
     // TODO Ignored for unit test - Architecture will be made separated for Mongo and Mysql
     List fetchListForMongo(Map params) {
@@ -28,7 +25,7 @@ class UserManagementService {
         String firstName = 'firstName'
         String role = 'role'
         if (params.roleFilter instanceof String) {
-            roleFilterList = params.roleFilter.tokenize(COMMA)
+            roleFilterList = params.roleFilter.tokenize(',')
         } else {
             roleFilterList = params.roleFilter as List
         }
@@ -36,10 +33,10 @@ class UserManagementService {
         List userList = UserRole.createCriteria().list(params) {
             if (params.roleFilter) {
                 switch (params.roleType) {
-                    case ANY_GRANTED:
+                    case 'Any Granted':
                         'in'(role, getAppropiateIdList(roleFilterList))
                         break
-                    case ALL_GRANTED:
+                    case 'All Granted':
                         and {
                             getAppropiateIdList(roleFilterList).each { roleId ->
                                 eq(role, roleId)
@@ -119,11 +116,11 @@ class UserManagementService {
             roleFilterList = roleFilterList*.toLong()
             // Above line will convert all values(*) inside the List from String to Long
 
-            if (roleType == ANY_GRANTED) {
+            if (roleType == 'Any Granted') {
                 queryStringParams.roles = roleFilterList
                 query.append(' where ur1.role.id in (:roles)')
             } else {
-                if (roleType == ALL_GRANTED) {
+                if (roleType == 'All Granted') {
                     query.append(where)
                     generateQueryToCheckEachRole(query, roleFilterList)
                 } else {
@@ -184,7 +181,7 @@ class UserManagementService {
             return getList(args)['instanceList']
         }
         if (selectedIds) {
-            return User.getAll(getAppropiateIdList(selectedIds.tokenize(COMMA)))
+            return User.getAll(getAppropiateIdList(selectedIds.tokenize(',')))
         }
         return []
     }

@@ -227,9 +227,7 @@ class DateUtil {
         if (!year) {
             return null
         }
-        String slash = '/'
-        String one = '01'
-        String dateString = (month ?: one) + slash + (day ?: one) + slash + year
+        String dateString = (month ?: '01') + '/' + (day ?: '01') + '/' + year
         return parse(dateString, null, DEFAULT_DATE_FORMAT)
     }
 

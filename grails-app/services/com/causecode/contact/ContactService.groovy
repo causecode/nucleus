@@ -26,11 +26,6 @@ class ContactService {
      */
     SpringSecurityService springSecurityService
 
-    private final static String ANONYMOUS = 'Anonymous'
-    private static final String CITY_NAME = 'city'
-    private static final String STATE_NAME = 'state'
-    private static final String COUNTRY_NAME = 'country'
-
     /**
      * Resolves location and contact information and save user instance with resolved parameter.
      * @param args list of location and contact parameters
@@ -39,17 +34,17 @@ class ContactService {
      */
     boolean resolveParameters(Map args, HttpServletRequest request, String fieldName = 'contact') {
         Country countryInstance
-        String city = args[CITY_NAME]
-        String state = args[STATE_NAME]
-        String country = args[COUNTRY_NAME]
+        String city = args['city']
+        String state = args['state']
+        String country = args['country']
         PhoneCountryCode countryCodeInstance
         String mCountryCode = 'mobileCountryCode'
         String phoneNumber = 'phoneNumber'
 
         Map locationMap = getCityStateCountry(args)
-        city = locationMap.containsKey(CITY_NAME) ? locationMap[CITY_NAME] : city
-        state = locationMap.containsKey(STATE_NAME) ? locationMap[STATE_NAME] : state
-        country = locationMap.containsKey(COUNTRY_NAME) ? locationMap[COUNTRY_NAME] : country
+        city = locationMap.containsKey('city') ? locationMap['city'] : city
+        state = locationMap.containsKey('state') ? locationMap['state'] : state
+        country = locationMap.containsKey('country') ? locationMap['country'] : country
         countryInstance = retrieveCountryInstance(args, request, country)
 
         log.info "Resolved [city: $city, state: $state, country: $country]"
@@ -91,21 +86,21 @@ class ContactService {
         if (args[strCityState]) {
             List cityState = args[strCityState].tokenize(comma)
             if (cityState != null && cityState.size() >= two) {
-                cityStateCountryMap[CITY_NAME] = cityState[0]?.trim()
-                cityStateCountryMap[STATE_NAME] = cityState[1]?.trim()
+                cityStateCountryMap['city'] = cityState[0]?.trim()
+                cityStateCountryMap['state'] = cityState[1]?.trim()
             }
         }
 
         if (args[strCityStateCountry]) {
             List cityStateCountry = args[strCityStateCountry].tokenize(comma)
             if (cityStateCountry != null && cityStateCountry.size() > 0) {
-                cityStateCountryMap[CITY_NAME] = cityStateCountry[0]?.trim()
+                cityStateCountryMap['city'] = cityStateCountry[0]?.trim()
                 if (cityStateCountry.size() < 3) {
-                    cityStateCountryMap[STATE_NAME] = ''
-                    cityStateCountryMap[COUNTRY_NAME] = cityStateCountry[1]?.trim()
+                    cityStateCountryMap['state'] = ''
+                    cityStateCountryMap['country'] = cityStateCountry[1]?.trim()
                 } else {
-                    cityStateCountryMap[STATE_NAME] = cityStateCountry[1]?.trim()
-                    cityStateCountryMap[COUNTRY_NAME] = cityStateCountry[two]?.trim()
+                    cityStateCountryMap['state'] = cityStateCountry[1]?.trim()
+                    cityStateCountryMap['country'] = cityStateCountry[two]?.trim()
                 }
             }
         }
@@ -124,7 +119,7 @@ class ContactService {
         String tempCountry = country
         String strCountryId = 'countryId'
         if (!args[strCountryId] && !tempCountry) {
-            log.warn "User [${springSecurityService.currentUser?.email ?: ANONYMOUS}] no country found in params." +
+            log.warn "User [${springSecurityService.currentUser?.email ?: 'Anonymous'}] no country found in params." +
                     "Setting [${request.locale.displayCountry}]"
             tempCountry = request.locale.displayCountry
         }
@@ -154,7 +149,7 @@ class ContactService {
         validationResult << instance[fieldName]?.address?.city?.country?.validate()
 
         def currentUserInstance = springSecurityService.currentUser
-        log.info "User [${currentUserInstance?.email ?: ANONYMOUS}]"
+        log.info "User [${currentUserInstance?.email ?: 'Anonymous'}]"
         return validateResults(instance, validationResult, fieldName)
     }
 

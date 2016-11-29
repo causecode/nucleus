@@ -22,15 +22,10 @@ class CurrencyController {
 
     static responseFormats = ['json']
 
-    private static final String ACTION_LIST = 'list'
-    private static final String VIEW_EDIT = 'edit'
-    private static final String VIEW_CREATE = 'create'
     static allowedMethods = [save: 'POST', update: 'POST', delete: 'POST']
-    private static final Map FLUSH_TRUE = [flush: true]
-    private static final Map ACTION_LIST_MAP = [action: ACTION_LIST]
 
     def index() {
-        redirect(ACTION_LIST_MAP)
+        redirect([action: 'list'])
     }
 
     def list(Integer max) {
@@ -39,23 +34,23 @@ class CurrencyController {
     }
 
     def create() {
-        render(view: VIEW_CREATE)
+        render(view: 'create')
     }
 
     def save(Currency currencyInstance) {
         if (!NucleusUtils.save(currencyInstance, true)) {
             flash.error = 'Cannot save invalid currency'
-            render(view: VIEW_CREATE)
+            render(view: 'create')
             return
         }
-        redirect(ACTION_LIST_MAP)
+        redirect([action: 'list'])
     }
 
     def edit(Currency currencyInstance) {
         if (currencyInstance && currencyInstance.id) {
-            render(view: VIEW_EDIT, model: [currencyInstance: currencyInstance])
+            render(view: 'edit', model: [currencyInstance: currencyInstance])
         } else {
-            redirect(ACTION_LIST_MAP)
+            redirect([action: 'list'])
         }
     }
 
@@ -70,26 +65,26 @@ class CurrencyController {
     def update(Currency currencyInstance) {
         if (currencyInstance && currencyInstance.id) {
             if (!NucleusUtils.save(currencyInstance, true)) {
-                render(view: VIEW_EDIT, model: [currencyInstance: currencyInstance])
+                render(view: 'edit', model: [currencyInstance: currencyInstance])
                 return
             }
         } else {
             flash.error = 'Selected currency does not exist'
         }
-        redirect(action: ACTION_LIST)
+        redirect(action: 'list')
     }
 
     def delete(Currency currencyInstance) {
         if (currencyInstance && currencyInstance.id) {
             try {
-                currencyInstance.delete(FLUSH_TRUE)
-                redirect(ACTION_LIST_MAP)
+                currencyInstance.delete([flush: true])
+                redirect([action: 'list'])
             } catch (DataIntegrityViolationException e) {
-                redirect(ACTION_LIST_MAP)
+                redirect([action: 'list'])
             }
         } else {
             flash.error = 'Selected currency does not exist'
-            redirect(ACTION_LIST_MAP)
+            redirect([action: 'list'])
         }
     }
 }
