@@ -135,27 +135,23 @@ class NucleusUtils {
      * Environment specific config override file locations.
      * environments {
      *     production {
-     *         grails.config.locations = ['path/to/application-local.groovy']
+     *         grails.config.locations = ['path/to/application-production-local.groovy']
      *     }
      *     development {
-     *         grails.config.locations = ['path/to/application-local.groovy']
-     *     }
-     *     test {
-     *         grails.config.locations = ['path/to/application-local.groovy']
-     *     }
-     *     staging {
-     *         grails.config.locations = ['path/to/application-local.groovy']
+     *         grails.config.locations = ['path/to/application-development-local1.groovy',
+     *                  'path/to/application-development-local2.groovy']
      *     }
      * }
      *
-     * note: config override depends on order of passes file locations.
+     * note: config override depends on order of passed file locations.
      *
      * @params application
      * @params org.springframework.core.env.Environment environment
      *
-     * @since 0.4.1
+     * @since 0.4.2
      * @author Ankit Agrawal
      */
+    // TODO Completely automate this process in future.
     static void addExternalConfig(GrailsAutoConfiguration application, SEnvironment environment) {
         URL applicationGroovy = application.getClass().classLoader.getResource('application.groovy')
         if (applicationGroovy) {
