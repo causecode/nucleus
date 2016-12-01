@@ -38,8 +38,6 @@ class ContactService {
         String state = args['state']
         String country = args['country']
         PhoneCountryCode countryCodeInstance
-        String mCountryCode = 'mobileCountryCode'
-        String phoneNumber = 'phoneNumber'
 
         Map locationMap = getCityStateCountry(args)
         city = locationMap.containsKey('city') ? locationMap['city'] : city
@@ -53,12 +51,12 @@ class ContactService {
         if (cityInstance.hasErrors()) {
             log.warn "Error saving city instance: $cityInstance.errors"
         }
-        if (args[mCountryCode]) {
-            countryCodeInstance = PhoneCountryCode.findOrSaveWhere(code: args[mCountryCode], country: countryInstance)
+        if (args['mobileCountryCode']) {
+            countryCodeInstance = PhoneCountryCode.findOrSaveWhere(code: args['mobileCountryCode'], country: countryInstance)
             args["${fieldName}.phone.countryCode.id"] = countryCodeInstance.id
         }
-        if (args[phoneNumber]) {
-            args["${fieldName}.phone.number"] = args[phoneNumber]
+        if (args['phoneNumber']) {
+            args["${fieldName}.phone.number"] = args['phoneNumber']
         }
         args["${fieldName}.email"] = args['email']
         args["${fieldName}.altEmail"] = args['altEmail']
@@ -80,19 +78,16 @@ class ContactService {
     private Map getCityStateCountry(Map args) {
         Map cityStateCountryMap = [:]
         int two = 2
-        String comma = ','
-        String strCityState = 'cityState'
-        String strCityStateCountry = 'cityStateCountry'
-        if (args[strCityState]) {
-            List cityState = args[strCityState].tokenize(comma)
+        if (args['cityState']) {
+            List cityState = args['cityState'].tokenize(',')
             if (cityState != null && cityState.size() >= two) {
                 cityStateCountryMap['city'] = cityState[0]?.trim()
                 cityStateCountryMap['state'] = cityState[1]?.trim()
             }
         }
 
-        if (args[strCityStateCountry]) {
-            List cityStateCountry = args[strCityStateCountry].tokenize(comma)
+        if (args['cityStateCountry']) {
+            List cityStateCountry = args['cityStateCountry'].tokenize(',')
             if (cityStateCountry != null && cityStateCountry.size() > 0) {
                 cityStateCountryMap['city'] = cityStateCountry[0]?.trim()
                 if (cityStateCountry.size() < 3) {
@@ -116,18 +111,16 @@ class ContactService {
      */
     private Country retrieveCountryInstance(Map args, HttpServletRequest request, String country) {
         Country countryInstance
-        String tempCountry = country
-        String strCountryId = 'countryId'
-        if (!args[strCountryId] && !tempCountry) {
+        if (!args['countryId'] && !country) {
             log.warn "User [${springSecurityService.currentUser?.email ?: 'Anonymous'}] no country found in params." +
                     "Setting [${request.locale.displayCountry}]"
-            tempCountry = request.locale.displayCountry
+            country = request.locale.displayCountry
         }
-        if (tempCountry) {
-            countryInstance = Country.findOrSaveByName(tempCountry)
+        if (country) {
+            countryInstance = Country.findOrSaveByName(country)
         } else {
-            if (args[strCountryId]) {
-                countryInstance = Country.get(args[strCountryId].toLong()) // Useful in token auto-complete
+            if (args['countryId']) {
+                countryInstance = Country.get(args['countryId'].toLong()) // Useful in token auto-complete
             }
         }
         return countryInstance

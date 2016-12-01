@@ -22,8 +22,6 @@ class UserManagementService {
     // TODO Ignored for unit test - Architecture will be made separated for Mongo and Mysql
     List fetchListForMongo(Map params) {
         List roleFilterList = []
-        String firstName = 'firstName'
-        String role = 'role'
         if (params.roleFilter instanceof String) {
             roleFilterList = params.roleFilter.tokenize(',')
         } else {
@@ -34,28 +32,28 @@ class UserManagementService {
             if (params.roleFilter) {
                 switch (params.roleType) {
                     case 'Any Granted':
-                        'in'(role, getAppropiateIdList(roleFilterList))
+                        'in'('role', getAppropiateIdList(roleFilterList))
                         break
                     case 'All Granted':
                         and {
                             getAppropiateIdList(roleFilterList).each { roleId ->
-                                eq(role, roleId)
+                                eq('role', roleId)
                             }
                         }
                         break
                     default:
-                        eq(role, getAppropiateIdList(roleFilterList).sort())
+                        eq('role', getAppropiateIdList(roleFilterList).sort())
                 }
             }
         }
         List result = User.createCriteria().list(params) {
             'in'('id', userList)
             if (params.letter) {
-                ilike(firstName, "${params.letter}%")
+                ilike('firstName', "${params.letter}%")
             }
             if (params.query) {
                 or {
-                    [firstName, 'lastName', 'username', 'email'].each { userField ->
+                    ['firstName', 'lastName', 'username', 'email'].each { userField ->
                         ilike(userField, "%${params.query}%")
                     }
                 }
