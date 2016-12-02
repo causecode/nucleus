@@ -52,7 +52,8 @@ class ContactService {
             log.warn "Error saving city instance: $cityInstance.errors"
         }
         if (args['mobileCountryCode']) {
-            countryCodeInstance = PhoneCountryCode.findOrSaveWhere(code: args['mobileCountryCode'], country: countryInstance)
+            countryCodeInstance = PhoneCountryCode.findOrSaveWhere(code: args['mobileCountryCode'],
+                    country: countryInstance)
             args["${fieldName}.phone.countryCode.id"] = countryCodeInstance.id
         }
         if (args['phoneNumber']) {
@@ -111,13 +112,14 @@ class ContactService {
      */
     private Country retrieveCountryInstance(Map args, HttpServletRequest request, String country) {
         Country countryInstance
+        String tempCountry = country
         if (!args['countryId'] && !country) {
             log.warn "User [${springSecurityService.currentUser?.email ?: 'Anonymous'}] no country found in params." +
                     "Setting [${request.locale.displayCountry}]"
-            country = request.locale.displayCountry
+            tempCountry = request.locale.displayCountry
         }
-        if (country) {
-            countryInstance = Country.findOrSaveByName(country)
+        if (tempCountry) {
+            countryInstance = Country.findOrSaveByName(tempCountry)
         } else {
             if (args['countryId']) {
                 countryInstance = Country.get(args['countryId'].toLong()) // Useful in token auto-complete
