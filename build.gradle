@@ -48,11 +48,6 @@ dependencyManagement {
     applyMavenExclusions false
 }
 
-bootRun {
-    addResources = false // We can set it to true if we would like to reload src/main/resources
-    jvmArgs = ["-Xdebug", "-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005"]
-}
-
 dependencies {
     // Default dependencies in grails 3.2.0 for plugin
     // While porting to a new grails version, create a blank app and replace the default dependencies with the new ones.
