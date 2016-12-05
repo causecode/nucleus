@@ -101,14 +101,13 @@ class StringAsGspRenderer {
      */
     private String getPageIdForDomain(Object domainInstance, String field, boolean previousVersion = false) {
         StringBuilder pageID = new StringBuilder(domainInstance.class.simpleName.toLowerCase())
-        String underscore = '_'
-        pageID.append(underscore)
+        pageID.append('_')
         pageID.append(field)
-        pageID.append(underscore)
+        pageID.append('_')
 
         if (domainInstance.id) {
             pageID.append(domainInstance.id.toString())
-            pageID.append(underscore)
+            pageID.append('_')
             if (previousVersion) {
                 pageID.append((domainInstance.version - 1).toString())
             } else {

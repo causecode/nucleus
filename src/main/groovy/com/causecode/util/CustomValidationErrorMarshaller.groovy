@@ -58,7 +58,6 @@ class CustomValidationErrorMarshaller implements ObjectMarshaller<JSON>, Applica
     void marshalObject(Object object, JSON json) throws ConverterException {
         Errors errors = (Errors) object
         JSONWriter writer = json.writer
-        String message = 'message'
         try {
             writer.object()
             writer.key('errors')
@@ -72,10 +71,10 @@ class CustomValidationErrorMarshaller implements ObjectMarshaller<JSON>, Applica
                     json.property('rejected-value', fe.rejectedValue)
                     Locale locale = LocaleContextHolder.locale
                     if (applicationContext != null) {
-                        json.property(message, applicationContext.getMessage(fe, locale))
+                        json.property('message', applicationContext.getMessage(fe, locale))
                     }
                     else {
-                        json.property(message, fe.defaultMessage)
+                        json.property('message', fe.defaultMessage)
                     }
                     writer.endObject()
                 }

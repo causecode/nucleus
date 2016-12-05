@@ -9,13 +9,15 @@ package com.causecode.user
 
 import grails.databinding.BindingFormat
 import grails.plugin.springsecurity.SpringSecurityService
+import groovy.transform.EqualsAndHashCode
 import groovy.transform.ToString
 
 /**
  * User groovy class used to specify person entity with default information.
  */
 @ToString(includes = ['id', 'username'], includePackage = false)
-@SuppressWarnings(['GrailsDomainHasEquals', 'GrailsDomainWithServiceReference'])
+@EqualsAndHashCode
+@SuppressWarnings(['GrailsDomainWithServiceReference'])
 class User {
 
     SpringSecurityService springSecurityService

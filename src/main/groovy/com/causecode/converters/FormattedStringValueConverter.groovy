@@ -22,6 +22,11 @@ import grails.databinding.converters.FormattedValueConverter
 class FormattedStringValueConverter implements FormattedValueConverter {
 
     /**
+     * Field to Specify the type to which this converter may be applied.
+     */
+    final Class targetType = String
+
+    /**
      * A generic method to convert incoming data to either lower case or upper case.
      * @param value String  whose value is to be converted to lower case.
      * @param format String the required conversion format.
@@ -40,13 +45,5 @@ class FormattedStringValueConverter implements FormattedValueConverter {
             }
         }
         return tempValue
-    }
-
-    /**
-     * Method to Specify the type to which this converter may be applied.
-     * @return Class
-     */
-    Class getTargetType() {
-        return String
     }
 }
