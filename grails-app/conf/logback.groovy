@@ -1,41 +1,35 @@
- import grails.util.BuildSettings
- import grails.util.Environment
+/*
+ * Copyright (c) 2016, CauseCode Technologies Pvt Ltd, India.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or
+ * without modification, are not permitted.
+ */
+import ch.qos.logback.classic.encoder.PatternLayoutEncoder
+import grails.util.Environment
 
- appender('STDOUT', ConsoleAppender) {
-     encoder(PatternLayoutEncoder) {
-         pattern = "%level %logger - %msg%n"
-     }
- }
+def dateFormat = "yyyy-MM-dd'T'HHmmss"
+GString loggingPattern = "%d{${dateFormat}} %-5level [${hostname}] %logger - %msg%n"
 
- logback = {
-     error    'org.codehaus.groovy.grails.web.servlet',        // controllers
-             'org.codehaus.groovy.grails.web.pages',          // GSP
-             'org.codehaus.groovy.grails.web.mapping.filter', // URL mapping
-             'org.codehaus.groovy.grails.web.mapping',        // URL mapping
-             'org.codehaus.groovy.grails.commons',            // core / classloading
-             'org.codehaus.groovy.grails.plugins',            // plugins
-             'org.codehaus.groovy.grails.orm.hibernate',      // hibernate integration
-             'org.springframework',
-             'org.hibernate'
+// For logging to console.
+appender('STDOUT', ConsoleAppender) {
+    encoder(PatternLayoutEncoder) {
+        pattern = loggingPattern
+    }
+}
 
-     debug    'grails.app.conf', 'grails.app.controllers', 'grails.app.services.com.cc',
-             'grails.app.taglib.com.cc', 'grails.app.domain.com.lucastex.grails.fileuploader',
-             'grails.app.jobs', 'grails.app.filters.com.cc', 'com.cc',
-             'grails.app.services.com.lucastex.grails.fileuploader'
+if (Environment.current in [Environment.DEVELOPMENT, Environment.TEST]) {
+    // Enable Spring Framework logs by passing the argument like 'grails -Dspring.logs=1 run-app'.
+    if (System.properties['spring.logs'] == '1') {
+        logger('org.springframework', DEBUG, ['STDOUT'], false)
+    }
 
-     info    'grails.app.conf'
-             'grails.app.filters'
-             'grails.app.taglib'
-             'grails.app.services'
-             'grails.app.controllers'
-             'grails.app.domain'
-             'org.codehaus.groovy.grails.commons'
-             'org.codehaus.groovy.grails.web'
-             'org.codehaus.groovy.grails.web.mapping'
-             'org.codehaus.groovy.grails.plugins'
-             'grails.spring'
-             'org.springframework'
-             'org.hibernate'
- }
+    if (System.properties['sql.logs'] == '1') {
+        logger('org.hibernate', DEBUG, ['STDOUT'], false)
+    }
+}
 
- root(DEBUG,['STDOUT'])
+root(ERROR, ['STDOUT'])
+logger('com.causecode', DEBUG, ['STDOUT'], false)
+logger('grails.app', DEBUG, ['STDOUT'], false)
+logger('StackTrace', ERROR, ['STDOUT'], false)
