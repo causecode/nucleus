@@ -1,7 +1,5 @@
 package com.causecode.util
 
-import java.lang.reflect.Constructor;
-
 import grails.converters.JSON
 
 import org.grails.web.converters.exceptions.ConverterException
@@ -18,6 +16,8 @@ import org.springframework.validation.FieldError
  * @author Shashank Agrawal
  *
  */
+//TODO remove instanceOf check
+@SuppressWarnings(['Instanceof'])
 class CustomValidationErrorMarshaller implements ObjectMarshaller<JSON>, ApplicationContextAware {
 
     /**
@@ -33,7 +33,6 @@ class CustomValidationErrorMarshaller implements ObjectMarshaller<JSON>, Applica
 
     /**
      * Constructor
-     * 
      * Set current scope application context.
      * @param applicationContext Interface provides configuration for an application.
      */
@@ -55,27 +54,27 @@ class CustomValidationErrorMarshaller implements ObjectMarshaller<JSON>, Applica
      * @param object Instance containing errors passed to marshal.
      * @throws ConverterException
      */
+    @SuppressWarnings(['CatchException'])
     void marshalObject(Object object, JSON json) throws ConverterException {
         Errors errors = (Errors) object
-        JSONWriter writer = json.getWriter()
-
+        JSONWriter writer = json.writer
         try {
             writer.object()
-            writer.key("errors")
+            writer.key('errors')
             writer.array()
 
-            for (Object o : errors.getAllErrors()) {
+            for (Object o : errors.allErrors()) {
                 if (o instanceof FieldError) {
                     FieldError fe = (FieldError) o
                     writer.object()
-                    json.property("field", fe.getField())
-                    json.property("rejected-value", fe.getRejectedValue())
-                    Locale locale = LocaleContextHolder.getLocale()
+                    json.property('field', fe.field)
+                    json.property('rejected-value', fe.rejectedValue)
+                    Locale locale = LocaleContextHolder.locale
                     if (applicationContext != null) {
-                        json.property("message", applicationContext.getMessage(fe, locale))
+                        json.property('message', applicationContext.getMessage(fe, locale))
                     }
                     else {
-                        json.property("message", fe.getDefaultMessage())
+                        json.property('message', fe.defaultMessage)
                     }
                     writer.endObject()
                 }
@@ -87,7 +86,7 @@ class CustomValidationErrorMarshaller implements ObjectMarshaller<JSON>, Applica
             throw ce
         }
         catch (Exception e) {
-            throw new ConverterException("Error converting Bean with class " + object.getClass().getName(), e)
+            throw new ConverterException('Error converting Bean with class ' + object.getClass().name, e)
         }
     }
 
@@ -98,5 +97,4 @@ class CustomValidationErrorMarshaller implements ObjectMarshaller<JSON>, Applica
     void setApplicationContext(ApplicationContext applicationContext) {
         this.applicationContext = applicationContext
     }
-
 }

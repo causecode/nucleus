@@ -12,7 +12,6 @@ import grails.test.mixin.TestMixin
 import grails.test.mixin.support.GrailsUnitTestMixin
 import grails.test.runtime.DirtiesRuntime
 import grails.util.Environment
-import grails.util.Holders
 import org.springframework.core.env.MapPropertySource
 import org.springframework.web.context.support.StandardServletEnvironment
 import spock.lang.Specification

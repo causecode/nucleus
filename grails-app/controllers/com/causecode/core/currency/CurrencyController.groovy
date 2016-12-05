@@ -1,41 +1,31 @@
 /*
- * Copyright (c) 2011, CauseCode Technologies Pvt Ltd, India.
+ * Copyright (c) 2016, CauseCode Technologies Pvt Ltd, India.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or
  * without modification, are not permitted.
  */
-
 package com.causecode.core.currency
 
+import static org.springframework.http.HttpStatus.NOT_FOUND
+import com.causecode.util.NucleusUtils
 import org.springframework.dao.DataIntegrityViolationException
 import grails.plugin.springsecurity.annotation.Secured
-
 import com.causecode.currency.Currency
 
-@Secured(["ROLE_ADMIN"])
+/**
+ * Provides end point and CRUD operations for Currency
+ */
+
+@Secured('ROLE_ADMIN')
 class CurrencyController {
 
-    static allowedMethods = [save: "POST", update: "POST", delete: "POST"]
+    static responseFormats = ['json']
 
-    def beforeInterceptor = [action: this.&validate]
-
-    Currency currencyInstance
-
-    private validate() {
-        if(!params.id) return true;
-
-        currencyInstance = Currency.get(params.id)
-        if(!currencyInstance) {
-            flash.message = g.message(code: 'default.not.found.message', args: [message(code: 'currency.label'), params.id])
-            redirect(action: "list")
-            return false
-        }
-        return true
-    }
+    static allowedMethods = [save: 'POST', update: 'POST', delete: 'POST']
 
     def index() {
-        redirect(action: "list", params: params)
+        redirect([action: 'list'])
     }
 
     def list(Integer max) {
@@ -44,58 +34,57 @@ class CurrencyController {
     }
 
     def create() {
-        [currencyInstance: new Currency(params)]
+        render(view: 'create')
     }
 
-    def save() {
-        currencyInstance = new Currency(params)
-        if (!currencyInstance.save(flush: true)) {
-            render(view: "create", model: [currencyInstance: currencyInstance])
+    def save(Currency currencyInstance) {
+        if (!NucleusUtils.save(currencyInstance, true)) {
+            flash.error = 'Cannot save invalid currency'
+            render(view: 'create')
             return
         }
-
-        flash.message = message(code: 'default.created.message', args: [message(code: 'currency.label'), currencyInstance.id])
-        redirect(action: "list", id: currencyInstance.id)
+        redirect([action: 'list'])
     }
 
-    def edit(Long id) {
-        [currencyInstance: currencyInstance]
+    def edit(Currency currencyInstance) {
+        if (currencyInstance && currencyInstance.id) {
+            render(view: 'edit', model: [currencyInstance: currencyInstance])
+        } else {
+            redirect([action: 'list'])
+        }
     }
 
-    def show(Long id) {
-        [currencyInstance: currencyInstance]
+    def show(Currency currencyInstance) {
+        if (currencyInstance && currencyInstance.id) {
+            respond([currencyInstance: currencyInstance])
+            return
+        }
+        render status: NOT_FOUND
     }
 
-    def update(Long id, Long version) {
-        if(version != null) {
-            if (currencyInstance.version > version) {
-                currencyInstance.errors.rejectValue("version", "default.optimistic.locking.failure",
-                        [message(code: 'currency.label')] as Object[],
-                        "Another user has updated this Currency while you were editing")
-                render(view: "edit", model: [currencyInstance: currencyInstance])
+    def update(Currency currencyInstance) {
+        if (currencyInstance && currencyInstance.id) {
+            if (!NucleusUtils.save(currencyInstance, true)) {
+                render(view: 'edit', model: [currencyInstance: currencyInstance])
                 return
             }
+        } else {
+            flash.error = 'Selected currency does not exist'
         }
-
-        currencyInstance.properties = params
-
-        if (!currencyInstance.save(flush: true)) {
-            render(view: "edit", model: [currencyInstance: currencyInstance])
-            return
-        }
-
-        flash.message = message(code: 'default.updated.message', args: [message(code: 'currency.label'), currencyInstance.id])
-        redirect(action: "list", id: currencyInstance.id)
+        redirect(action: 'list')
     }
 
-    def delete(Long id) {
-        try {
-            currencyInstance.delete(flush: true)
-            flash.message = message(code: 'default.deleted.message', args: [message(code: 'currency.label'), id])
-            redirect(action: "list")
-        } catch (DataIntegrityViolationException e) {
-            flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'currency.label'), id])
-            redirect(action: "list", id: id)
+    def delete(Currency currencyInstance) {
+        if (currencyInstance && currencyInstance.id) {
+            try {
+                currencyInstance.delete([flush: true])
+                redirect([action: 'list'])
+            } catch (DataIntegrityViolationException e) {
+                redirect([action: 'list'])
+            }
+        } else {
+            flash.error = 'Selected currency does not exist'
+            redirect([action: 'list'])
         }
     }
 }
