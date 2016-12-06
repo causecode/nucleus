@@ -1,18 +1,21 @@
 /*
- * Copyright (c) 2011, CauseCode Technologies Pvt Ltd, India.
+ * Copyright (c) 2016, CauseCode Technologies Pvt Ltd, India.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or
  * without modification, are not permitted.
  */
-
 package com.causecode.user
 
+import groovy.transform.ToString
 import org.apache.commons.lang.builder.HashCodeBuilder
 
 /**
  * UserRole join groovy class specifies authority for user.
  */
+// TODO remove Instanceof check
+@ToString(includes = ['id'], includePackage = false)
+@SuppressWarnings(['Instanceof'])
 class UserRole implements Serializable {
 
     private static final long serialVersionUID = 1
@@ -25,15 +28,18 @@ class UserRole implements Serializable {
         if (!(other instanceof UserRole)) {
             return false
         }
-
         other.user?.id == user?.id && other.role?.id == role?.id
     }
 
     @Override
     int hashCode() {
         def builder = new HashCodeBuilder()
-        if (user) builder.append(user.id)
-        if (role) builder.append(role.id)
+        if (user) {
+            builder.append(user.id)
+        }
+        if (role) {
+            builder.append(role.id)
+        }
         builder.toHashCode()
     }
 
@@ -47,11 +53,11 @@ class UserRole implements Serializable {
         new UserRole(user: user, role: role).save(flush: flush, insert: true)
     }
 
-    static UserRole create(User user, String role = "ROLE_USER", flush = false) {
+    static UserRole create(User user, String role = 'ROLE_USER', flush = false) {
         new UserRole(user: user, role: Role.findOrSaveByAuthority(role)).save(flush: flush, insert: true)
     }
 
-    static boolean remove(User u, Role r, boolean flush = false) {
+    static boolean remove(User u, Role r) {
         int rowCount = UserRole.where {
             user == User.load(u.id) && role == Role.load(r.id)
         }.deleteAll()
@@ -83,5 +89,4 @@ class UserRole implements Serializable {
         id composite: ['role', 'user']
         version false
     }
-
 }

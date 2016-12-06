@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, CauseCode Technologies Pvt Ltd, India.
+ * Copyright (c) 2016, CauseCode Technologies Pvt Ltd, India.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or
@@ -7,12 +7,15 @@
  */
 package com.causecode.user
 
+import groovy.transform.EqualsAndHashCode
+import groovy.transform.ToString
+
 /**
  * Role groovy class used to specify authority information.
  */
+@ToString(includes = ['id'], includePackage = false)
+@EqualsAndHashCode
 class Role {
-
-    static transients = ['ROLE_CONTENT_MANAGER', 'ROLE_EMPLOYEE', 'PERMIT_ALL']
 
     String authority
 
@@ -23,8 +26,4 @@ class Role {
     static constraints = {
         authority blank: false, unique: true
     }
-
-    public static final String ROLE_CONTENT_MANAGER = 'ROLE_CONTENT_MANAGER'
-    public static final String ROLE_EMPLOYEE = 'ROLE_EMPLOYEE'
-    public static final String PERMIT_ALL = 'permitAll'
 }
