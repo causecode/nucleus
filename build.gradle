@@ -163,3 +163,7 @@ ccJacocoExt {
             '**/Hashids*/**'
     ]
 }
+
+jar {
+    exclude('**/nucleus/UrlMappings*')
+}

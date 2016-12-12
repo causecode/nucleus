@@ -18,7 +18,7 @@ class NucleusGrailsPlugin extends Plugin {
 
     def grailsVersion = '3.1.4 > *'
     def pluginExcludes = [
-        'grails-app/views/error.gsp'
+        '**/nucleus/UrlMappings*/**'
     ]
 
     def title = 'Nucleus Plugin'
