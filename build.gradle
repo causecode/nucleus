@@ -7,6 +7,13 @@ buildscript {
         maven { url "https://plugins.gradle.org/m2/" }
         maven { url "https://repo.grails.org/grails/core" }
         mavenCentral()
+        maven {
+            credentials {
+                username mavenUser
+                password mavenPassword
+            }
+            url "http://maven.causecode.com"
+        }
     }
     dependencies {
         classpath "com.netflix.nebula:nebula-publishing-plugin:4.4.4"
@@ -39,6 +46,13 @@ repositories {
     mavenCentral()
     maven { url "https://plugins.gradle.org/m2/" }
     maven { url "https://repo.grails.org/grails/core" }
+    maven {
+        credentials {
+            username mavenUser
+            password mavenPassword
+        }
+        url "http://maven.causecode.com"
+    }
 }
 
 dependencyManagement {
@@ -148,4 +162,8 @@ ccJacocoExt {
             '**/SitemapMarshaller*/**',
             '**/Hashids*/**'
     ]
+}
+
+jar {
+    exclude('**/nucleus/UrlMappings*')
 }

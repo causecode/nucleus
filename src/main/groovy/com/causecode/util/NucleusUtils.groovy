@@ -145,6 +145,7 @@ class NucleusUtils {
      * @author Ankit Agrawal
      */
     // TODO Completely automate this process in future.
+    @SuppressWarnings(['JavaIoPackageAccess'])
     static void addExternalConfig(GrailsAutoConfiguration application, SEnvironment environment) {
         URL applicationGroovy = application.getClass().classLoader.getResource('application.groovy')
         if (applicationGroovy) {
