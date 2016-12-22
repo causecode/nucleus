@@ -177,16 +177,14 @@ class NucleusUtils {
      *
      * @return merged ConfigObject
      */
-    static ConfigObject getMergedConfigurations(GrailsAutoConfiguration application, String className) {
-        URL applicationGroovy = application.getClass().classLoader.getResource('application.groovy')
+    static ConfigObject getMergedConfigurations(String className) {
 
-        if (applicationGroovy) {
-            ConfigObject applicationConfiguration = new ConfigSlurper(Environment.current.name).parse(applicationGroovy)
+        ConfigObject applicationConfiguration = new ConfigSlurper(Environment.current.name).parse(new
+                GroovyClassLoader(this.classLoader).loadClass('application'))
 
-            ConfigObject pluginConfiguration = new ConfigSlurper(Environment.current.name).parse(new
-                    GroovyClassLoader(this.classLoader).loadClass(className))
+        ConfigObject pluginConfiguration = new ConfigSlurper(Environment.current.name).parse(new
+                GroovyClassLoader(this.classLoader).loadClass(className))
 
-            return (pluginConfiguration ?: new ConfigObject()).merge(applicationConfiguration ?: new ConfigObject())
-        }
+        return (pluginConfiguration ?: new ConfigObject()).merge(applicationConfiguration ?: new ConfigObject())
     }
 }
