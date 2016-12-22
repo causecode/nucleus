@@ -162,4 +162,31 @@ class NucleusUtils {
     static void sendExceptionEmail(Throwable exception, Map model) {
         sendExceptionEmail([exception], model)
     }
+
+    /**
+     * This method is used to merge configurations defined at application.groovy file of parent app and configurations
+     * from DefaultConfig file of any plugin.
+     * The order of merge is important.
+     * We started with configurations from DefaultConfig.groovy and then merged the configurations
+     * defined in application.groovy file of parent app.
+     * This lets the configurations from DefaultConfig act as default values but lets the user-supplied
+     * values in the application.groovy file of parent app override them.
+     *
+     * @params application
+     * @params className
+     *
+     * @return merged ConfigObject
+     */
+    static ConfigObject getMergedConfigurations(GrailsAutoConfiguration application, String className) {
+        URL applicationGroovy = application.getClass().classLoader.getResource('application.groovy')
+
+        if (applicationGroovy) {
+            ConfigObject applicationConfiguration = new ConfigSlurper(Environment.current.name).parse(applicationGroovy)
+
+            ConfigObject pluginConfiguration = new ConfigSlurper(Environment.current.name).parse(new
+                    GroovyClassLoader(this.classLoader).loadClass(className))
+
+            return (pluginConfiguration ?: new ConfigObject()).merge(applicationConfiguration ?: new ConfigObject())
+        }
+    }
 }
