@@ -122,4 +122,14 @@ class NucleusUtilsSpec extends Specification {
         cleanup:
         applicationConfigFile.delete()
     }
+
+    void "test getMergedConfigurations configurations to override configurations"() {
+        when: "getMergedConfiguration method is called"
+        ConfigObject resultConfigObject = NucleusUtils.getMergedConfigurations('com.causecode.test.files.PluginConfig')
+
+        then: "Method returns a ConfigObject which has merged configurations from AppConfig and plugin"
+        resultConfigObject.grails.test.pluginConfig == 'Configuration from PluginConfig.groovy file'
+        resultConfigObject.grails.test.appConfig == 'Configuration from AppConfig.groovy file'
+        resultConfigObject.grails.test.appName == 'appName from AppConfig.groovy file'
+    }
 }

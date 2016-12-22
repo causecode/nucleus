@@ -178,9 +178,15 @@ class NucleusUtils {
      * @return merged ConfigObject
      */
     static ConfigObject getMergedConfigurations(String className) {
+        ConfigObject applicationConfiguration
 
-        ConfigObject applicationConfiguration = new ConfigSlurper(Environment.current.name).parse(new
-                GroovyClassLoader(this.classLoader).loadClass('application'))
+        if (Environment.current == Environment.TEST) {
+            applicationConfiguration = new ConfigSlurper(Environment.current.name).parse(new
+                    GroovyClassLoader(this.classLoader).loadClass('com.causecode.test.files.AppConfig'))
+        } else {
+            applicationConfiguration = new ConfigSlurper(Environment.current.name).parse(new
+                    GroovyClassLoader(this.classLoader).loadClass('application'))
+        }
 
         ConfigObject pluginConfiguration = new ConfigSlurper(Environment.current.name).parse(new
                 GroovyClassLoader(this.classLoader).loadClass(className))
