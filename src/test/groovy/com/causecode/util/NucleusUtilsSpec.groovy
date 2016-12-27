@@ -129,7 +129,8 @@ class NucleusUtilsSpec extends Specification {
 
         then: "Method returns a ConfigObject which has merged configurations from AppConfig and plugin"
         resultConfigObject.grails.test.pluginConfig == 'Configuration from PluginConfig.groovy file'
-        resultConfigObject.grails.test.appConfig == 'Configuration from AppConfig.groovy file'
-        resultConfigObject.grails.test.appName == 'appName from AppConfig.groovy file'
+        resultConfigObject.grails.test.appConfig == 'Configuration from application.groovy file'
+        // appName has been overridden in application.groovy file.
+        resultConfigObject.grails.test.appName == 'appName from application.groovy file'
     }
 }
