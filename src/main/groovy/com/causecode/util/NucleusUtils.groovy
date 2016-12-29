@@ -67,7 +67,7 @@ class NucleusUtils {
         domainInstance.validate()
 
         if (domainInstance.hasErrors()) {
-            logger.warn "Error saving $domainInstance $domainInstance.errors"
+            log.warn "Error saving $domainInstance $domainInstance.errors"
             return false
         }
 
