@@ -7,6 +7,7 @@
  */
 package nucleus
 
+import static org.springframework.http.HttpStatus.NOT_FOUND
 import com.causecode.core.currency.CurrencyController
 import com.causecode.currency.Currency
 import com.causecode.util.NucleusUtils
@@ -16,25 +17,24 @@ import org.springframework.dao.DataIntegrityViolationException
 import spock.lang.Specification
 import spock.util.mop.ConfineMetaClassChanges
 
-import static org.springframework.http.HttpStatus.NOT_FOUND
-
+/**
+ * This class specifies unit test cases for {@link com.causecode.core.currency.CurrencyController}
+ */
 @TestFor(CurrencyController)
 @Mock(Currency)
 class CurrencyControllerSpec extends Specification {
 
     void 'test list action with valid parameter'() {
         when: 'action list is called with parameter greater than 100'
-        controller.params.max = 1000
         controller.request.method = 'POST'
-        controller.list()
+        controller.list(1000)
 
         then: 'params.max must contain 100'
         params.max == 100
 
         when: 'action list is called with parameter less than 100'
-        controller.params.max = 10
         controller.request.method = 'POST'
-        controller.list()
+        controller.list(10)
 
         then: 'params.max must contain 10'
         params.max == 10
@@ -63,7 +63,7 @@ class CurrencyControllerSpec extends Specification {
         when: 'action create is called'
         controller.request.method = 'POST'
         controller.params.currencyInstance = [dateCreated: new Date(), dateUpdated: new Date(), code: 'GBP',
-        name : 'Pound']
+                name: 'Pound']
         controller.save()
 
         then: 'user must be redirected to action list'
@@ -89,7 +89,8 @@ class CurrencyControllerSpec extends Specification {
 
         when: 'action save is called'
         controller.request.method = 'POST'
-        controller.params.currencyInstance = [dateCreated: new Date(), dateUpdated: new Date(), code: null, name: 'Pound']
+        controller.params.currencyInstance = [dateCreated: new Date(), dateUpdated: new Date(), code: null,
+                name: 'Pound']
         controller.save()
 
         then: 'create view must be rendered'
@@ -108,7 +109,8 @@ class CurrencyControllerSpec extends Specification {
 
     def 'test edit action for valid instance of Currency'() {
         when: 'action edit is called'
-        Currency currencyInstance = new Currency([dateCreated: new Date(), dateUpdated: new Date(), code: 'USD', name: 'US Dollar'])
+        Currency currencyInstance = new Currency([dateCreated: new Date(), dateUpdated: new Date(), code: 'USD',
+                name: 'US Dollar'])
         assert currencyInstance.save(failOnError: true, flush: true)
 
         controller.request.method = 'PUT'
@@ -131,7 +133,8 @@ class CurrencyControllerSpec extends Specification {
 
     void 'test show action for valid instance of Currency'() {
         when: 'action show is called'
-        Currency currency = new Currency([dateCreated: new Date(), dateUpdated: new Date(), code: 'USD', name: 'US Dollars'])
+        Currency currency = new Currency([dateCreated: new Date(), dateUpdated: new Date(), code: 'USD',
+                name: 'US Dollars'])
         assert currency.save(failOnError: true, flush: true)
         controller.request.method = 'POST'
         controller.request.json = [id: currency.id.toString()]
@@ -153,7 +156,8 @@ class CurrencyControllerSpec extends Specification {
     @ConfineMetaClassChanges(NucleusUtils)
     def 'test update action when instance of Currency cannot be saved'() {
         given: 'Valid instance of Currency'
-        Currency currency = new Currency([dateCreated: new Date(), dateUpdated: new Date(), code: 'USD', name: 'US Dollar'])
+        Currency currency = new Currency([dateCreated: new Date(), dateUpdated: new Date(), code: 'USD',
+                name: 'US Dollar'])
         assert currency.save(failOnError: true, flush: true)
 
         NucleusUtils.metaClass.'static'.save = { Object domainInstance, boolean flush, def log = logger ->
@@ -171,7 +175,8 @@ class CurrencyControllerSpec extends Specification {
 
     void 'test update action for valid instance of Currency'() {
         given: 'Valid instance of Currency'
-        Currency currency = new Currency([dateCreated: new Date(), dateUpdated: new Date(), code: 'INR', name: 'Indian Rupees'])
+        Currency currency = new Currency([dateCreated: new Date(), dateUpdated: new Date(), code: 'INR',
+                name: 'Indian Rupees'])
         assert currency.save(failOnError: true, flush: true)
         controller.request.json = [id: currency.id.toString()]
         controller.request.method = 'POST'
@@ -208,11 +213,11 @@ class CurrencyControllerSpec extends Specification {
         Currency.count() == currencyTotal
     }
 
-
     void 'test delete action for valid instance of Currency'() {
         given: 'existing instance of Currency'
 
-        new Currency([dateCreated: new Date(), dateUpdated: new Date(),code: 'GBP',name: 'Pound']).save(failOnError: true, flush: true)
+        new Currency([dateCreated: new Date(), dateUpdated: new Date(), code: 'GBP',
+                name: 'Pound']).save(failOnError: true, flush: true)
 
         Currency currencyInstance = new Currency([dateCreated: new Date(), dateUpdated: new Date(),
         code: 'eu', name: 'Euro']).save(failOnError: true, flush: true)
@@ -241,7 +246,7 @@ class CurrencyControllerSpec extends Specification {
 
          when: 'action delete is called'
          controller.request.method = 'POST'
-         controller.request.json = [id : currencyInstance.id.toString()]
+         controller.request.json = [id: currencyInstance.id.toString()]
          controller.delete()
 
          then: 'User is redirected to action list'

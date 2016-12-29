@@ -8,6 +8,8 @@
 package nucleus
 
 import com.causecode.util.NucleusUtils
+import com.causecode.util.EmailService
+import grails.artefact.Artefact
 import grails.plugins.Plugin
 import com.causecode.util.StringAsGspRenderer
 
@@ -37,9 +39,21 @@ class NucleusGrailsPlugin extends Plugin {
             }
         }
     }
-
     @Override
     void doWithApplicationContext() {
         NucleusUtils.initialize(applicationContext)
+    }
+
+    void doWithDynamicMethods() {
+        EmailService emailService = applicationContext.getBean(EmailService)
+
+        List<Artefact> listOfArtefacts = grailsApplication.controllerClasses
+        listOfArtefacts.addAll(grailsApplication.serviceClasses)
+
+        for (artefact in listOfArtefacts) {
+            artefact.metaClass.sendEmail = { Closure closure, String eventName ->
+                emailService.sendEmail(closure, eventName)
+            }
+        }
     }
 }

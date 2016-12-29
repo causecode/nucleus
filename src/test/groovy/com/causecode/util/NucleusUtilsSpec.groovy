@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011-Present, CauseCode Technologies Pvt Ltd, India.
+ * Copyright (c) 2011-Present CauseCode Technologies Pvt Ltd, India.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or
@@ -7,119 +7,135 @@
  */
 package com.causecode.util
 
-import grails.boot.config.GrailsAutoConfiguration
+import com.causecode.currency.Currency
+import grails.gsp.PageRenderer
+import grails.plugins.mail.MailService
+import grails.test.mixin.Mock
 import grails.test.mixin.TestMixin
+
 import grails.test.mixin.support.GrailsUnitTestMixin
-import grails.test.runtime.DirtiesRuntime
-import grails.util.Environment
-import org.springframework.core.env.MapPropertySource
-import org.springframework.web.context.support.StandardServletEnvironment
+import grails.util.Holders
+import org.apache.commons.logging.Log
+import org.grails.gsp.GroovyPagesTemplateEngine
+import org.springframework.beans.BeansException
+import org.springframework.context.ApplicationContext
 import spock.lang.Specification
 
+import java.lang.reflect.Field
+import java.lang.reflect.Modifier
+
+/**
+ * This class specifies unit test cases for {@link com.causecode.util.NucleusUtils}
+ */
 @TestMixin(GrailsUnitTestMixin)
+@Mock([Currency, MailService])
 class NucleusUtilsSpec extends Specification {
 
-    @DirtiesRuntime
-    void "test addExternalConfig method for successfully overriding configurations"() {
-        given: "File instances with configurations and other required instances"
-        File externalConfigFile =  new File('test-config.groovy')
-        externalConfigFile.createNewFile()
-        externalConfigFile << "grails.mail.overrideAddress = 'config.test@causecode.com'\n" +
-                "grails.override.name = 'test-config.groovy'"
+    void 'test getAppName method'() {
+        when: 'getAppName() is called'
+        Holders.config.setAt('app.name', 'nucleus')
+        String appName = NucleusUtils.appName
 
-        File applicationConfigFile = new File('application-test.groovy')
-        applicationConfigFile.createNewFile()
-        applicationConfigFile << "grails.mail.overrideAddress = 'unit.test@causecode.com'\n" +
-                "grails.original.appName = 'nucleus'\n" +
-                "test { \n grails.config.locations = ['${externalConfigFile.absolutePath}'] \n } \n" +
-                "development { \n grails.config.locations = ['${externalConfigFile.absolutePath}'] \n }"
-
-        GrailsAutoConfiguration application = new GrailsAutoConfiguration()
-        StandardServletEnvironment environment = new StandardServletEnvironment()
-
-        // Adding application configurations in environment.
-        ConfigObject config = new ConfigSlurper(Environment.current.name)
-                .parse(new File(applicationConfigFile.absolutePath).toURI().toURL())
-        environment.propertySources.addFirst(new MapPropertySource('app-config', config))
-        assert environment.propertySources.propertySourceList[0].source.grails.mail.overrideAddress ==
-                'unit.test@causecode.com'
-        assert environment.propertySources.propertySourceList[0].source.grails.original.appName == 'nucleus'
-        assert environment.propertySources.propertySourceList[0].source.grails.config.locations ==
-                [externalConfigFile.absolutePath]
-
-        and: "Mocked method"
-        ClassLoader.metaClass.getResource = { String name ->
-            return applicationConfigFile.toURI().toURL()
-        }
-
-        when: "addExternalConfig method is called"
-        NucleusUtils.addExternalConfig(application, environment)
-
-        then: "propertis are read from given external file and are added to environment's propertySource"
-        // Old properties
-        environment.propertySources.propertySourceList[1].source.grails.mail.overrideAddress ==
-                'unit.test@causecode.com'
-        environment.propertySources.propertySourceList[1].source.grails.original.appName == 'nucleus'
-        environment.propertySources.propertySourceList[1].source.grails.config.locations ==
-                [externalConfigFile.absolutePath]
-
-        // New properties added from external config file.
-        environment.propertySources.propertySourceList[0].source.grails.mail.overrideAddress ==
-                'config.test@causecode.com'
-        environment.propertySources.propertySourceList[0].source.grails.override.name == 'test-config.groovy'
-
-        cleanup:
-        externalConfigFile.delete()
-        applicationConfigFile.delete()
+        then: 'result must match with provided string'
+        appName == 'Nucleus'
     }
 
-    @DirtiesRuntime
-    void "test addExternalConfig method when external file locations is not present"() {
-        given: "File instances with configurations and other required instances"
-        File applicationConfigFile = new File('application-test.groovy')
-        applicationConfigFile.createNewFile()
-        applicationConfigFile << "grails.mail.overrideAddress = 'unit.test@causecode.com'\n" +
-                "grails.original.appName = 'nucleus'\n"
+    void 'test initialize method'() {
+        given: 'applicationContext'
+        ApplicationContext applicationContext = Holders.applicationContext
 
-        GrailsAutoConfiguration application = new GrailsAutoConfiguration()
-        StandardServletEnvironment environment = new StandardServletEnvironment()
+        when: 'initialize method is called'
+        NucleusUtils.initialize(applicationContext)
 
-        // Adding application configurations in environment.
-        ConfigObject config = new ConfigSlurper(Environment.current.name)
-                .parse(new File(applicationConfigFile.absolutePath).toURI().toURL())
-        environment.propertySources.addFirst(new MapPropertySource('app-config', config))
-        assert environment.propertySources.propertySourceList[0].source.grails.mail.overrideAddress ==
-                'unit.test@causecode.com'
-        assert environment.propertySources.propertySourceList[0].source.grails.original.appName == 'nucleus'
-        assert environment.propertySources.propertySourceList[0].source.grails.config.locations == [:]
+        then: 'No exception is thrown'
+        notThrown(BeansException)
+    }
 
-        and: "Mocked method"
-        ClassLoader.metaClass.getResource = { String name ->
-            return applicationConfigFile.toURI().toURL()
+    void 'test getBean method'() {
+        when: 'getBean method is called'
+        Object object = NucleusUtils.getBean('mailService')
+
+        then: 'bean object is returned'
+        object != null
+    }
+
+    void 'test save method'() {
+        when: 'save method is called for given valid currency instance'
+        Currency currency = new Currency(code: 'INR', name: 'Indian Rupees')
+        boolean result = NucleusUtils.save(currency, true)
+
+        then: 'save method must return true'
+        result == true
+
+        when: 'save method is called for given invalid currency instance'
+        currency = new Currency()
+        result = NucleusUtils.save(currency, true)
+
+        then: 'save method must return false'
+        result == false
+
+        when: 'save method is called for given null currency instance'
+        currency = null
+        result = NucleusUtils.save(currency, true)
+
+        then: 'save method must return false'
+        result == false
+    }
+
+    // This needs to be discussed
+    /*void 'test sendExceptionEmail method'() {
+        given: 'List of exceptions to be sent in email'
+
+        Holders.config.setAt('app.name', 'nucleus')
+        Map map = [:]
+
+        PageRenderer groovyPageRenderer = new PageRenderer(new GroovyPagesTemplateEngine())
+
+        NucleusUtils.metaClass.'static'.getBean = { String serviceName ->
+            return groovyPageRenderer
         }
 
-        when: "addExternalConfig method is called and external configuration file is not given"
-        NucleusUtils.addExternalConfig(application, environment)
+        groovyPageRenderer.metaClass.render = {
+            Map param -> return 'Error occurred'
+        }
 
-        then: "Properties remain unchanged"
-        assert environment.propertySources.propertySourceList[0].source.grails.mail.overrideAddress ==
-                'unit.test@causecode.com'
-        assert environment.propertySources.propertySourceList[0].source.grails.original.appName == 'nucleus'
+        String logStatement
+        Log log = [debug: { Object message ->
+            logStatement = message
+        }, warn : { Object message ->
+            logStatement = message
+        }, info : { Object message ->
+            logStatement = message
+        }, error : { Object message, Throwable e = new Exception() ->
+            logStatement = message
+            println e.message
+        } ] as Log
 
-        when: "addExternalConfig method is called and external configuration file path is given but does not exist"
-        applicationConfigFile << "test { \n grails.config.locations =" +
-                "['${System.getProperty('user.dir') + '/temp/external-config.groovy'}'] \n } \n" +
-                "development { \n grails.config.locations =" +
-                "['${System.getProperty('user.dir') + '/temp/external-config.groovy'}'] \n }"
 
-        NucleusUtils.addExternalConfig(application, environment)
+        Field loggerField = NucleusUtils.class.getDeclaredField('logger')
+        loggerField.setAccessible(true)
+        Field modifier = Field.class.getDeclaredField('modifiers')
+        modifier.setAccessible(true)
+        modifier.setInt(loggerField, loggerField.getModifiers() & ~Modifier.FINAL)
+        loggerField.set(null, log)
 
-        then: "Method throws FileNotFoundException"
-        FileNotFoundException exception = thrown()
-        exception.message == System.getProperty('user.dir') + '/temp/external-config.groovy' +
-                ' (No such file or directory)'
+        NucleusUtils.mailService = null
 
-        cleanup:
-        applicationConfigFile.delete()
-    }
+        when: 'sendExceptionEmail method is called and mailService is null'
+
+        NucleusUtils.sendExceptionEmail(new StackOverflowError(), map)
+
+        then: 'mail cannot be sent and method returns'
+        logStatement == 'Could not send email as MailService bean is null.'
+
+        when: 'sendExceptionEmail method is called'
+        NucleusUtils.mailService = [sendMail: { Closure callable ->
+            return
+        } ] as MailService
+
+        NucleusUtils.sendExceptionEmail(new StackOverflowError(), map)
+
+        then: 'mail is sent'
+        logStatement == 'Exception email sent'
+    }*/
 }

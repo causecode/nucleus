@@ -27,7 +27,7 @@ plugins {
 }
 
 group "com.causecode.plugins"
-version "0.4.2"
+version "0.4.3"
 
 apply plugin: "eclipse"
 apply plugin: "idea"
@@ -87,15 +87,20 @@ dependencies {
     testRuntime "org.seleniumhq.selenium:selenium-htmlunit-driver:2.47.1"
     testRuntime "net.sourceforge.htmlunit:htmlunit:2.18"
 
+    // Grails JSON Views
+    compile "org.grails.plugins:views-json:1.1.2"
+    compile "org.grails.plugins:views-json-templates:1.1.2"
 
+    // Grails Async Mail Plugin
+    compile "org.grails.plugins:asynchronous-mail:2.0.0.RC4"
     /*
     * Dependencies which were needed for the application/plugin.
     */
     compile "org.grails.plugins:hibernate5"
     compile "org.hibernate:hibernate-ehcache:5.1.1.Final"
     profile "org.grails.profiles:web-plugin:3.1.4"
-    provided "org.grails.plugins:spring-security-core:3.1.1"
-    provided "org.grails.plugins:export:2.0.0"
+    compile "org.grails.plugins:spring-security-core:3.1.1"
+    compile "org.grails.plugins:export:2.0.0"
     testCompile "org.grails:grails-datastore-test-support:1.0.2-grails-2.4"
     runtime "mysql:mysql-connector-java:5.1.16"
     compile "javax.validation:validation-api:1.1.0.Final"
@@ -160,7 +165,9 @@ ccJacocoExt {
             '**/UrlMappings*/**',
             '**/CustomValidationErrorMarshaller*/**',
             '**/SitemapMarshaller*/**',
-            '**/Hashids*/**'
+            '**/Hashids*/**',
+            '**/RestfulController*/**',
+            '**/BaseController*/**'
     ]
 }
 
