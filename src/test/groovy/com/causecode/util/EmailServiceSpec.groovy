@@ -11,12 +11,13 @@ import grails.plugin.asyncmail.AsynchronousMailService
 import grails.test.mixin.TestFor
 import org.slf4j.Logger
 import org.springframework.mail.MailSendException
+import spock.lang.Specification
 
 /**
  * This class specifies unit test cases for {@link com.causecode.util.EmailService}.
  */
 @TestFor(EmailService)
-class EmailServiceSpec {
+class EmailServiceSpec extends Specification {
 
     Object logStatement
 
@@ -40,6 +41,7 @@ class EmailServiceSpec {
         result
 
         when: 'AsynchronousMailService is mocked to throw exception'
+        mockLogger()
         service.asynchronousMailService = [sendMail: { Closure closure ->
             throw new MailSendException('Test Exception')
         } ] as AsynchronousMailService

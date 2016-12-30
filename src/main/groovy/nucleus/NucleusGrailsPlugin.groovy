@@ -43,17 +43,4 @@ class NucleusGrailsPlugin extends Plugin {
     void doWithApplicationContext() {
         NucleusUtils.initialize(applicationContext)
     }
-
-    void doWithDynamicMethods() {
-        EmailService emailService = applicationContext.getBean(EmailService)
-
-        List<Artefact> listOfArtefacts = grailsApplication.controllerClasses
-        listOfArtefacts.addAll(grailsApplication.serviceClasses)
-
-        for (artefact in listOfArtefacts) {
-            artefact.metaClass.sendEmail = { Closure closure, String eventName ->
-                emailService.sendEmail(closure, eventName)
-            }
-        }
-    }
 }

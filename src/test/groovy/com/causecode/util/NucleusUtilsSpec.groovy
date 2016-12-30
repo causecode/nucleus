@@ -82,8 +82,7 @@ class NucleusUtilsSpec extends Specification {
         result == false
     }
 
-    // This needs to be discussed
-    /*void 'test sendExceptionEmail method'() {
+    void 'test sendExceptionEmail method'() {
         given: 'List of exceptions to be sent in email'
 
         Holders.config.setAt('app.name', 'nucleus')
@@ -137,5 +136,5 @@ class NucleusUtilsSpec extends Specification {
 
         then: 'mail is sent'
         logStatement == 'Exception email sent'
-    }*/
+    }
 }
