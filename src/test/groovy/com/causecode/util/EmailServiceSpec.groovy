@@ -24,7 +24,7 @@ class EmailServiceSpec {
         } ] as Logger
     }
 
-    void "test sendEmail method when not exception is thrown"() {
+    void "test sendEmail method for exception"() {
         given: 'AsynchronousMailService is mocked to return true'
         service.asynchronousMailService = [sendMail: { Closure closure ->
             return true
