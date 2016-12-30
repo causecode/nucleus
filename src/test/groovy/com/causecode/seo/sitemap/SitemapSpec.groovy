@@ -11,6 +11,9 @@ import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
 import spock.lang.Specification
 
+/**
+ * This class specifies unit test cases for {@link com.causecode.seo.sitemap.Sitemap}.
+ */
 @Mock(Url)
 @TestFor(Sitemap)
 class SitemapSpec extends Specification {
@@ -41,7 +44,7 @@ class SitemapSpec extends Specification {
         Sitemap causecodeSitemap = new Sitemap()
         causecodeSitemap.addToUrlset(user)
         assert causecodeSitemap.save(flush: true, failOnError: true)
-        String result = causecodeSitemap.toString()
+        String result = causecodeSitemap
 
         then: 'result must match with the given String'
         result == 'Sitemap(1)'

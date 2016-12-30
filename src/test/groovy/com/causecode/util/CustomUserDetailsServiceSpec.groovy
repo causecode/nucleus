@@ -18,7 +18,9 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException
 import spock.lang.Specification
 import spock.util.mop.ConfineMetaClassChanges
 
-
+/**
+ * This class specifies unit test cases for {@link com.causecode.util.CustomUserDetailsService}.
+ */
 @Mock([User, Role, UserRole, SpringSecurityService])
 @TestFor(CustomUserDetailsService)
 class CustomUserDetailsServiceSpec extends Specification {
@@ -41,7 +43,7 @@ class CustomUserDetailsServiceSpec extends Specification {
 
         CustomUserDetailsService customUserDetailsService = new CustomUserDetailsService()
         when: 'loaduserByUsername method is called'
-        UserDetails details = customUserDetailsService.loadUserByUsername(username,true)
+        UserDetails details = customUserDetailsService.loadUserByUsername(username, true)
 
         then: 'User instance is found and user details are returned'
         details != null

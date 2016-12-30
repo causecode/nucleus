@@ -13,6 +13,9 @@ import grails.test.mixin.TestFor
 import grails.test.runtime.DirtiesRuntime
 import spock.lang.Specification
 
+/**
+ * This class specifies unit test cases for {@link com.causecode.user.UserRole}.
+ */
 @Mock([User, Role, SpringSecurityService])
 @TestFor(UserRole)
 class UserRoleSpec extends Specification {
@@ -22,7 +25,8 @@ class UserRoleSpec extends Specification {
     UserRole adminUserRole, userRole
 
     def setup() {
-        admin = new User([firstName: 'admin', lastName: 'admin', username: 'admin', password: 'admin@123', email: 'admin@causecode.com'])
+        admin = new User([firstName: 'admin', lastName: 'admin', username: 'admin', password: 'admin@123',
+                email: 'admin@causecode.com'])
 
         SpringSecurityService springSecurityServiceForAdminUser = new SpringSecurityService()
         springSecurityServiceForAdminUser.metaClass.encodePassword = { String password -> 'ENCODED_PASSWORD' }
@@ -35,7 +39,8 @@ class UserRoleSpec extends Specification {
         adminUserRole = UserRole.create(admin, adminRole, true)
         assert adminUserRole
 
-        normalUser = new User([firstName: 'normal', lastName: 'normal', username: 'normal', password: 'normal@123', email: 'normal@causecode.com'])
+        normalUser = new User([firstName: 'normal', lastName: 'normal', username: 'normal', password: 'normal@123',
+                email: 'normal@causecode.com'])
 
         SpringSecurityService springSecurityServiceForNormalUser = new SpringSecurityService()
         springSecurityServiceForNormalUser.metaClass.encodePassword = { String password -> 'ENCODED_PASSWORD' }
@@ -51,7 +56,7 @@ class UserRoleSpec extends Specification {
 
     void 'test equals method for instance which is not instanceof UserRole'() {
         when: 'equals method is called'
-        boolean result = adminUserRole.equals(adminRole)
+        boolean result = adminUserRole == adminRole
 
         then: 'equals method must return false'
         result == false
@@ -59,13 +64,14 @@ class UserRoleSpec extends Specification {
 
     void 'test equals method'() {
         when: 'equals method is called with two difference instances of UserRole'
-        boolean result = adminRole.equals(userRole)
+        boolean result = adminUserRole == normalUserRole
 
         then: 'equals method must return false'
         result == false
 
         when: 'equals method is called with two same instances of UserRole'
-        result = adminRole.equals(adminRole)
+        UserRole localAdminUserRole = adminUserRole
+        result = adminUserRole == localAdminUserRole
 
         then: 'equals method must return true'
         result == true
@@ -73,7 +79,7 @@ class UserRoleSpec extends Specification {
 
     void 'test equals method when passed instance is null'() {
         when: 'equals method is called'
-        boolean result = adminUserRole.equals(null)
+        boolean result = adminUserRole == null
 
         then: 'equals method must return false'
         result == false
@@ -95,7 +101,7 @@ class UserRoleSpec extends Specification {
         UserRole userRole = UserRole.get(admin.id, adminRole.id)
 
         then: 'Returned instance must match with the instance created above'
-        userRole.equals(adminUserRole)
+        userRole == adminUserRole
     }
 
     void 'test get() method when passed id is not valid'() {
@@ -122,7 +128,7 @@ class UserRoleSpec extends Specification {
             user == User.load(newAdmin.id) && role == Role.load(adminRole.id)
         }.get()
 
-        savedInstance.equals(newAdminUserRole)
+        savedInstance == newAdminUserRole
         UserRole.count() == userRoleCount + 1
     }
 
@@ -148,7 +154,7 @@ class UserRoleSpec extends Specification {
         then: 'UserRole will be created with voidault ROLE_USER'
         Role role = Role.findByAuthority('ROLE_USER')
         UserRole savedInstance = UserRole.get(newAdmin.id, role.id)
-        savedInstance.equals(createdUserRole)
+        savedInstance == createdUserRole
         UserRole.count() == userRoleCount + 1
     }
 
@@ -169,7 +175,7 @@ class UserRoleSpec extends Specification {
         UserRole savedInstance = UserRole.where {
             user == User.load(newAdmin.id) && role == Role.load(newAdminRole.id)
         }.get()
-        savedInstance.equals(createdUserRole)
+        savedInstance == createdUserRole
         UserRole.count() == userRoleCount + 1
     }
 
@@ -213,14 +219,16 @@ class UserRoleSpec extends Specification {
     @DirtiesRuntime
     void 'test removeAll method to delete all user roles by passing role instance'() {
         given: 'UserRole instance for two users'
-        User adminOne = new User([firstName: 'adminOne', lastName: 'adminOne', username: 'adminOne', password: 'admin@123', email: 'adminOne@causecode.com'])
+        User adminOne = new User([firstName: 'adminOne', lastName: 'adminOne', username: 'adminOne',
+                password: 'admin@123', email: 'adminOne@causecode.com'])
 
         SpringSecurityService springSecurityServiceForAdminOne = new SpringSecurityService()
         springSecurityServiceForAdminOne.metaClass.encodePassword = { String password -> 'ENCODED_PASSWORD' }
         adminOne.springSecurityService = springSecurityServiceForAdminOne
         assert adminOne.save(flush: true, failOnError: true)
 
-        User adminTwo = new User([firstName: 'adminTwo', lastName: 'adminTwo', username: 'adminTwo', password: 'admin@123', email: 'adminTwo@causecode.com'])
+        User adminTwo = new User([firstName: 'adminTwo', lastName: 'adminTwo', username: 'adminTwo',
+                password: 'admin@123', email: 'adminTwo@causecode.com'])
 
         SpringSecurityService springSecurityServiceForAdminTwo = new SpringSecurityService()
         springSecurityServiceForAdminTwo.metaClass.encodePassword = { String password -> 'ENCODED_PASSWORD' }
@@ -259,14 +267,15 @@ class UserRoleSpec extends Specification {
 
     void 'test toString() method'() {
         when: 'UserRole instance is created and toString is called'
-        String result = adminUserRole.toString()
+        String result = adminUserRole
 
         then:
         result == 'UserRole(1)'
     }
 
     User createAdminUser() {
-        User newAdmin = new User([firstName: 'admin', lastName: 'admin', username: 'sysadmin', password: 'admin@123', email: 'sysadmin@causecode.com'])
+        User newAdmin = new User([firstName: 'admin', lastName: 'admin', username: 'sysadmin', password: 'admin@123',
+                email: 'sysadmin@causecode.com'])
         SpringSecurityService springSecurityServiceForAdminUser = new SpringSecurityService()
         springSecurityServiceForAdminUser.metaClass.encodePassword = { String password -> 'ENCODED_PASSWORD' }
         newAdmin.springSecurityService = springSecurityServiceForAdminUser

@@ -11,6 +11,9 @@ import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
 import spock.lang.Specification
 
+/**
+ * This class specifies test cases for {@link com.causecode.geo.location.City}.
+ */
 @Mock(Country)
 @TestFor(City)
 class CitySpec extends Specification {
@@ -41,7 +44,7 @@ class CitySpec extends Specification {
         assert india.save(flush: true, failOnError: true)
         City city = new City([country: india])
         assert city.save(flush: true, failOnError: true)
-        String result = city.toString()
+        String result = city
 
         then: 'It must match with the provided string value'
         result == 'City(1)'
