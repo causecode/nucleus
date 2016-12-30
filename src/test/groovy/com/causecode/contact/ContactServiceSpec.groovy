@@ -17,6 +17,9 @@ import grails.test.mixin.TestFor
 import org.springframework.mock.web.MockHttpServletRequest
 import spock.lang.Specification
 
+/**
+ * This classes describes unit test cases for ContactService.groovy.
+ */
 @Mock([User, Phone, PhoneCountryCode, Contact, Location, Country, City, SpringSecurityService])
 @TestFor(ContactService)
 class ContactServiceSpec extends Specification {
@@ -25,7 +28,8 @@ class ContactServiceSpec extends Specification {
     MockHttpServletRequest request
 
     def setup() {
-        User adminUser = new User(firstName: 'admin', lastName: 'admin', username: 'admin', password: 'admin@123', email: 'admin@causecode.com')
+        User adminUser = new User(firstName: 'admin', lastName: 'admin', username: 'admin', password: 'admin@123',
+                email: 'admin@causecode.com')
 
         SpringSecurityService service = new SpringSecurityService()
         service.metaClass.currentUser = adminUser
@@ -38,15 +42,16 @@ class ContactServiceSpec extends Specification {
         contactService.springSecurityService = service
 
         request = new MockHttpServletRequest()
-        List<Locale> localeList = new ArrayList<>()
+        List<Locale> localeList = []
         localeList.add(new Locale('India', 'en_IN'))
         request.setPreferredLocales(localeList)
     }
 
     void 'test resolve parameters method'() {
         given: 'Map containing various key-value pairs for contact'
-        Map args = [city : 'Pune', state: 'Maharashtra', cityState : 'Pune,Maharashtra', cityStateCountry: 'Pune,Maharashtra,India',
-                countryId : 1, email : 'admin@causecode.com', altEmail: 'admin@gmail.com', mobileCountryCode : '91', phoneNumber: '9876543210'
+        Map args = [city: 'Pune', state: 'Maharashtra', cityState: 'Pune,Maharashtra',
+                    cityStateCountry: 'Pune,Maharashtra,India', countryId: 1, email: 'admin@causecode.com',
+                    altEmail: 'admin@gmail.com', mobileCountryCode: '91', phoneNumber: '9876543210'
         ]
 
         when: 'resolveParameters is called'
@@ -63,8 +68,8 @@ class ContactServiceSpec extends Specification {
 
     void 'test resolve parameters method when mobileCountryCode,phoneNumber is not provided'() {
         given: 'Map containing various key-value pairs'
-        Map args = [city : 'Pune', state: 'Maharashtra', cityStateCountry : 'Pune,India',
-                longitude : '73°51`19` E', latitude: '18°31`10` N'
+        Map args = [city: 'Pune', state: 'Maharashtra', cityStateCountry: 'Pune,India',
+                longitude: '73°51`19` E', latitude: '18°31`10` N'
         ]
 
         when: 'resolveParameters is called'
@@ -79,9 +84,9 @@ class ContactServiceSpec extends Specification {
 
     void 'test resolve parameters method when country field is missing'() {
         given: 'Map containing various key-value pairs'
-        Map args = [city : 'Pune', state: 'Maharashtra', cityState : 'Pune,Maharashtra', country : null, countryId : 1,
-                cityState : 'Pune,Maharashtra', zip: '366366', mobileCountryCode: '91', phoneNumber: '9876543210',
-                facebook: 'https://www.facebook.com/causecode', twitter : '@causecode'
+        Map args = [city: 'Pune', state: 'Maharashtra', cityState: 'Pune,Maharashtra', country: null, countryId: 1,
+                zip: '366366', mobileCountryCode: '91', phoneNumber: '9876543210',
+                facebook: 'https://www.facebook.com/causecode', twitter: '@causecode'
         ]
 
         Country.metaClass.'static'.get = { Long id ->
@@ -123,7 +128,7 @@ class ContactServiceSpec extends Specification {
     void "test hasErrors method when instance has errors"() {
         given: 'Map containing various key-value pairs'
         Country india = new Country(code: 'IND')
-        PhoneCountryCode indiaCode = new PhoneCountryCode(code: '91',country: india)
+        PhoneCountryCode indiaCode = new PhoneCountryCode(code: '91', country: india)
         Phone phone = new Phone(countryCode: indiaCode)
         City pune = new City(state: 'Maharashtra', stateCode: 'MH')
         Location location = new Location(city: pune)

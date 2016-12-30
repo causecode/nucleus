@@ -82,7 +82,12 @@ dependencies {
     testRuntime "org.seleniumhq.selenium:selenium-htmlunit-driver:2.47.1"
     testRuntime "net.sourceforge.htmlunit:htmlunit:2.18"
 
+    // Grails JSON Views
+    provided "org.grails.plugins:views-json:1.1.3"
+    provided "org.grails.plugins:views-json-templates:1.1.3"
 
+    // Grails Async Mail Plugin
+    compile "org.grails.plugins:asynchronous-mail:2.0.0.RC4"
     /*
     * Dependencies which were needed for the application/plugin.
     */
@@ -158,7 +163,10 @@ ccJacocoExt {
             '**/UrlMappings*/**',
             '**/CustomValidationErrorMarshaller*/**',
             '**/SitemapMarshaller*/**',
-            '**/Hashids*/**'
+            '**/Hashids*/**',
+            '**/RestfulController*/**',
+            '**/BaseController*/**',
+            '**/GenericEnhancers*/**'
     ]
 }
 

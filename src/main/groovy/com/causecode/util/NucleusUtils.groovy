@@ -19,6 +19,7 @@ import org.apache.commons.logging.LogFactory
  * @author Shashank Agrawal
  * @since v0.3.1
  */
+
 class NucleusUtils {
 
     private static final Log logger = LogFactory.getLog(this)
@@ -33,7 +34,7 @@ class NucleusUtils {
     }
 
     static void initialize(ApplicationContext applicationContext) {
-        logger.debug 'Initilizing NucleusUtil..'
+        logger.debug 'Initializing NucleusUtil..'
 
         try {
             mailService = applicationContext.getBean('asynchronousMailService')

@@ -9,6 +9,9 @@ package com.causecode.util.date
 
 import spock.lang.Specification
 
+/**
+ * This class specifies unit test cases for {@link com.causecode.util.date.DateUtil}
+ */
 class DateUtilSpec extends Specification {
 
     DateUtil dateUtil
@@ -16,7 +19,7 @@ class DateUtilSpec extends Specification {
 
     def setup() {
         dateUtil = new DateUtil()
-        calendar = Calendar.getInstance()
+        calendar = Calendar.instance
     }
 
     void 'test setBeginningOfDay method'() {
@@ -43,7 +46,7 @@ class DateUtilSpec extends Specification {
 
     void 'test getDateRangeForThisWeek method'() {
         when: 'getDateRangeForThisWeek method is called where include weekend is true'
-        Map result = dateUtil.getDateRangeForThisWeek()
+        Map result = dateUtil.getDateRangeForThisWeek(true)
 
         then: 'Map containing date range is returned, saturday is included'
         assert !result.isEmpty()
@@ -61,7 +64,7 @@ class DateUtilSpec extends Specification {
 
     void 'test getWeekDayRange method'() {
         when: 'getWeekDayRange is called'
-        Map result = dateUtil.getWeekDayRange()
+        Map result = dateUtil.weekDayRange
 
         then: 'Map containing value of current week range is returned'
         assert !result.isEmpty()
@@ -71,7 +74,7 @@ class DateUtilSpec extends Specification {
 
     void 'test getDateRangeForComingWeekend method'() {
         when: 'getDateRangeForComingWeekend is called'
-        Map result = dateUtil.getDateRangeForComingWeekend()
+        Map result = dateUtil.dateRangeForComingWeekend
 
         then: 'Map containing values for upcoming weekend is returned'
         assert !result.isEmpty()
@@ -81,7 +84,7 @@ class DateUtilSpec extends Specification {
 
     void 'test getDateRangeForThisMonth method'() {
         when: 'getDateRangeForThisMonth method is called'
-        Map result = dateUtil.getDateRangeForThisMonth()
+        Map result = dateUtil.dateRangeForThisMonth
 
         then: 'Map containing values for date range of current month is returned'
         assert !result.isEmpty()
@@ -126,7 +129,7 @@ class DateUtilSpec extends Specification {
 
     void 'test getDatePart method'() {
         when: 'getDatePart method is called'
-        String date = dateUtil.getDatePart()
+        String date = dateUtil.getDatePart(calendar.time, DateUtil.DEFAULT_DATE_FORMAT)
 
         then: 'String containing only date is returned'
         !date.isEmpty()
@@ -135,7 +138,7 @@ class DateUtilSpec extends Specification {
 
     void 'test getTimePart method'() {
         when: 'getTimePart method is called'
-        String time = dateUtil.getTimePart()
+        String time = dateUtil.getTimePart(calendar.time)
 
         then: 'String containing only time is returned'
         !time.isEmpty()
@@ -156,7 +159,7 @@ class DateUtilSpec extends Specification {
         try {
             Thread.sleep(2000)
         } catch (InterruptedException e) {
-            //foo
+            e.printStackTrace(System.err)
         }
         Date date2 = new Date()
         boolean result = dateUtil.equalsWithoutTime(date1, date2)
