@@ -17,12 +17,12 @@ buildscript {
     }
     dependencies {
         classpath "org.grails:grails-gradle-plugin:$grailsVersion"
-        classpath "com.causecode.plugins:gradle-code-quality:0.0.2"
+        classpath "com.causecode.plugins:gradle-code-quality:0.0.3"
     }
 }
 
 group "com.causecode.plugins"
-version "0.4.3"
+version "0.4.4"
 
 apply plugin: "eclipse"
 apply plugin: "idea"
@@ -105,6 +105,8 @@ dependencies {
     compile "org.grails.plugins:views-json:1.1.2"
     compile "org.grails.plugins:views-json-templates:1.1.2"
     compile "org.grails.plugins:asynchronous-mail:2.0.0.RC4"
+    // Please exclude this dependency in installing app if not needed.
+    compile "com.causecode.plugins:user-management:0.0.2"
 }
 
 project.publishing {
