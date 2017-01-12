@@ -11,6 +11,9 @@ import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
 import spock.lang.Specification
 
+/**
+ * This class specifies unit test cases for {@link com.causecode.geo.location.Location}.
+ */
 @Mock([City, Country])
 @TestFor(Location)
 class LocationSpec extends Specification {
@@ -27,13 +30,13 @@ class LocationSpec extends Specification {
         assert location.save(flush: true, failOnError: true)
 
         when: 'getFullAddress method is called'
-        String fullAddress = location.getFullAddress()
+        String fullAddress = location.fullAddress
 
         then: 'returned fullAddress must match the given value'
         fullAddress == 'Baner, Pune, Maharashtra, India - 343434'
 
         when: 'getString method is called'
-        String result = location.toString()
+        String result = location
 
         then: 'It must match with the provided string value'
         result == 'Location(1)'

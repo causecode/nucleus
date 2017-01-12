@@ -14,6 +14,9 @@ import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
 import spock.lang.Specification
 
+/**
+ * This class describes unit test case for {@link com.causecode.contact.Contact}.
+ */
 @Mock([Location, City, Country])
 @TestFor(Contact)
 class ContactSpec extends Specification {
@@ -26,12 +29,13 @@ class ContactSpec extends Specification {
         City city = new City([city: 'Pune', state: 'Maharashtra', stateCode: 'MH', country: india])
         assert city.save(flush: true, failOnError: true)
 
-        Location location = new Location([name: 'Home Address', address: 'somewhere on earth', zip: '123456', city: city])
+        Location location = new Location([name: 'Home Address', address: 'somewhere on earth',
+                zip: '123456', city: city])
         assert location.save(flush: true, failOnError: true)
 
         Contact contactInstance = new Contact(address: location)
         assert contactInstance.save(flush: true, failOnError: true)
-        String result = contactInstance.toString()
+        String result = contactInstance
 
         then: 'result must match with given string'
         result == 'Contact(1)'

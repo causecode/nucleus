@@ -14,13 +14,17 @@ import spock.lang.Shared
 import spock.lang.Specification
 import spock.lang.Unroll
 
+/**
+ * This class specifies unit test cases for {@link com.causecode.user.User}.
+ */
 @TestFor(User)
 @Mock(SpringSecurityService)
 class UserSpec extends Specification {
 
     def 'test email update'() {
         given: 'An email address already stored in database'
-        User adminUser = new User([firstName: 'admin', lastName: 'admin', username: 'admin', password: 'admin@123', email: 'admin@causecode.com'])
+        User adminUser = new User([firstName: 'admin', lastName: 'admin', username: 'admin', password: 'admin@123',
+                email: 'admin@causecode.com'])
 
         SpringSecurityService springSecurityServiceForAdminUser = new SpringSecurityService()
         springSecurityServiceForAdminUser.metaClass.encodePassword = { String password -> 'ENCODED_PASSWORD' }
@@ -35,42 +39,41 @@ class UserSpec extends Specification {
         adminUser.email == 'admin@causecode.com'
     }
 
-    @Unroll("person #field is #test using #value")
+    @Unroll('person gender is #test using #value')
     void 'test user gender constraints'() {
         when: 'User instance is created with provided gender values'
         User userInstance = new User([firstName: 'admin', lastName: 'admin', username: 'admin', password: 'admin@123',
-                email: 'admin@causecode.com', "$field": value
-        ])
+                email: 'admin@causecode.com', 'gender': value])
 
         then: 'User instance is validated against constraints'
-        validateConstraints(userInstance, field, test)
+        validateConstraints(userInstance, 'gender', test)
 
         where:
-        test     | field    | value
-        'inList' | 'gender' | 'Unknown'
-        'valid'  | 'gender' | null
-        'valid'  | 'gender' | ''
-        'valid'  | 'gender' | 'male'
-        'valid'  | 'gender' | 'female'
+        test     | value
+        'inList' | 'Unknown'
+        'valid'  | null
+        'valid'  | ''
+        'valid'  | 'male'
+        'valid'  | 'female'
     }
 
     @Shared Date date = new Date().clearTime()
-    @Unroll('User #field is #test using #value')
+    @Unroll('User birthdate is #test using #value')
     void 'test birth date constraints'() {
 
         when: 'User instance is created with provided birthdate'
         User userInstance = new User([firstName: 'admin', lastName: 'admin', username: 'admin', password: 'admin',
-        email: 'admin@causecode.com', "$field": value])
+        email: 'admin@causecode.com', 'birthdate': value])
 
         then: 'User instance is validated against constraints'
-        validateConstraints(userInstance, field, test)
+        validateConstraints(userInstance, 'birthdate', test)
 
         where:
-        test      | field       | value
-        'invalid' | 'birthdate' | date + 1
-        'valid'   | 'birthdate' | null
-        'valid'   | 'birthdate' | '  '
-        'valid'   | 'birthdate' | date - 100
+        test      | value
+        'invalid' | date + 1
+        'valid'   | null
+        'valid'   | '  '
+        'valid'   | date - 100
     }
 
     void validateConstraints(obj, field, test) {

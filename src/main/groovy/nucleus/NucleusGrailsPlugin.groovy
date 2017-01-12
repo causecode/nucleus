@@ -37,7 +37,6 @@ class NucleusGrailsPlugin extends Plugin {
             }
         }
     }
-
     @Override
     void doWithApplicationContext() {
         NucleusUtils.initialize(applicationContext)

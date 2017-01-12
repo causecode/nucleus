@@ -11,6 +11,9 @@ import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
 import spock.lang.Specification
 
+/**
+ * This class specifies unit test cases for {@link com.causecode.seo.sitemap.SitemapController}
+ */
 @TestFor(SitemapController)
 @Mock([Sitemap, Url])
 class SitemapControllerSpec extends Specification {
@@ -40,13 +43,14 @@ class SitemapControllerSpec extends Specification {
         controller.index()
 
         then: 'First sitemap instance will be generated'
-        controller.response.text == '<?xml version="1.0" encoding="UTF-8"?><sitemap id="1"><urlset><url id="1" /><url id="2" /><url id="3" /></urlset></sitemap>'
+        controller.response.text == '<?xml version="1.0" encoding="UTF-8"?><sitemap id="1"><urlset>' +
+                '<url id="1" /><url id="2" /><url id="3" /></urlset></sitemap>'
     }
 
     void 'test generate method'() {
         given: 'Sitemap Service'
         def siteMapService = new Object()
-        siteMapService.metaClass.generate = { println 'Sitemap generated' }
+        siteMapService.metaClass.generate = { 'Sitemap Generated' }
         controller.sitemapService = siteMapService
 
         when: 'generate method is called'

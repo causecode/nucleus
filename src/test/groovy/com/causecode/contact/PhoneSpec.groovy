@@ -13,39 +13,42 @@ import grails.test.mixin.TestFor
 import spock.lang.Specification
 import spock.lang.Unroll
 
-@Mock([PhoneCountryCode,Country])
+/**
+ * This class describes test cases for {@link com.causecode.contact.Phone}.
+ */
+@Mock([PhoneCountryCode, Country])
 @TestFor(Phone)
 class PhoneSpec extends Specification {
 
-    @Unroll("Phone #field is #test using #value")
+    @Unroll('Phone number is #test using #value')
     void 'test number field'() {
         when: 'Phone instance is created with provided value for number field'
-        Phone phone = new Phone("$field" : value)
+        Phone phone = new Phone(number: value)
 
         then: 'Contact instance is validated against the constraint'
-        validateConstraints(phone,field,test)
+        validateConstraints(phone, 'number', test)
 
         where:
-        test        | field    | value
-        'nullable'  | 'number' | null
-        'blank'     | 'number' | '  '
-        'invalid'   | 'number' | '9876543'
-        'invalid'   | 'number' | '98765432101'
-        'valid'     | 'number' | '9876543210'
+        test        | value
+        'nullable'  | null
+        'blank'     | '  '
+        'invalid'   | '9876543'
+        'invalid'   | '98765432101'
+        'valid'     | '9876543210'
     }
 
     void 'test getFullPhoneNumber() '() {
         given: 'PhoneCountry instance'
         Country india = new Country([code: 'IND', name: 'India'])
-        assert india.save(flush:true ,failOnError: true)
+        assert india.save(flush: true, failOnError: true)
 
         PhoneCountryCode indiaCode = new PhoneCountryCode([code: '91', country: india])
-        assert indiaCode.save(flush: true, failOnError:true)
+        assert indiaCode.save(flush: true, failOnError: true)
 
         Phone phone = new Phone([countryCode: indiaCode, number: '9876543210'])
 
         when: 'getFullPhoneNumber() is called'
-        String result = phone.getFullPhoneNumber()
+        String result = phone.fullPhoneNumber
 
         then:
         result == '+(91)9876543210'
@@ -56,26 +59,26 @@ class PhoneSpec extends Specification {
         Country india = new Country([code: 'IND', name: 'India'])
         assert india.save(flush: true, failOnError: true)
 
-        PhoneCountryCode phoneCountryCode = new PhoneCountryCode([code: '91',country:  india])
+        PhoneCountryCode phoneCountryCode = new PhoneCountryCode([code: '91', country: india])
         assert phoneCountryCode.save(flush: true, failOnError: true)
 
         Phone phoneInstance = new Phone([number: '9876543210', countryCode: phoneCountryCode])
         assert phoneInstance.save(flush: true, failOnError: true)
 
         when: 'toString is called for country instance'
-        String result = india.toString()
+        String result = india
 
         then: 'result must match with the provided string value'
         result == 'Country(India)'
 
         when: 'toString is called for phoneCountryCode instance'
-        result = phoneCountryCode.toString()
+        result = phoneCountryCode
 
         then: 'result must match with the provided string value'
         result == 'PhoneCountryCode(1)'
 
         when: 'toString is called for phone instance'
-        result = phoneInstance.toString()
+        result = phoneInstance
 
         then: 'result must match the provided string value'
         result == 'Phone(1)'

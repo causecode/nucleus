@@ -14,8 +14,6 @@ import org.springframework.mail.MailException
  * This class is used for sending emails using the AsynchronousMailPlugin. It is a utility class that handles exception
  * while sending emails.
  *
- * TODO Move this service to nucleus plugin.
- *
  * @author Nikhil Sharma
  * @since 2.0.0
  */
