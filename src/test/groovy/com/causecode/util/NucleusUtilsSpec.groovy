@@ -101,21 +101,19 @@ class NucleusUtilsSpec extends Specification {
         String logStatement
         Log log = [debug: { Object message ->
             logStatement = message
-        }, warn : { Object message ->
+        }, warn: { Object message ->
             logStatement = message
-        }, info : { Object message ->
+        }, info: { Object message ->
             logStatement = message
-        }, error : { Object message, Throwable e = new Exception() ->
+        }, error: { Object message, Throwable e = new Exception() ->
             logStatement = message
-            println e.message
         } ] as Log
 
-
-        Field loggerField = NucleusUtils.class.getDeclaredField('logger')
+        Field loggerField = NucleusUtils.getDeclaredField('logger')
         loggerField.setAccessible(true)
-        Field modifier = Field.class.getDeclaredField('modifiers')
+        Field modifier = Field.getDeclaredField('modifiers')
         modifier.setAccessible(true)
-        modifier.setInt(loggerField, loggerField.getModifiers() & ~Modifier.FINAL)
+        modifier.setInt(loggerField, loggerField.modifiers & ~Modifier.FINAL)
         loggerField.set(null, log)
 
         NucleusUtils.mailService = null
