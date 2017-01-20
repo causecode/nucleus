@@ -101,7 +101,6 @@ dependencies {
     compile "org.grails.plugins:views-json-templates:1.1.2"
     compile "org.grails.plugins:asynchronous-mail:2.0.0.RC4"
     // Please exclude this dependency in installing app if not needed.
-    compile "com.causecode.plugins:user-management:0.0.2"
 }
 
 project.publishing {
