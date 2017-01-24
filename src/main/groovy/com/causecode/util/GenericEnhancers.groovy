@@ -32,7 +32,7 @@ trait GenericEnhancers {
      * @return boolean indicating successful save or not
      */
     boolean save(Object domainInstance, boolean flush) {
-        NucleusUtils.save(domainInstance, flush)
+        return NucleusUtils.save(domainInstance, flush)
     }
 
     /**
@@ -40,7 +40,8 @@ trait GenericEnhancers {
      * @param closure contains information about sending the mail.
      * @param eventName On Which event mail is being sent.
      */
-    void sendEmail(Closure mailSettingsClosure, String eventName) {
-        applicationContext.getBean(EmailService).sendEmail(mailSettingsClosure, eventName)
+    boolean sendEmail(Closure mailSettingsClosure, String eventName) {
+        EmailService emailService = applicationContext.getBean(EmailService)
+        return (emailService ? emailService.sendEmail(mailSettingsClosure, eventName) : false)
     }
 }
