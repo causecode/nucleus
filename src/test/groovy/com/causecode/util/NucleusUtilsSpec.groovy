@@ -15,6 +15,7 @@ import grails.test.mixin.TestMixin
 
 import grails.test.mixin.support.GrailsUnitTestMixin
 import grails.util.Holders
+import groovy.json.JsonBuilder
 import org.apache.commons.logging.Log
 import org.grails.gsp.GroovyPagesTemplateEngine
 import org.springframework.beans.BeansException
@@ -127,6 +128,8 @@ class NucleusUtilsSpec extends Specification {
 
         when: 'sendExceptionEmail method is called'
         NucleusUtils.mailService = [sendMail: { Closure callable ->
+            new JsonBuilder() callable
+
             return
         } ] as MailService
 
@@ -134,5 +137,11 @@ class NucleusUtilsSpec extends Specification {
 
         then: 'mail is sent'
         logStatement == 'Exception email sent'
+    }
+
+    void "test validateGoogleReCaptcha method when captcha validation fails"() {
+        expect:
+        !NucleusUtils.validateGoogleReCaptcha('')
+        !NucleusUtils.validateGoogleReCaptcha('randomCaptcha')
     }
 }
