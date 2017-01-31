@@ -42,6 +42,7 @@ trait GenericEnhancers {
      */
     boolean sendEmail(Closure mailSettingsClosure, String eventName) {
         GenericEmailService emailService = applicationContext.getBean(GenericEmailService)
+
         return (emailService ? emailService.sendEmail(mailSettingsClosure, eventName) : false)
     }
 }
