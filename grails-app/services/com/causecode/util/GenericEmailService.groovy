@@ -17,7 +17,7 @@ import org.springframework.mail.MailException
  * @author Nikhil Sharma
  * @since 2.0.0
  */
-class EmailService {
+class GenericEmailService {
 
     AsynchronousMailService asynchronousMailService
 

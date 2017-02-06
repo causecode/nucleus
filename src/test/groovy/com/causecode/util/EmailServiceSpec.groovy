@@ -14,9 +14,9 @@ import org.springframework.mail.MailSendException
 import spock.lang.Specification
 
 /**
- * This class specifies unit test cases for {@link com.causecode.util.EmailService}.
+ * This class specifies unit test cases for {@link GenericEmailService}.
  */
-@TestFor(EmailService)
+@TestFor(GenericEmailService)
 class EmailServiceSpec extends Specification {
 
     Object logStatement
