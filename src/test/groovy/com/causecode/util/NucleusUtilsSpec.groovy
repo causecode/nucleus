@@ -15,6 +15,8 @@ import grails.test.mixin.TestMixin
 
 import grails.test.mixin.support.GrailsUnitTestMixin
 import grails.util.Holders
+import groovy.json.JsonBuilder
+import groovyx.net.http.HTTPBuilder
 import org.apache.commons.logging.Log
 import org.grails.gsp.GroovyPagesTemplateEngine
 import org.springframework.beans.BeansException
@@ -30,6 +32,27 @@ import java.lang.reflect.Modifier
 @TestMixin(GrailsUnitTestMixin)
 @Mock([Currency, MailService])
 class NucleusUtilsSpec extends Specification {
+
+    String logStatement
+
+    void setup() {
+        Log log = [debug: { Object message ->
+            logStatement = message
+        }, warn: { Object message ->
+            logStatement = message
+        }, info: { Object message ->
+            logStatement = message
+        }, error: { Object message, Throwable e = new Exception() ->
+            logStatement = message
+        } ] as Log
+
+        Field loggerField = NucleusUtils.getDeclaredField('logger')
+        loggerField.setAccessible(true)
+        Field modifier = Field.getDeclaredField('modifiers')
+        modifier.setAccessible(true)
+        modifier.setInt(loggerField, loggerField.modifiers & ~Modifier.FINAL)
+        loggerField.set(null, log)
+    }
 
     void 'test getAppName method'() {
         when: 'getAppName() is called'
@@ -98,24 +121,6 @@ class NucleusUtilsSpec extends Specification {
             Map param -> return 'Error occurred'
         }
 
-        String logStatement
-        Log log = [debug: { Object message ->
-            logStatement = message
-        }, warn: { Object message ->
-            logStatement = message
-        }, info: { Object message ->
-            logStatement = message
-        }, error: { Object message, Throwable e = new Exception() ->
-            logStatement = message
-        } ] as Log
-
-        Field loggerField = NucleusUtils.getDeclaredField('logger')
-        loggerField.setAccessible(true)
-        Field modifier = Field.getDeclaredField('modifiers')
-        modifier.setAccessible(true)
-        modifier.setInt(loggerField, loggerField.modifiers & ~Modifier.FINAL)
-        loggerField.set(null, log)
-
         NucleusUtils.mailService = null
 
         when: 'sendExceptionEmail method is called and mailService is null'
@@ -127,6 +132,8 @@ class NucleusUtilsSpec extends Specification {
 
         when: 'sendExceptionEmail method is called'
         NucleusUtils.mailService = [sendMail: { Closure callable ->
+            new JsonBuilder() callable
+
             return
         } ] as MailService
 
@@ -134,5 +141,44 @@ class NucleusUtilsSpec extends Specification {
 
         then: 'mail is sent'
         logStatement == 'Exception email sent'
+    }
+
+    void "test validateGoogleReCaptcha method when captcha validation fails"() {
+        expect: 'Following conditions should be satisfied'
+        !NucleusUtils.validateGoogleReCaptcha('')
+        !NucleusUtils.validateGoogleReCaptcha('randomCaptcha')
+    }
+
+    void "test validateGoogleReCaptcha method when captcha validation fails due to exception"() {
+        given: 'Mocked HTTPBuilder method calls'
+        HTTPBuilder httpBuilderMock = GroovyMock(HTTPBuilder, global: true)
+        new HTTPBuilder(_) >> httpBuilderMock
+
+        1 * httpBuilderMock.post(_) >> {
+            throw new URISyntaxException('', 'Incorrect URI')
+        }
+
+        when: 'validateGoogleReCaptcha method is called and exception is thrown'
+        boolean result = NucleusUtils.validateGoogleReCaptcha('valid-captcha')
+
+        then: 'Method returns false and error gets logged'
+        !result
+        logStatement.contains('Incorrect URI')
+    }
+
+    void "test validateGoogleReCaptcha method when captcha validation passes"() {
+        given: 'Mocked HTTPBuilder method calls'
+        HTTPBuilder httpBuilderMock = GroovyMock(HTTPBuilder, global: true)
+        new HTTPBuilder(_) >> httpBuilderMock
+
+        1 * httpBuilderMock.post(_) >> {
+            return [success: true]
+        }
+
+        when: 'validateGoogleReCaptcha method is called and captcha validation passes'
+        boolean result = NucleusUtils.validateGoogleReCaptcha('valid-captcha')
+
+        then: 'Method returns true'
+        result
     }
 }
