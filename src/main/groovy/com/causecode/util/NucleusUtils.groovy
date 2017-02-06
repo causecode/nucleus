@@ -9,6 +9,7 @@ package com.causecode.util
 
 import grails.util.Environment
 import grails.util.Holders
+import groovyx.net.http.HTTPBuilder
 import org.springframework.beans.BeansException
 import org.springframework.context.ApplicationContext
 import org.apache.commons.logging.Log
@@ -118,5 +119,34 @@ class NucleusUtils {
 
     static void sendExceptionEmail(Throwable exception, Map model) {
         sendExceptionEmail([exception], model)
+    }
+
+    /**
+     * Used for Google reCAPTCHA validation
+     *
+     * @param reCaptchaResponse (g-recaptcha-response string from google after client side validation is successful.)
+     * @return boolean (true - For valid captcha, false - For invalid captcha.)
+     */
+    static boolean validateGoogleReCaptcha(String reCaptchaResponse) {
+        if (!reCaptchaResponse) {
+            return false
+        }
+
+        logger.info('Validating google reCaptcha...')
+
+        HTTPBuilder httpBuilder = new HTTPBuilder('https://www.google.com/recaptcha/api/siteverify')
+        Map bodyParams = [secret: Holders.grailsApplication.config.reCaptcha.secret, response: reCaptchaResponse]
+
+        Object response
+
+        try {
+            response = httpBuilder.post(body: bodyParams)
+        } catch (IOException | URISyntaxException e) {
+            logger.error(e.message, e)
+
+            return false
+        }
+
+        return response.success
     }
 }
