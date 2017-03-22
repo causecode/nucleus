@@ -21,7 +21,7 @@ import com.causecode.seo.sitemap.Sitemap
  *
  */
 
-class SitemapMarshaller implements ObjectMarshaller, NameAwareMarshaller {
+class SitemapMarshaller implements ObjectMarshaller<XML>, NameAwareMarshaller {
 
     /**
      * Checks Object is instance of Sitemap or not.
@@ -39,7 +39,7 @@ class SitemapMarshaller implements ObjectMarshaller, NameAwareMarshaller {
      * @param object The {@link Object}
      * @param converter {@link Converter} instance used to convert object.
      */
-    void marshalObject(Object object, Converter<XML> converter) {
+    void marshalObject(Object object, Converter converter) {
         Sitemap sitemap = object as Sitemap
         converter.attribute 'xmlns', 'http://www.sitemaps.org/schemas/sitemap/0.9'
         sitemap.urlset.each {
@@ -67,8 +67,9 @@ class SitemapMarshaller implements ObjectMarshaller, NameAwareMarshaller {
      * @param o The {@link Object}
      * @return Return tag name for the Object.
      */
+    @Override
     String getElementName(Object o) {
-        return 'urlset' + o
+        return 'urlset'
     }
 
 }
