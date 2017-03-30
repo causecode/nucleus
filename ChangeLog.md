@@ -21,3 +21,6 @@
 
 1. Fixed support for multiple error classes on jquery validation,
 2. Some fixes for showing alert messages.
+
+## Version 0.4.7
+1. Changed utility method name from `camelCaseToTile` to `camelCaseToTitle` in NucleusBootStrap.groovy file.
