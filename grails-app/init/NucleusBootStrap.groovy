@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, CauseCode Technologies Pvt Ltd, India.
+ * Copyright (c) 2011-Present, CauseCode Technologies Pvt Ltd, India.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or
@@ -35,13 +35,12 @@ class NucleusBootStrap {
     }
 
     private static void registerStringUtilityMethods() {
-        char space = ' '
         /**
          * Used to convert camel case to title or natural case.
-         * @example "firstName".camelCaseToTile() == "First Name"
+         * @example "firstName".camelCaseToTitle() == "First Name"
          */
-        String.metaClass.camelCaseToTile = {
-            String title = delegate.replaceAll(/\B[A-Z]/) { space + it }.capitalize()
+        String.metaClass.camelCaseToTitle = {
+            String title = delegate.replaceAll(/\B[A-Z]/) { ' ' + it }.capitalize()
             return title
         }
 
@@ -67,7 +66,7 @@ class NucleusBootStrap {
          * @Example "some word".capitalizeAll() == "Some Word"
          */
         String.metaClass.capitalizeAll = {
-            return delegate.split(space)*.capitalize().join(space)
+            return delegate.split(' ')*.capitalize().join(' ')
         }
     }
 }
