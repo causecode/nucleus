@@ -68,6 +68,7 @@ class ContactService {
         args["${fieldName}.address.latitude"] = args['latitude'] ?: 0
         args["${fieldName}.address.longitude"] = args['longitude'] ?: 0
         args["${fieldName}.address.city.id"] = cityInstance.id
+
         return true
     }
 
@@ -100,6 +101,7 @@ class ContactService {
                 }
             }
         }
+
         return cityStateCountryMap
     }
 
@@ -125,6 +127,7 @@ class ContactService {
                 countryInstance = Country.get(args['countryId'].toLong()) // Useful in token auto-complete
             }
         }
+
         return countryInstance
     }
 
@@ -135,7 +138,7 @@ class ContactService {
      * @return True when instance for given field validated with no errors. Returns False if it throws errors in
      * validation.
      */
-    boolean hasErrors(def instance, String fieldName = 'contact') {
+    boolean hasErrors(Object instance, String fieldName = 'contact') {
         List validationResult = []
         validationResult << instance[fieldName]?.validate()
         validationResult << instance[fieldName]?.phone?.validate()
@@ -145,6 +148,7 @@ class ContactService {
 
         def currentUserInstance = springSecurityService.currentUser
         log.info "User [${currentUserInstance?.email ?: 'Anonymous'}]"
+
         return validateResults(instance, validationResult, fieldName)
     }
 
@@ -153,15 +157,17 @@ class ContactService {
      * @param validationResult - List containing result of performed validations
      * @return boolean if there are errors, it returns true, otherwise false
      */
-    boolean validateResults(def instance, List validationResult, String fieldName) {
+    boolean validateResults(Object instance, List validationResult, String fieldName) {
         if (validationResult.contains(false)) {
             log.warn "Instance with field name $fieldName has errors"
-            log.warn "$instance[fieldName]?.errors"
-            log.warn "$instance[fieldName]?.phone?.errors"
-            log.warn "$instance[fieldName]?.address?.errors"
-            log.warn "$instance[fieldName]?.address?.city?.errors"
+            log.warn "${instance[fieldName]?.errors}"
+            log.warn "${instance[fieldName]?.phone?.errors}"
+            log.warn "${instance[fieldName]?.address?.errors}"
+            log.warn "${instance[fieldName]?.address?.city?.errors}"
+
             return true
         }
+
         return false
     }
 }

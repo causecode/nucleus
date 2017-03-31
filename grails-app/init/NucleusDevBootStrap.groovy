@@ -38,7 +38,7 @@ class NucleusDevBootStrap {
             User adminUser = User.findByUsernameAndEnabled('admin', true)
             User normalUser = User.findByUsername('jane')
 
-            Map failOnError = [ failOnError: true]
+            Map failOnError = [failOnError: true]
 
             if (!adminUser) {
                 adminUser = new User([username: 'admin', password: 'admin@13', email: 'bootstrap@causecode.com',
