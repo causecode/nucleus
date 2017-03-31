@@ -176,7 +176,7 @@ class DateUtil {
      * @return Sting containing only Date.
      */
     String getDatePart(Date date = c.getTime(), String format = DEFAULT_DATE_FORMAT) {
-        return new SimpleDateFormat(format, Locale.ENGLISH).format(date)
+        return new SimpleDateFormat(format, Locale.default).format(date)
     }
 
     /**
@@ -185,7 +185,7 @@ class DateUtil {
      * @return Sting containing only Time.
      */
     String getTimePart(Date date = c.time) {
-        return new SimpleDateFormat('HH:mm:ss', Locale.ENGLISH).format(date)
+        return new SimpleDateFormat('HH:mm:ss', Locale.default).format(date)
     }
 
     /**
@@ -195,7 +195,7 @@ class DateUtil {
      * @return {@link Date}.
      */
     Date addTimeTo(Date date = c.time, String time = '9:00 AM') {
-        String stringDate = new SimpleDateFormat(DEFAULT_DATE_FORMAT, Locale.ENGLISH).format(date)
+        String stringDate = new SimpleDateFormat(DEFAULT_DATE_FORMAT, Locale.default).format(date)
         stringDate = stringDate + ' ' + time
         return parse(stringDate)
     }
@@ -244,7 +244,7 @@ class DateUtil {
             return null
         }
 
-        DateFormat dateFormat = new SimpleDateFormat(format, Locale.ENGLISH)
+        DateFormat dateFormat = new SimpleDateFormat(format, Locale.default)
         if (timezone) {
             dateFormat.setTimeZone(TimeZone.getTimeZone(timezone))
         }
@@ -275,7 +275,7 @@ class DateUtil {
             return ''
         }
 
-        DateFormat dateFormat = new SimpleDateFormat(format, Locale.ENGLISH)
+        DateFormat dateFormat = new SimpleDateFormat(format, Locale.default)
         if (timezone) {
             dateFormat.setTimeZone(TimeZone.getTimeZone(timezone))
         }
