@@ -63,7 +63,7 @@ class CustomValidationErrorMarshaller implements ObjectMarshaller<JSON>, Applica
             writer.key('errors')
             writer.array()
 
-            for (Object o : errors.allErrors()) {
+            for (Object o : errors.allErrors) {
                 if (o instanceof FieldError) {
                     FieldError fe = (FieldError) o
                     writer.object()
