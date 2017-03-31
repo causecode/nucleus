@@ -2,14 +2,12 @@ package nucleus
 
 import com.causecode.user.Role;
 import com.causecode.user.User
-import com.causecode.user.UserManagementController
 import com.causecode.user.UserRole
 
-//import grails.test.spock.IntegrationSpec
 import grails.test.mixin.integration.Integration
 import grails.test.mixin.Mock
-import grails.transaction.*
-import spock.lang.*
+import grails.transaction.Rollback
+import spock.lang.Specification
 
 
 @Integration
@@ -18,7 +16,6 @@ import spock.lang.*
 class BaseIntegrationSpec extends Specification {
     User adminUser, normalUser, managerUser, trialUser
     Role userRole, adminRole, userManagerRole
-    UserManagementController controller
 
     def setup() {
         // Creating roles for each setup
