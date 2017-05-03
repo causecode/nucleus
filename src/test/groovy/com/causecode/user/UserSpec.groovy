@@ -7,6 +7,7 @@
  */
 package com.causecode.user
 
+import com.causecode.embedded.EmUser
 import grails.plugin.springsecurity.SpringSecurityService
 import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
@@ -74,6 +75,24 @@ class UserSpec extends Specification {
         'valid'   | null
         'valid'   | '  '
         'valid'   | date - 100
+    }
+
+    void "test getEmbeddedInstance method"() {
+        given: 'An instance of User'
+        User userInstance = new User([accountExpired: false, accountLocked: false, enabled: true,
+                                      email: 'admin@causecode.com', firstName: 'admin', gender: 'male', lastName:
+                                      'admin', username: 'admin',password: 'test', pictureURL: '/causecode/test.jpg'])
+        userInstance.save()
+        assert userInstance.email
+        assert userInstance.firstName
+        assert userInstance.id
+
+        when: 'getEmbeddedInstance method is called'
+        EmUser emUser = userInstance.embeddedInstance
+
+        then: 'emUser instance is created from userInstance'
+        assert emUser.instanceId == userInstance.id
+        assert emUser.email == userInstance.email
     }
 
     void validateConstraints(obj, field, test) {
