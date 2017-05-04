@@ -81,7 +81,7 @@ class UserSpec extends Specification {
         given: 'An instance of User'
         User userInstance = new User([accountExpired: false, accountLocked: false, enabled: true,
                                       email: 'admin@causecode.com', firstName: 'admin', gender: 'male', lastName:
-                                      'admin', username: 'admin',password: 'test', pictureURL: '/causecode/test.jpg'])
+                                      'admin', username: 'admin', password: 'test', pictureURL: '/causecode/test.jpg'])
         userInstance.save()
         assert userInstance.email
         assert userInstance.firstName

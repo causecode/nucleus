@@ -8,7 +8,6 @@
 package com.causecode.embedded
 
 import com.causecode.mongo.embeddable.EmbeddableDomain
-import org.bson.types.ObjectId
 
 /**
  * This class represents embedded instance of User domain.
@@ -30,17 +29,16 @@ class EmUser implements EmbeddableDomain {
     EmUser() {
     }
 
-    EmUser( Long instanceId, boolean accountExpired, boolean accountLocked, boolean enabled = true, String email,
-                    String firstName, String gender, String lastName, String username, String pictureURL) {
-        this.instanceId = instanceId
-        this.accountExpired = accountExpired
-        this.accountLocked = accountLocked
-        this.enabled = enabled
-        this.email = email
-        this.firstName = firstName
-        this.gender = gender
-        this.lastName = lastName
-        this.username = username
-        this.pictureURL = pictureURL
+    EmUser(Map params) {
+        this.instanceId = params.instanceId
+        this.accountExpired = params.accountExpired
+        this.accountLocked = params.accountLocked
+        this.enabled = params.enabled
+        this.email = params.email
+        this.firstName = params.firstName
+        this.gender = params.gender
+        this.lastName = params.lastName
+        this.username = params.username
+        this.pictureURL = params.pictureURL
     }
 }

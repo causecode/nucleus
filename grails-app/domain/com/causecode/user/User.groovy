@@ -86,7 +86,8 @@ class User {
      * Method to get embedded instance of User
      */
     EmUser getEmbeddedInstance() {
-        return new EmUser(this.id, this.accountExpired, this.accountLocked, this.enabled, this.email, this.firstName,
-                this.gender, this.lastName, this.username, this.pictureURL)
+        return new EmUser([instanceId: this.id, accountExpired: this.accountExpired, accountLocked: this.accountLocked,
+                           enabled: this.enabled, email: this.email, firstName: this.firstName, gender: this.gender,
+                           lastName: this.lastName, username: this.username, pictureURL: this.pictureURL])
     }
 }
