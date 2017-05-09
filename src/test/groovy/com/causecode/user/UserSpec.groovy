@@ -80,8 +80,8 @@ class UserSpec extends Specification {
     void "test getEmbeddedInstance method"() {
         given: 'An instance of User'
         User userInstance = new User([accountExpired: false, accountLocked: false, enabled: true,
-                                      email: 'admin@causecode.com', firstName: 'admin', gender: 'male', lastName:
-                                      'admin', username: 'admin', password: 'test', pictureURL: '/causecode/test.jpg'])
+                email: 'admin@causecode.com', firstName: 'admin', gender: 'male', lastName: 'admin', username: 'admin',
+                password: 'test', pictureURL: '/causecode/test.jpg'])
         userInstance.save()
         assert userInstance.email
         assert userInstance.firstName
@@ -90,9 +90,10 @@ class UserSpec extends Specification {
         when: 'getEmbeddedInstance method is called'
         EmUser emUser = userInstance.embeddedInstance
 
-        then: 'emUser instance is created from userInstance'
-        assert emUser.instanceId == userInstance.id
-        assert emUser.email == userInstance.email
+        then: 'emUser instance is created from userInstance with same value in fields'
+        emUser.instanceId == userInstance.id
+        emUser.email == userInstance.email
+        emUser.firstName == emUser.firstName
     }
 
     void validateConstraints(obj, field, test) {
