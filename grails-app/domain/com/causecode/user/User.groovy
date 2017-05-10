@@ -87,7 +87,7 @@ class User {
      */
     EmUser getEmbeddedInstance() {
         return new EmUser([instanceId: this.id, accountExpired: this.accountExpired, accountLocked: this.accountLocked,
-                           enabled: this.enabled, email: this.email, firstName: this.firstName, gender: this.gender,
-                           lastName: this.lastName, username: this.username, pictureURL: this.pictureURL])
+                enabled: this.enabled, email: this.email, firstName: this.firstName, gender: this.gender,
+                lastName: this.lastName, username: this.username, pictureURL: this.pictureURL])
     }
 }
