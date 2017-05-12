@@ -6,16 +6,19 @@
  * without modification, are not permitted.
  */
 
+ import grails.artefact.DomainClass
+
 model {
     List instanceList = []
     String domainName
+    int totalCount
 }
 
 json {
     if (domainName) {
         instanceList g.render(template: "/$domainName/$domainName", var: domainName, collection: instanceList)
     } else {
-        instanceList g.render(instanceList)
+        instanceList g.render(template: "/object/object", var: 'object', collection: instanceList)
     }
-    totalCount instanceList.size()
+    totalCount totalCount
 }

@@ -29,6 +29,15 @@ class EmUser implements EmbeddableDomain {
     EmUser() {
     }
 
+    static constraints = {
+        email blank: false, email: true, unique: true
+        gender inList: ['male', 'female', 'unspecified'], size: 4..11, nullable: true
+        username blank: false, unique: true
+        firstName maxSize: 100, nullable: true
+        lastName maxSize: 100, nullable: true
+        pictureURL nullable: true
+    }
+
     EmUser(Map params) {
         this.instanceId = params.instanceId
         this.accountExpired = params.accountExpired

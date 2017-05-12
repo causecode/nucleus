@@ -17,6 +17,7 @@ buildscript {
     }
     dependencies {
         classpath "org.grails:grails-gradle-plugin:$grailsVersion"
+        classpath 'org.grails.plugins:views-gradle:1.2.0'
         classpath "com.causecode.plugins:gradle-code-quality:0.0.7"
     }
 }
@@ -29,6 +30,7 @@ apply plugin: "org.grails.grails-plugin"
 apply plugin: "org.grails.grails-plugin-publish"
 apply plugin: "org.grails.grails-gsp"
 apply plugin: 'gradle-code-quality'
+apply plugin:'org.grails.plugins.views-json'
 
 ext {
     grailsVersion = project.grailsVersion
@@ -78,8 +80,8 @@ dependencies {
     testCompile "com.causecode.plugins:asynchronous-mail:2.3.1"
 
     // Grails JSON Views
-    provided "org.grails.plugins:views-json:1.1.3"
-    provided "org.grails.plugins:views-json-templates:1.1.3"
+    provided "org.grails.plugins:views-json"
+    provided "org.grails.plugins:views-json-templates"
 
     // Grails Async Mail Plugin
     compile "org.grails.plugins:asynchronous-mail:2.0.0.RC4"

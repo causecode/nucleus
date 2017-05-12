@@ -86,6 +86,9 @@ class UserSpec extends Specification {
         assert userInstance.email
         assert userInstance.firstName
         assert userInstance.id
+        assert userInstance.embeddedInstance.validate()
+        assert userInstance.embeddedInstance.email
+        assert userInstance.embeddedInstance.instanceId
 
         when: 'getEmbeddedInstance method is called'
         EmUser emUser = userInstance.embeddedInstance
