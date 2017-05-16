@@ -9,5 +9,4 @@ model {
     Object object
 }
 
-json g.render(object, [deep: true, excludes: ['password', 'passwordExpired', 'lastUpdated', 'dateCreated',
-        'accountExpired', 'accountLocked', 'enabled', 'version']])
+json g.render(object)
