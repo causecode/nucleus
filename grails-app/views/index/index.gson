@@ -9,6 +9,7 @@
 model {
     List instanceList = []
     String domainName
+    int totalCount
 }
 
 json {
@@ -17,5 +18,5 @@ json {
     } else {
         instanceList g.render(instanceList)
     }
-    totalCount instanceList.size()
+    totalCount totalCount
 }
