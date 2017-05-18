@@ -54,6 +54,8 @@ class RestfulController extends grails.rest.RestfulController implements BaseCon
             model.domainName = controllerName
         }
 
+        model.totalCount = resource.count()
+
         render(model: model, view: view)
     }
 

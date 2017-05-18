@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, CauseCode Technologies Pvt Ltd, India.
+ * Copyright (c) 2011-Present, CauseCode Technologies Pvt Ltd, India.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or
@@ -7,6 +7,7 @@
  */
 package com.causecode.user
 
+import com.causecode.embedded.EmUser
 import grails.databinding.BindingFormat
 import grails.plugin.springsecurity.SpringSecurityService
 import groovy.transform.EqualsAndHashCode
@@ -79,5 +80,14 @@ class User {
 
     String getFullName() {
        return firstName + ' ' + lastName
+    }
+
+    /**
+     * Method to get embedded instance of User
+     */
+    EmUser getEmbeddedInstance() {
+        return new EmUser([instanceId: this.id, accountExpired: this.accountExpired, accountLocked: this.accountLocked,
+            enabled: this.enabled, email: this.email, firstName: this.firstName, gender: this.gender,
+            lastName: this.lastName, username: this.username, pictureURL: this.pictureURL])
     }
 }

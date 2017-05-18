@@ -1,5 +1,5 @@
-# Nucleus Plugin (Latest 0.4.0)
-Supported Grials 3.2.0
+# Nucleus Plugin (Latest 0.4.9)
+Supported Grails 3.2.0
 
 ## By CauseCode Technologies Pvt. Ltd.
 
