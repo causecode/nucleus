@@ -14,6 +14,7 @@ import org.springframework.beans.BeansException
 import org.springframework.context.ApplicationContext
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
+import com.causecode.exceptions.DBTypeNotFoundException
 
 /**
  * A utility class to provide some common & useful stuff
@@ -135,7 +136,7 @@ class NucleusUtils {
         logger.info('Validating google reCaptcha...')
 
         HTTPBuilder httpBuilder = new HTTPBuilder('https://www.google.com/recaptcha/api/siteverify')
-        Map bodyParams = [secret: Holders.grailsApplication.config.reCaptcha.secret, response: reCaptchaResponse]
+        Map bodyParams = [secret: Holders.config.reCaptcha.secret, response: reCaptchaResponse]
 
         Object response
 
@@ -148,5 +149,29 @@ class NucleusUtils {
         }
 
         return response.success
+    }
+
+    /**
+     * A utility method which infers database name from config properties.
+     * @return name of database either of(Mysql, Mongo)
+     * @throws DBTypeNotFoundException when no name is inferred or both the names are inferred from the config properties
+     */
+    static String getDBType() throws DBTypeNotFoundException{
+        def config=Holders.config
+        String mysqlDriver=config.dataSource.driverClassName
+        String mysqlUrl=config.dataSource.url
+        String mongoDBName=config.grails.mongodb.databaseName
+        String mongoDBHost=config.grails.mongodb.host
+
+        if((mysqlDriver instanceof String) && (mysqlUrl instanceof String) && !mongoDBName && !mongoDBHost ){
+            if(mysqlDriver.contains("mysql") && mysqlUrl.contains("mysql")){
+                return "Mysql"
+            }
+        }
+        else if(mongoDBHost && mongoDBName && !mysqlDriver && !mysqlUrl){
+            return "Mongo"
+        }
+
+        throw new DBTypeNotFoundException("Could not infer dbType from application config.")
     }
 }

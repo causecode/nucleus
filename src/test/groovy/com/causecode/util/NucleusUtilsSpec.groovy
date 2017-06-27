@@ -8,6 +8,7 @@
 package com.causecode.util
 
 import com.causecode.currency.Currency
+import com.causecode.exceptions.DBTypeNotFoundException
 import grails.gsp.PageRenderer
 import grails.plugins.mail.MailService
 import grails.test.mixin.Mock
@@ -180,5 +181,43 @@ class NucleusUtilsSpec extends Specification {
 
         then: 'Method returns true'
         result
+    }
+
+    void "test method getDBType when type of database used is Mysql"(){
+        setup:
+        Holders.config.dataSource.driverClassName='com.mysql.jdbc.driver'
+        Holders.config.dataSource.url='jdbc:mysql://localhost:3306/test'
+        when:
+        def result=NucleusUtils.getDBType()
+        then:
+        result=="Mysql"
+
+    }
+
+    void "test method getDBType when type of database used is MongoDB"(){
+        setup:
+        Holders.config.dataSource.driverClassName=''
+        Holders.config.dataSource.url=''
+        Holders.config.grails.mongodb.databaseName='test_mongo'
+        Holders.config.grails.mongodb.host='localhost'
+
+        when:
+        def result=NucleusUtils.getDBType()
+        then:
+        result=="Mongo"
+    }
+
+    void "test method getDBType when no database is used or missing config properties"(){
+        setup:
+        Holders.config.dataSource.driverClassName=''
+        Holders.config.dataSource.url=''
+        Holders.config.grails.mongodb.databaseName=null
+        Holders.config.grails.mongodb.host=null
+        when:
+        def result=NucleusUtils.getDBType()
+        then:
+        DBTypeNotFoundException exception=thrown()
+        exception.message=="Could not infer dbType from application config."
+
     }
 }
