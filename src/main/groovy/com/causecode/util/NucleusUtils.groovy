@@ -7,6 +7,7 @@
  */
 package com.causecode.util
 
+import grails.config.Config
 import grails.util.Environment
 import grails.util.Holders
 import groovyx.net.http.HTTPBuilder
@@ -158,10 +159,9 @@ class NucleusUtils {
      * properties.
      */
     static String getDBType() throws DBTypeNotFoundException {
-       def config=Holders.config
+       Config config=Holders.config
         Map mysqlDB = config.dataSource
         Map mongoDB = config.grails.mongodb
-                //.databaseName //host
 
         if (mysqlDB.driverClassName.contains('mysql') && mysqlDB.url.contains('mysql')
                     && !mongoDB.databaseName && !mongoDB.host ) {
