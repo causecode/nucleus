@@ -23,6 +23,7 @@ import org.grails.gsp.GroovyPagesTemplateEngine
 import org.springframework.beans.BeansException
 import org.springframework.context.ApplicationContext
 import spock.lang.Specification
+import spock.lang.Unroll
 
 import java.lang.reflect.Field
 import java.lang.reflect.Modifier
@@ -183,41 +184,38 @@ class NucleusUtilsSpec extends Specification {
         result
     }
 
-    void "test method getDBType when type of database used is Mysql"(){
-        setup:
-        Holders.config.dataSource.driverClassName='com.mysql.jdbc.driver'
-        Holders.config.dataSource.url='jdbc:mysql://localhost:3306/test'
-        when:
-        def result=NucleusUtils.getDBType()
-        then:
-        result=="Mysql"
+    @Unroll
+    void "test method getDBType with valid params"() {
 
+        when: 'getDBTYpe method is hit and below params are passed'
+        Holders.config.dataSource.driverClassName = mysqlDriver
+        Holders.config.dataSource.url = mysqlUrl
+        Holders.config.grails.mongodb.databaseName = mongoDBName
+        Holders.config.grails.mongodb.host = mongoHost
+        String result=NucleusUtils.DBType
+
+        then: 'metod responds with valid databse name'
+        result == responseMessage
+
+        where:
+        mysqlDriver   |  mysqlUrl     |  mongoDBName     |  mongoHost    | responseMessage
+        'com.mysql.'  | 'jdbc:mysql:' |  null            |  null         | 'Mysql'
+        ''            | ''            | 'test_mongo'     | 'localhost'   | 'Mongo'
     }
 
-    void "test method getDBType when type of database used is MongoDB"(){
-        setup:
-        Holders.config.dataSource.driverClassName=''
-        Holders.config.dataSource.url=''
-        Holders.config.grails.mongodb.databaseName='test_mongo'
-        Holders.config.grails.mongodb.host='localhost'
+    @Unroll
+    void "test method getDBType with invalid params"() {
 
-        when:
-        def result=NucleusUtils.getDBType()
-        then:
-        result=="Mongo"
-    }
+        when: 'getDBTYpe method is hit and below params are passed'
+        Holders.config.dataSource.driverClassName = ''
+        Holders.config.dataSource.url = ''
+        Holders.config.grails.mongodb.databaseName = null
+        Holders.config.grails.mongodb.host = null
+        NucleusUtils.DBType
 
-    void "test method getDBType when no database is used or missing config properties"(){
-        setup:
-        Holders.config.dataSource.driverClassName=''
-        Holders.config.dataSource.url=''
-        Holders.config.grails.mongodb.databaseName=null
-        Holders.config.grails.mongodb.host=null
-        when:
-        def result=NucleusUtils.getDBType()
-        then:
-        DBTypeNotFoundException exception=thrown()
-        exception.message=="Could not infer dbType from application config."
+        then: 'DBTypeNotFound exception is thrown with valid error message'
+        DBTypeNotFoundException ex = thrown()
+        ex.message == 'Could not infer dbType from application config.'
 
     }
 }

@@ -154,24 +154,23 @@ class NucleusUtils {
     /**
      * A utility method which infers database name from config properties.
      * @return name of database either of(Mysql, Mongo)
-     * @throws DBTypeNotFoundException when no name is inferred or both the names are inferred from the config properties
+     * @throws DBTypeNotFoundException when no name is inferred or both the names are inferred from the config
+     * properties.
      */
-    static String getDBType() throws DBTypeNotFoundException{
-        def config=Holders.config
-        String mysqlDriver=config.dataSource.driverClassName
-        String mysqlUrl=config.dataSource.url
-        String mongoDBName=config.grails.mongodb.databaseName
-        String mongoDBHost=config.grails.mongodb.host
+    static String getDBType() throws DBTypeNotFoundException {
+       def config=Holders.config
+        Map mysqlDB = config.dataSource
+        Map mongoDB = config.grails.mongodb
+                //.databaseName //host
 
-        if((mysqlDriver instanceof String) && (mysqlUrl instanceof String) && !mongoDBName && !mongoDBHost ){
-            if(mysqlDriver.contains("mysql") && mysqlUrl.contains("mysql")){
-                return "Mysql"
-            }
+        if (mysqlDB.driverClassName.contains('mysql') && mysqlDB.url.contains('mysql')
+                    && !mongoDB.databaseName && !mongoDB.host ) {
+                return 'Mysql'
         }
-        else if(mongoDBHost && mongoDBName && !mysqlDriver && !mysqlUrl){
-            return "Mongo"
+        else if (mongoDB.databaseName && mongoDB.host && !mysqlDB.driverClassName && !mysqlDB.url) {
+            return 'Mongo'
         }
 
-        throw new DBTypeNotFoundException("Could not infer dbType from application config.")
+        throw new DBTypeNotFoundException('Could not infer dbType from application config.')
     }
 }

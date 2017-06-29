@@ -18,7 +18,7 @@ buildscript {
     dependencies {
         classpath "org.grails:grails-gradle-plugin:$grailsVersion"
         classpath 'org.grails.plugins:views-gradle:1.2.0'
-        classpath "com.causecode.plugins:gradle-code-quality:0.0.7"
+        classpath "com.causecode.plugins:gradle-code-quality:0.0.8"
     }
 }
 
