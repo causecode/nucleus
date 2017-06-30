@@ -7,7 +7,6 @@
  */
 package com.causecode.util
 
-import grails.config.Config
 import grails.util.Environment
 import grails.util.Holders
 import groovyx.net.http.HTTPBuilder
