@@ -202,7 +202,6 @@ class NucleusUtilsSpec extends Specification {
         ''            | ''            | 'test_mongo'     | 'localhost'   | 'Mongo'
     }
 
-    @Unroll
     void "test method getDBType with invalid params"() {
         when: 'getDBTYpe method is hit and below params are passed'
         Holders.config.dataSource.driverClassName = ''

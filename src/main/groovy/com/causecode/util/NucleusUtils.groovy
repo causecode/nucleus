@@ -154,14 +154,14 @@ class NucleusUtils {
 
     /**
      * A utility method which infers database name from config properties.
+     *
      * @return name of database either of(Mysql, Mongo)
      * @throws DBTypeNotFoundException when no name is inferred or both the names are inferred from the config
      * properties.
      */
     static String getDBType() throws DBTypeNotFoundException {
-       Config config=Holders.config
-        Map mysqlDB = config.dataSource
-        Map mongoDB = config.grails.mongodb
+        Map mysqlDB = Holders.config.dataSource
+        Map mongoDB = Holders.config.grails.mongodb
 
         if (mysqlDB.driverClassName.contains('mysql') && mysqlDB.url.contains('mysql')
                     && !mongoDB.databaseName && !mongoDB.host ) {
