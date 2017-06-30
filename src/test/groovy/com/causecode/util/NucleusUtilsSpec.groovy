@@ -186,7 +186,6 @@ class NucleusUtilsSpec extends Specification {
 
     @Unroll
     void "test method getDBType with valid params"() {
-
         when: 'getDBTYpe method is hit and below params are passed'
         Holders.config.dataSource.driverClassName = mysqlDriver
         Holders.config.dataSource.url = mysqlUrl
@@ -205,7 +204,6 @@ class NucleusUtilsSpec extends Specification {
 
     @Unroll
     void "test method getDBType with invalid params"() {
-
         when: 'getDBTYpe method is hit and below params are passed'
         Holders.config.dataSource.driverClassName = ''
         Holders.config.dataSource.url = ''
@@ -216,6 +214,5 @@ class NucleusUtilsSpec extends Specification {
         then: 'DBTypeNotFound exception is thrown with valid error message'
         DBTypeNotFoundException ex = thrown()
         ex.message == 'Could not infer dbType from application config.'
-
     }
 }

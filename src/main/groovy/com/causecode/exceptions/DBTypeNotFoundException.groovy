@@ -9,7 +9,6 @@ package com.causecode.exceptions
 
 /**
  * An exception class to represent invalid or missing database configuration in config properties.
- * Created by causecode on 27/6/17.
  * @author Hardik Desai
  * @since 0.4.10
  */

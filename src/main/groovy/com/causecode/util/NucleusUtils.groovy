@@ -137,7 +137,7 @@ class NucleusUtils {
         logger.info('Validating google reCaptcha...')
 
         HTTPBuilder httpBuilder = new HTTPBuilder('https://www.google.com/recaptcha/api/siteverify')
-        Map bodyParams = [secret: Holders.config.reCaptcha.secret, response: reCaptchaResponse]
+        Map bodyParams = [secret: Holders.grailsApplication.config.reCaptcha.secret, response: reCaptchaResponse]
 
         Object response
 
