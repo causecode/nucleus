@@ -7,6 +7,7 @@
  */
 package com.causecode.util
 
+import com.causecode.exceptions.MissingConfigException
 import grails.util.Environment
 import grails.util.Holders
 import groovyx.net.http.HTTPBuilder
@@ -154,20 +155,26 @@ class NucleusUtils {
     /**
      * A utility method which infers database name from config properties.
      *
-     * @return name of database either of(Mysql, Mongo)
+     * @return com.causecode.util.DBTypes
      * @throws DBTypeNotFoundException when no name is inferred or both the names are inferred from the config
      * properties.
+     * @throws MissingConfigException when database configuration is missing in installing application.
      */
-    static String getDBType() throws DBTypeNotFoundException {
-        Map mysqlDB = Holders.config.dataSource
-        Map mongoDB = Holders.config.grails.mongodb
+    static DBTypes getDBType() throws DBTypeNotFoundException, MissingConfigException {
+        Map mysqlDB = Holders.config.dataSource ?: [:]
+        Map mongoDB = Holders.config.grails.mongodb ?: [:]
 
-        if (mysqlDB.driverClassName.contains('mysql') && mysqlDB.url.contains('mysql')
-                    && !mongoDB.databaseName && !mongoDB.host ) {
-                return 'Mysql'
+        logger.debug('NucleusUtils.getDBType()...')
+
+        if (!mysqlDB && !mongoDB) {
+            throw new MissingConfigException('Database configuration missing from Application config.')
         }
-        else if (mongoDB.databaseName && mongoDB.host && !mysqlDB.driverClassName && !mysqlDB.url) {
-            return 'Mongo'
+
+        if (mysqlDB.driverClassName?.contains('mysql') && mysqlDB.url?.contains('mysql')
+                    && !mongoDB.databaseName && !mongoDB.host ) {
+                return DBTypes.MYSQL
+        } else if (mongoDB.databaseName && mongoDB.host && !mysqlDB.driverClassName && !mysqlDB.url) {
+            return DBTypes.MONGO
         }
 
         throw new DBTypeNotFoundException('Could not infer dbType from application config.')

@@ -9,12 +9,14 @@ package com.causecode.util
 
 import com.causecode.currency.Currency
 import com.causecode.exceptions.DBTypeNotFoundException
+import com.causecode.exceptions.MissingConfigException
 import grails.gsp.PageRenderer
 import grails.plugins.mail.MailService
 import grails.test.mixin.Mock
 import grails.test.mixin.TestMixin
 
 import grails.test.mixin.support.GrailsUnitTestMixin
+import grails.test.runtime.FreshRuntime
 import grails.util.Holders
 import groovy.json.JsonBuilder
 import groovyx.net.http.HTTPBuilder
@@ -191,27 +193,44 @@ class NucleusUtilsSpec extends Specification {
         Holders.config.dataSource.url = mysqlUrl
         Holders.config.grails.mongodb.databaseName = mongoDBName
         Holders.config.grails.mongodb.host = mongoHost
-        String result=NucleusUtils.DBType
+        DBTypes result = NucleusUtils.DBType
 
         then: 'metod responds with valid databse name'
-        result == responseMessage
+        result == database
 
         where:
-        mysqlDriver   |  mysqlUrl     |  mongoDBName     |  mongoHost    | responseMessage
-        'com.mysql.'  | 'jdbc:mysql:' |  null            |  null         | 'Mysql'
-        ''            | ''            | 'test_mongo'     | 'localhost'   | 'Mongo'
+        mysqlDriver   |  mysqlUrl     |  mongoDBName     |  mongoHost    | database
+        'com.mysql.'  | 'jdbc:mysql:' |  null            |  null         | DBTypes.MYSQL
+        ''            | ''            | 'test_mongo'     | 'localhost'   | DBTypes.MONGO
     }
 
     void "test method getDBType with invalid params"() {
         when: 'getDBTYpe method is hit and below params are passed'
-        Holders.config.dataSource.driverClassName = ''
-        Holders.config.dataSource.url = ''
-        Holders.config.grails.mongodb.databaseName = null
-        Holders.config.grails.mongodb.host = null
+        Holders.config.dataSource.driverClassName = mysqlDriver
+        Holders.config.dataSource.url = mysqlUrl
+        Holders.config.grails.mongodb.databaseName = mongoDBName
+        Holders.config.grails.mongodb.host = mongoHost
         NucleusUtils.DBType
 
         then: 'DBTypeNotFound exception is thrown with valid error message'
         DBTypeNotFoundException ex = thrown()
         ex.message == 'Could not infer dbType from application config.'
+
+        where:
+        mysqlDriver  | mysqlUrl      | mongoDBName  | mongoHost
+        'com.mysql.' | 'jdbc:mysql:' | 'test_mongo' | 'localhost'
+        ''           | ''            | ''           | ''
+    }
+
+    @FreshRuntime
+    void "test getDbType method when no database configuration is present in the installing app"() {
+        when: 'getDBType method is hit and database has not been configured in installing application'
+        Holders.config.dataSource = [:]
+        Holders.config.grails.mongodb = [:]
+        NucleusUtils.DBType
+
+        then: 'Method throws MissingConfigException exception'
+        MissingConfigException e = thrown()
+        e.message == 'Database configuration missing from Application config.'
     }
 }
