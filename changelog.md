@@ -4,11 +4,10 @@
 
 ### Fixed
 1. Dependencies - changed compile dependencies to provided dependency for common dependencies which will be
-present in the installing app. (For ex - spring security core and spring security rest, hibernate, mysql-connector,
- json views etc.)
+present in the installing app. (For ex - spring security core and spring security rest, json views etc.)
 
 ### Removed
-1. org.grails.plugins:export:2.0.0 dependency - Moved to user-management (0.0.9)
+1. org.grails.plugins:export:2.0.0 dependency
 2. Removed duplicate dependencies.
 3. EmUser class. This should be added in the installing app.
 4. Google re-captcha server side validation. A new gradle plugin will be created to support this funnctionality.
