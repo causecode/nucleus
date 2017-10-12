@@ -1,5 +1,20 @@
 # ChangeLog
 
+## Version 0.5.0
+
+### Fixed
+1. Dependencies - changed compile dependencies to provided dependency for common dependencies which will be
+present in the installing app. (For ex - spring security core and spring security rest, hibernate, mysql-connector,
+ json views etc.)
+
+### Removed
+1. org.grails.plugins:export:2.0.0 dependency - Moved to user-management (0.0.9)
+2. Removed duplicate dependencies.
+3. EmUser class. This should be added in the installing app.
+4. Google re-captcha server side validation. A new gradle plugin will be created to support this funnctionality.
+card - https://trello.com/c/PpzKgczh
+5. Removed mongodb dependencies.
+
 ## Version 0.3.4
 1. Migrated from Grails version 2.5.0 to 3.1.4.
 2. Changed package name from `cc` to > `causecode`.
