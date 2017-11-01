@@ -1,5 +1,13 @@
 # ChangeLog
 
+## Version 0.5.1
+
+### Changed
+1. Upgraded `gradle-code-quality` version to `1.0.0`.
+2. Updated `maven` server url in `build.gradle`.
+3. Now reading maven credentials from Environment variables instead of `gradle.properties`.
+4. Updated Gradle Wrapper version from 3.0 to 3.4.1.
+
 ## Version 0.5.0
 
 ### Fixed
