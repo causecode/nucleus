@@ -7,10 +7,10 @@ buildscript {
             mavenCentral()
             maven {
                 credentials {
-                    username mavenUser
-                    password mavenPassword
+                    username System.getenv('CAUSECODE_MAVEN_USERNAME')
+                    password System.getenv('CAUSECODE_MAVEN_PASSWORD')
                 }
-                url "http://maven.causecode.com"
+                url "https://nexus.causecode.com/repository/maven-releases/"
             }
         }
     }
