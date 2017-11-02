@@ -31,17 +31,20 @@ jobs:
           # fallback to using the latest cache if no exact match is found
           - v1-dependencies-
 
+      - run: chmod +x ./.circleci/mavenCredsSetup.sh
+      - run: ./.circleci/mavenCredsSetup.sh
       - run: gradle dependencies
 
       - save_cache:
           paths:
             - ~/.m2
           key: v1-dependencies-{{ checksum "build.gradle" }}
-        
+
       # run tests!
       - run: gradle clean test
-      - run: gradle cc-codenarc
-      - run: gradle simian		
-      - run: gradle test cc-jacoco
 
+      #run custom gradle tasks
+      - run: gradle cc-codenarc
+      - run: gradle simian
+      - run: gradle test cc-jacoco
 
