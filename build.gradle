@@ -7,8 +7,8 @@ buildscript {
             mavenCentral()
             maven {
                 credentials {
-                    username System.getenv('CAUSECODE_MAVEN_USERNAME')
-                    password System.getenv('CAUSECODE_MAVEN_PASSWORD')
+                    username mavenUser
+                    password mavenPassword
                 }
                 url "https://nexus.causecode.com/repository/maven-releases/"
             }
@@ -99,8 +99,8 @@ project.publishing {
     repositories {
         maven {
             credentials {
-                username System.getenv('CAUSECODE_MAVEN_PUBLISHER_USERNAME')
-                password System.getenv('CAUSECODE_MAVEN_PUBLISHER_PASSWORD')
+                username mavenPublishUser
+                password mavenPublishPassword
             }
             url "https://nexus.causecode.com/repositories/maven-releases"
         }
