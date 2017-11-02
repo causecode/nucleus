@@ -5,10 +5,14 @@
 ### Changed
 1. Upgraded `gradle-code-quality` version to `1.0.0`.
 2. Updated `maven` server url in `build.gradle`.
-3. Now reading maven credentials from Environment variables instead of `gradle.properties`.
-4. Updated Gradle Wrapper version from 3.0 to 3.4.1.
+3. Updated Gradle Wrapper version from 3.0 to 3.4.1.
 
-## Version 0.5.0
+### Added
+* ####CircleCI configuration
+    -  `.circleci/config.yml` for build automation using `CircleCI`.
+    - `mavenCredsSetup.sh` for generating `gradle.properties` during the CircleCI build.
+    
+## v0.5.1 - [01-11-2017]
 
 ### Fixed
 1. Dependencies - changed compile dependencies to provided dependency for common dependencies which will be
