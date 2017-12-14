@@ -76,6 +76,8 @@ dependencies {
     provided "org.grails.plugins:views-json:1.1.2"
     provided "org.grails.plugins:views-json-templates:1.1.2"
     compile "org.grails.plugins:asynchronous-mail:2.0.0.RC4"
+
+    provided "com.causecode.plugins:user-data-lib:0.0.1"
 }
 
 project.publishing {
