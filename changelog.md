@@ -3,11 +3,7 @@
 ## Version 0.5.2 - [14-12-2017]
 
 ### Added
-1. `user-data-lib` plugin dependency.
-
-### Removed
-1. `User`, `Role`, and `UserRole` domains and their respective test cases.
-
+1. Feature to create and authorise a User using `user-data-lib` plugin.
 
 ## Version 0.5.1
 
