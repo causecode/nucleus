@@ -23,7 +23,7 @@ buildscript {
 }
 
 group "com.causecode.plugins"
-version "0.5.1"
+version "0.5.2"
 
 apply plugin: "idea"
 apply plugin: "org.grails.grails-plugin"
@@ -76,6 +76,9 @@ dependencies {
     provided "org.grails.plugins:views-json:1.1.2"
     provided "org.grails.plugins:views-json-templates:1.1.2"
     compile "org.grails.plugins:asynchronous-mail:2.0.0.RC4"
+
+    // CauseCode Plugins
+    compile "com.causecode.plugins:user-data-lib:0.0.1"
 }
 
 project.publishing {
