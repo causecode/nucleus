@@ -14,8 +14,7 @@ See [ChangeLog.md](https://bitbucket.org/causecode/nucleus/src/d9be8242b8cc37260
 
 ## Running test cases
 
-To run the test cases, uncomment the hibernate plugin dependency in BuildConfig.groovy file. Just make sure you do
-not commit that file.
+Use command: `grails test-app`
 
 ## Architecture Overview
 
@@ -43,14 +42,17 @@ Used in conjunction with Sitemap.
 - **Sitemap** : 
 Used for tracking request URL for which search engine discover these application.
 
-### Controllers
+### Controllers/Trait
 
 - **Currency** : 
 Provides default CRUD end point for Admin.
 - **Sitemap** : 
 Provides end point to `generate` sitemap.
-- **UserManagement** : 
-Provides End point for `index`, `list` , `modifyRoles`, `makeUserActiveInactive` and `exportUserReport`.
+- **RestfulController** :
+This controller extends the Grails default RestfulController and overrides the index and delete actions.
+- **BaseController**
+A trait to act as the BaseController for all controllers. It contains some generic methods and exception handlers
+that are required by all the controllers in the App.
 
 ### Utility Classes
 
@@ -72,16 +74,6 @@ Provides multiple methods which transforms Dates.
 ### Required Modules
 
 1. A module named **angular** is required in order to user user management screen.
-
-### Login via Email / Username
-
-To add facility to login via email / username add following snippet to your `/grails-app/conf/spring/resources.groovy` file:
-
-```
-beans = {
-    userDetailsService(CustomUserDetailsService)
-}
-```
 
 ### TagLib pagerInfo 
 Generic tagLib used to render pagination information for list pages.
