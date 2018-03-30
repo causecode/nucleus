@@ -1,25 +1,26 @@
-package com.causecode.contact
+package com.causecode.user
 
-import com.causecode.geo.location.Country
 import groovy.transform.EqualsAndHashCode
 import groovy.transform.ToString
 
 /**
- * Used to store code and country information.
- *
+ * Role groovy class used to specify authority information.
  */
 @ToString(includes = ['id'], includePackage = false)
 @EqualsAndHashCode
-class PhoneCountryCode {
+class Role {
+
+    String authority
 
     Date dateCreated
     Date lastUpdated
 
-    String code
-    Country country
+    static mapping = {
+        cache true
+    }
 
     static constraints = {
-        code blank: false, unique: true, maxSize: 2
+        authority blank: false, unique: true
         dateCreated bindable: false
         lastUpdated bindable: false
     }
