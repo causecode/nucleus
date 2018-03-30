@@ -33,7 +33,7 @@ jobs:
 
       - run: chmod +x ./.circleci/mavenCredsSetup.sh
       - run: ./.circleci/mavenCredsSetup.sh
-      - run: gradle dependencies
+      - run: ./gradlew dependencies
 
       - save_cache:
           paths:

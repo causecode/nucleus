@@ -5,13 +5,6 @@ buildscript {
             maven { url "https://plugins.gradle.org/m2/" }
             maven { url "https://repo.grails.org/grails/core" }
             mavenCentral()
-            maven {
-                credentials {
-                    username mavenUser
-                    password mavenPassword
-                }
-                url "https://nexus.causecode.com/repository/maven-releases/"
-            }
         }
     }
     repositories mavenRepos
@@ -22,7 +15,7 @@ buildscript {
 }
 
 group "com.causecode.plugins"
-version "0.5.2"
+version "0.5.3"
 
 apply plugin: "idea"
 apply plugin: "org.grails.grails-plugin"
@@ -59,7 +52,6 @@ dependencies {
     // provided "org.codehaus.groovy:groovy-ant"
     runtime "com.h2database:h2"
     testCompile "org.grails:grails-plugin-testing"
-    testCompile "com.causecode.plugins:asynchronous-mail:2.3.1"
 
     /*
     * Dependencies which were needed for the application/plugin.
@@ -75,9 +67,6 @@ dependencies {
     provided "org.grails.plugins:views-json:1.1.2"
     provided "org.grails.plugins:views-json-templates:1.1.2"
     compile "org.grails.plugins:asynchronous-mail:2.0.0.RC4"
-
-    // CauseCode Plugins
-    compile "com.causecode.plugins:user-data-lib:0.0.1"
 }
 
 project.publishing {
@@ -151,7 +140,8 @@ jacocoTestReport {
                             '**/Hashids*/**',
                             '**/RestfulController*/**',
                             '**/BaseController*/**',
-                            '**/GenericEnhancers*/**'
+                            '**/GenericEnhancers*/**',
+                            '**/NucleusDevBootStrap*/**'
                     ])
         })
     }

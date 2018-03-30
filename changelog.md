@@ -1,9 +1,18 @@
 # ChangeLog
 
+## Version 0.5.3 - [Unreleased]
+
+### Added
+- Removed 'user-data-lib' plugin and moved the classes back to nucleus.
+- CircleCI and code climate configurations.
+
+### Removed
+- gradle-code-quality plugin.
+
 ## Version 0.5.2 - [14-12-2017]
 
 ### Added
-1. Feature to create and authorise a User using `user-data-lib` plugin.
+1. A separate plugin 'user-data-lib' for user related classes.
 
 ## Version 0.5.1
 
