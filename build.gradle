@@ -18,7 +18,6 @@ buildscript {
     dependencies {
         classpath "org.grails:grails-gradle-plugin:$grailsVersion"
         classpath 'org.grails.plugins:views-gradle:1.2.0'
-        classpath "com.causecode.plugins:gradle-code-quality:1.0.0"
     }
 }
 
@@ -29,8 +28,8 @@ apply plugin: "idea"
 apply plugin: "org.grails.grails-plugin"
 apply plugin: "org.grails.grails-plugin-publish"
 apply plugin: "org.grails.grails-gsp"
-apply plugin: 'gradle-code-quality'
 apply plugin:'org.grails.plugins.views-json'
+apply plugin: 'jacoco'
 
 repositories mavenRepos
 
@@ -123,22 +122,42 @@ grailsPublish {
     developers = [johndoe: "John Doe"]
 }
 
-ccJacocoExt {
-    excludes = [
-            '**/NucleusTagLib*/**',
-            '**/RenderTagLib*/**',
-            '**/NucleusBootStrap*/**',
-            '**/NucleusDevBootStrap*/**',
-            '**/NucleusGrailsPlugin*/**',
-            '**/NucleusUrlMappings*/**',
-            '**/UrlMappings*/**',
-            '**/CustomValidationErrorMarshaller*/**',
-            '**/SitemapMarshaller*/**',
-            '**/Hashids*/**',
-            '**/RestfulController*/**',
-            '**/BaseController*/**',
-            '**/GenericEnhancers*/**'
-    ]
+jacoco {
+    toolVersion = '0.7.7.201606060606'
+    reportsDir = file("$buildDir/jacoco")
+}
+
+jacocoTestReport {
+    reports {
+        xml.enabled true
+        csv.enabled false
+        html.enabled true
+        html.destination "${buildDir}/jacoco/jacocoHtml/"
+        xml.destination "${buildDir}/jacoco/jacocoXml/jacoco.xml"
+    }
+
+    afterEvaluate {
+        classDirectories = files(classDirectories.files.collect {
+            fileTree(dir: it,
+                    exclude: [
+                            '**/NucleusTagLib*/**',
+                            '**/RenderTagLib*/**',
+                            '**/NucleusBootStrap*/**',
+                            '**/NucleusGrailsPlugin*/**',
+                            '**/NucleusUrlMappings*/**',
+                            '**/UrlMappings*/**',
+                            '**/CustomValidationErrorMarshaller*/**',
+                            '**/SitemapMarshaller*/**',
+                            '**/Hashids*/**',
+                            '**/RestfulController*/**',
+                            '**/BaseController*/**',
+                            '**/GenericEnhancers*/**'
+                    ])
+        })
+    }
+
+    executionData test
+    dependsOn test
 }
 
 jar {

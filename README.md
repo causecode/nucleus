@@ -1,6 +1,9 @@
 # Nucleus Plugin (Latest 0.5.2)
 Supported Grails 3.2.0
 
+[![Maintainability](https://api.codeclimate.com/v1/badges/14b3b2d953e6e78c4439/maintainability)](https://codeclimate.com/repos/5abde0edb72b63029e000ee6/maintainability)
+[![Maintainability](https://api.codeclimate.com/v1/badges/14b3b2d953e6e78c4439/maintainability)](https://codeclimate.com/repos/5abde0edb72b63029e000ee6/maintainability)
+
 ## By CauseCode Technologies Pvt. Ltd.
 
 * This plugin is used as the base plugin of every project.
