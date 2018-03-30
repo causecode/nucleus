@@ -2,7 +2,7 @@
 Supported Grails 3.2.0
 
 [![Maintainability](https://api.codeclimate.com/v1/badges/14b3b2d953e6e78c4439/maintainability)](https://codeclimate.com/repos/5abde0edb72b63029e000ee6/maintainability)
-[![Maintainability](https://api.codeclimate.com/v1/badges/14b3b2d953e6e78c4439/maintainability)](https://codeclimate.com/repos/5abde0edb72b63029e000ee6/maintainability)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/14b3b2d953e6e78c4439/test_coverage)](https://codeclimate.com/repos/5abde0edb72b63029e000ee6/test_coverage)
 
 ## By CauseCode Technologies Pvt. Ltd.
 
