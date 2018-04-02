@@ -19,7 +19,9 @@ version "0.5.3"
 
 apply plugin: "idea"
 apply plugin: "org.grails.grails-plugin"
-apply plugin: "org.grails.grails-plugin-publish"
+apply plugin: 'maven-publish'
+apply plugin: 'maven'
+apply plugin: 'signing'
 apply plugin: "org.grails.grails-gsp"
 apply plugin:'org.grails.plugins.views-json'
 apply plugin: 'jacoco'
@@ -69,46 +71,61 @@ dependencies {
     compile "org.grails.plugins:asynchronous-mail:2.0.0.RC4"
 }
 
-project.publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            from project.components.java
+artifacts {
+    archives jar
 
-            artifactId "nucleus"
+    archives javadocJar
+    archives sourcesJar
+}
 
-            pom.withXml {
-                def pomNode = asNode()
-                // version-less dependencies are handled with dependencyManagement
-                pomNode.dependencies.dependency.findAll {
-                    it.version.text().isEmpty()
-                }.each {
-                    it.replaceNode {}
+signing {
+    useGpgCmd()
+    sign configurations.archives
+}
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+            repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+                authentication(userName: ossrhUsername, password: ossrhPassword)
+            }
+
+            snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+                authentication(userName: ossrhUsername, password: ossrhPassword)
+            }
+
+            pom.project {
+                name 'nucleus'
+                packaging 'jar'
+                description 'nucleus is a Grails-Groovy plugin which contains utility methods, classes and endpoints.'
+                url 'https://github.com/causecode/nucleus'
+
+                scm {
+                    url 'scm:svn:https://github.com/causecode/nucleus'
+                    connection 'scm:svn:https://github.com/causecode/nucleus.git'
+                    developerConnection 'https://github.com:causecode/nucleus.git'
+                }
+
+                licenses {
+                    license {
+                        name 'The Apache Software License, Version 2.0'
+                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                        distribution 'repo'
+                    }
+                }
+
+                developers {
+                    developer {
+                        id 'causecode'
+                        name 'CauseCode Technologies'
+                        email 'bootstrap@causecode.com'
+                    }
                 }
             }
         }
     }
-    repositories {
-        maven {
-            credentials {
-                username mavenPublishUser
-                password mavenPublishPassword
-            }
-            url "https://nexus.causecode.com/repositories/maven-releases"
-        }
-    }
-}
-
-grailsPublish {
-    user = 'user'  // Not required if you defined BINARY_USER var
-    key = 'key'    // Not required if you defined BINARY_KEY var
-    userOrg = 'mycompany' // Optional
-    githubSlug = 'foo/bar'
-    license {
-        name = 'Apache-2.0'
-    }
-    title = "My Plugin Title"
-    desc = "My Plugin Description"
-    developers = [johndoe: "John Doe"]
 }
 
 jacoco {
@@ -152,4 +169,8 @@ jacocoTestReport {
 
 jar {
     exclude('**/nucleus/UrlMappings*')
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = gradleWrapperVersion
 }
