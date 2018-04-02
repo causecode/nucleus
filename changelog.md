@@ -1,6 +1,11 @@
 # ChangeLog
 
-## Version 0.5.3 - [Unreleased]
+## Version 0.5.4 - [02-04-2018]
+
+### Added
+- Dependency versions for default dependencies to resolve https://github.com/grails/grails-core/issues/9276
+
+## Version 0.5.3 - [02-04-2018]
 
 ### Added
 - Removed 'user-data-lib' plugin and moved the classes back to nucleus.
