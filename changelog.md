@@ -1,5 +1,10 @@
 # ChangeLog
 
+## Version 0.5.5 - [09-04-2018]
+
+### Fixed
+- Duplication issue while adding users in development mode.
+
 ## Version 0.5.4 - [02-04-2018]
 
 ### Added

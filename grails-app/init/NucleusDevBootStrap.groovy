@@ -31,7 +31,7 @@ class NucleusDevBootStrap {
             Role userManagerRole = Role.findOrSaveByAuthority('ROLE_USER_MANAGER')
 
             User adminUser = User.findByUsernameAndEnabled('admin', true)
-            User normalUser = User.findByUsername('jane')
+            User normalUser = User.findByUsername('user')
 
             Map failOnError = [failOnError: true]
 
