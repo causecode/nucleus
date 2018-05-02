@@ -49,6 +49,7 @@ class User {
     }
 
     static mapping = {
+        autowire true
         password column: '`password`'
     }
 
