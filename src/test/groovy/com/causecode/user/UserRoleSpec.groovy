@@ -3,8 +3,6 @@ package com.causecode.user
 import grails.plugin.springsecurity.SpringSecurityService
 import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
-import grails.test.runtime.DirtiesRuntime
-import spock.lang.Shared
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -131,14 +129,6 @@ class UserRoleSpec extends Specification {
 
         savedInstance == newAdminUserRole
         UserRole.count() == userRoleCount + 1
-    }
-
-    void 'test create method when passed user or role instance is null'() {
-        when: 'create method is called with null user or role'
-        UserRole.create(null, null, true)
-
-        then: 'Exception is thrown'
-        thrown(MissingMethodException)
     }
 
     void 'test create method when role is not passed at all'() {
