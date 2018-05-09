@@ -49,6 +49,10 @@ class User {
     }
 
     static mapping = {
+        /*
+         * In Grails 3.3.5 Domain class autowiring is disabled by default due to its impact on performance so enabling
+         * it for this domain class only.
+         */
         autowire true
         password column: '`password`'
     }
