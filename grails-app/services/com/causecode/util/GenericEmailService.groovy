@@ -1,6 +1,7 @@
 package com.causecode.util
 
 import grails.plugin.asyncmail.AsynchronousMailService
+import groovy.util.logging.Slf4j
 import org.springframework.mail.MailException
 
 /**
@@ -10,6 +11,7 @@ import org.springframework.mail.MailException
  * @author Nikhil Sharma
  * @since 2.0.0
  */
+@Slf4j
 class GenericEmailService {
 
     AsynchronousMailService asynchronousMailService

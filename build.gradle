@@ -86,55 +86,55 @@ artifacts {
     archives sourcesJar
 }
 
-signing {
-    useGpgCmd()
-    sign configurations.archives
-}
-
-uploadArchives {
-    repositories {
-        mavenDeployer {
-            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
-
-            repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
-                authentication(userName: ossrhUsername, password: ossrhPassword)
-            }
-
-            snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
-                authentication(userName: ossrhUsername, password: ossrhPassword)
-            }
-
-            pom.project {
-                name 'nucleus'
-                packaging 'jar'
-                description 'nucleus is a Grails-Groovy plugin which contains utility methods, classes and endpoints.'
-                url 'https://github.com/causecode/nucleus'
-
-                scm {
-                    url 'scm:svn:https://github.com/causecode/nucleus'
-                    connection 'scm:svn:https://github.com/causecode/nucleus.git'
-                    developerConnection 'https://github.com:causecode/nucleus.git'
-                }
-
-                licenses {
-                    license {
-                        name 'The Apache Software License, Version 2.0'
-                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-                        distribution 'repo'
-                    }
-                }
-
-                developers {
-                    developer {
-                        id 'causecode'
-                        name 'CauseCode Technologies'
-                        email 'bootstrap@causecode.com'
-                    }
-                }
-            }
-        }
-    }
-}
+//signing {
+//    useGpgCmd()
+//    sign configurations.archives
+//}
+//
+//uploadArchives {
+//    repositories {
+//        mavenDeployer {
+//            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+//
+//            repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+//                authentication(userName: ossrhUsername, password: ossrhPassword)
+//            }
+//
+//            snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+//                authentication(userName: ossrhUsername, password: ossrhPassword)
+//            }
+//
+//            pom.project {
+//                name 'nucleus'
+//                packaging 'jar'
+//                description 'nucleus is a Grails-Groovy plugin which contains utility methods, classes and endpoints.'
+//                url 'https://github.com/causecode/nucleus'
+//
+//                scm {
+//                    url 'scm:svn:https://github.com/causecode/nucleus'
+//                    connection 'scm:svn:https://github.com/causecode/nucleus.git'
+//                    developerConnection 'https://github.com:causecode/nucleus.git'
+//                }
+//
+//                licenses {
+//                    license {
+//                        name 'The Apache Software License, Version 2.0'
+//                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+//                        distribution 'repo'
+//                    }
+//                }
+//
+//                developers {
+//                    developer {
+//                        id 'causecode'
+//                        name 'CauseCode Technologies'
+//                        email 'bootstrap@causecode.com'
+//                    }
+//                }
+//            }
+//        }
+//    }
+//}
 
 jacoco {
     toolVersion = '0.7.7.201606060606'
