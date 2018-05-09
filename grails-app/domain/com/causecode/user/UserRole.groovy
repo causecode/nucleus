@@ -52,7 +52,7 @@ class UserRole implements Serializable {
         new UserRole(user: user, role: role).save(flush: flush, insert: true)
     }
 
-    static UserRole create(User user, String role = 'ROLE_USER', def flush = false) {
+    static UserRole create(User user, String role = 'ROLE_USER', boolean flush = false) {
         new UserRole(user: user, role: Role.findOrSaveByAuthority(role)).save(flush: flush, insert: true)
     }
 
