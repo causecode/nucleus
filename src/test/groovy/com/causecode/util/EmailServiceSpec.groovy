@@ -1,7 +1,9 @@
 package com.causecode.util
 
+import com.causecode.logger.ReplaceSlf4jLogger
 import grails.plugin.asyncmail.AsynchronousMailService
 import grails.test.mixin.TestFor
+import org.junit.Rule
 import org.slf4j.Logger
 import org.springframework.mail.MailSendException
 import spock.lang.Specification
@@ -12,14 +14,8 @@ import spock.lang.Specification
 @TestFor(GenericEmailService)
 class EmailServiceSpec extends Specification {
 
-    Object logStatement
-
-    void mockLogger() {
-        // Mocking the logger calls to test the log statements.
-        service.log = [warn: { Object message, Throwable e = new Exception() ->
-            logStatement = message
-        } ] as Logger
-    }
+    Logger logger = Mock(Logger)
+    @Rule ReplaceSlf4jLogger replaceSlf4jLogger = new ReplaceSlf4jLogger(GenericEmailService, logger)
 
     void "test sendEmail method for exception"() {
         given: 'AsynchronousMailService is mocked to return true'
@@ -34,7 +30,6 @@ class EmailServiceSpec extends Specification {
         result
 
         when: 'AsynchronousMailService is mocked to throw exception'
-        mockLogger()
         service.asynchronousMailService = [sendMail: { Closure closure ->
             throw new MailSendException('Test Exception')
         } ] as AsynchronousMailService
@@ -43,6 +38,6 @@ class EmailServiceSpec extends Specification {
 
         then: 'result should be false and logStatement should reflect the message'
         !result
-        logStatement == 'Error sending email for testEvent'
+        logger.warn('Error sending email for testEvent')
     }
 }

@@ -93,14 +93,6 @@ class ContactServiceSpec extends Specification {
         result == true
         args['contact.twitter'] == '@causecode'
         args['contact.facebook'] == 'https://www.facebook.com/causecode'
-
-        when: 'country id and country both fields are missing'
-        result = contactService.resolveParameters(args, request, 'contact')
-
-        then: 'resolveParameters must return true'
-        result == true
-        args['contact.twitter'] == '@causecode'
-        args['contact.facebook'] == 'https://www.facebook.com/causecode'
     }
 
     void 'test hasErrors method when instance does not have any errors'() {

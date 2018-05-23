@@ -1,5 +1,9 @@
 # ChangeLog
 
+## Version 1.0.0 - [Unreleased]
+### Changed
+- Upgraded the plugin to support grails 3.3.5 
+
 ## Version 0.5.5 - [09-04-2018]
 
 ### Fixed

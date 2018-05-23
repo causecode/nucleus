@@ -1,5 +1,7 @@
-# Nucleus Plugin (Latest 0.5.5)
-Supported Grails 3.2.0
+# Nucleus Plugin (Latest 1.0.0)
+
+Nucleus > 1.0.0 supports Grails 3.3.x
+Nucleus < 0.5.5 supports Grails 3.2.x (Tested upto 3.2.5)
 
 [![Maintainability](https://api.codeclimate.com/v1/badges/14b3b2d953e6e78c4439/maintainability)](https://codeclimate.com/repos/5abde0edb72b63029e000ee6/maintainability)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/14b3b2d953e6e78c4439/test_coverage)](https://codeclimate.com/repos/5abde0edb72b63029e000ee6/test_coverage)
