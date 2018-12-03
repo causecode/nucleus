@@ -18,48 +18,48 @@ not commit that file.
 ### Domains
 
 - **User**, **Role**, **UserRole**:
-A default domain generated using spring security core plugin to use standard user lookup, Customized according to 
+A default domain generated using spring security core plugin to use standard user lookup, Customized according to
 `CauseCode` application requirement.
-- **Country** : 
+- **Country** :
 Used for storing country name and code.
-- **PhoneCountryCode** : 
+- **PhoneCountryCode** :
 Used for storing country code with `Country`.
-- **Phone** : 
+- **Phone** :
 Used for storing phone number with `PhoneCountryCode`.
-- **City** : 
+- **City** :
 Used for storing city related information with `Country`.
-- **Location** : 
+- **Location** :
 Used for storing location related information with `City`.
-- **Currency** : 
+- **Currency** :
 Used for storing currency code and name.
-- **Contact** : 
+- **Contact** :
 A generic domain used to store `User` social network contact ID's, `Location` and `Phone`.
-- **Url** : 
+- **Url** :
 Used in conjunction with Sitemap.
-- **Sitemap** : 
+- **Sitemap** :
 Used for tracking request URL for which search engine discover these application.
 
 ### Controllers
 
-- **Currency** : 
+- **Currency** :
 Provides default CRUD end point for Admin.
-- **Sitemap** : 
+- **Sitemap** :
 Provides end point to `generate` sitemap.
-- **UserManagement** : 
+- **UserManagement** :
 Provides End point for `index`, `list` , `modifyRoles`, `makeUserActiveInactive` and `exportUserReport`.
 
 ### Utility Classes
 
-- **SitemapMarshaller** : 
+- **SitemapMarshaller** :
 Used to render sitemap in sitemap.xml pattern.
-- **CustomValidationErrorMarshaller** : 
+- **CustomValidationErrorMarshaller** :
 Used to render generic customizable validation error messages for domains.
-- **CustomUserDetailsService** : 
+- **CustomUserDetailsService** :
 Provides methods `loadUserByUsername` accepts String argument as username and returns user by username or email.
 **Note**: If User not found throws `UsernameNotFoundException` exception.
-- **DateUtil** : 
+- **DateUtil** :
 Provides multiple methods which transforms Dates.
-- **NucleusTagLib** : 
+- **NucleusTagLib** :
     - Provides `pagerInfo` tagLib with parameters max, offset and total.
     - Used to render HTML elements showing response for list pages record status.
 
@@ -79,7 +79,7 @@ beans = {
 }
 ```
 
-### TagLib pagerInfo 
+### TagLib pagerInfo
 Generic tagLib used to render pagination information for list pages.
 
 ```
@@ -94,3 +94,39 @@ To generate groovy document use following command and protect document using spr
 ```
     groovydoc [options] [packagenames] [sourcefiles]
 ```
+
+## Publish plugin
+
+### Local maven
+- Run following commands to publish plugin to local maven repository.
+```
+grails clean
+grails compile
+grails maven-install
+```
+
+Note: Make sure you are using Grails version 2.3.5 and Java version 1.7
+
+## Nexus repository
+- Run the following commands to publish the plugin to nexus.
+ ```
+ grails clean
+ grails compile
+ grails publish-plugin
+ ```
+
+ ### Credentials
+ Create a `settings.groovy` file in `~/.grails/` directory if not present and add the following config:
+ ```
+ // use username and password of nexus repo
+ grails.project.repos.ccRepo.username = "foo"
+ grails.project.repos.ccRepo.password = "bar"
+
+ grails.project.dependency.authentication = {
+   credentials {
+     id = "ccRepo"
+     username = "foo"
+     password = "bar"
+   }
+ }
+ ```
