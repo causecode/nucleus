@@ -2,6 +2,10 @@ grails.project.class.dir = "target/classes"
 grails.project.test.class.dir = "target/test-classes"
 grails.project.test.reports.dir = "target/test-reports"
 
+grails.project.repos.ccRepo.url = "https://nexus.causecode.com/repository/maven-releases/"
+grails.project.repos.default = "ccRepo"
+grails.project.repos.ccRepo.type = "maven"
+
 grails.project.dependency.resolver = "maven"
 grails.project.dependency.resolution = {
     inherits("global") {
@@ -14,6 +18,7 @@ grails.project.dependency.resolution = {
         mavenLocal()
         mavenCentral()
         mavenRepo "http://repo.spring.io/milestone/"
+        mavenRepo "https://nexus.causecode.com/repository/maven-releases/"
     }
 
     dependencies {
