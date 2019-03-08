@@ -59,6 +59,9 @@ dependencies {
 
     compile "org.grails.plugins:asynchronous-mail:2.0.2"
 
+    // https://mvnrepository.com/artifact/org.mongodb/bson
+    compile 'org.mongodb:bson:2.3'
+
     console "org.grails:grails-console"
 
     profile "org.grails.profiles:web-plugin"

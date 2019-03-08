@@ -7,9 +7,6 @@ import org.bson.types.ObjectId
 
 /**
  * This domain represent an organization.
- *
- * @author Siddharth Shishulkar
- * @since 0.0.9
  */
 @EqualsAndHashCode
 @ToString(includes = ['id', 'name'], includePackage = false)
