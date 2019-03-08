@@ -1,8 +1,12 @@
 # ChangeLog
 
+## Version 1.1.0 - [Unreleased]
+### Changed
+- User domain to support ObjectId and embedded classes support.
+
 ## Version 1.0.0 - [Unreleased]
 ### Changed
-- Upgraded the plugin to support grails 3.3.5 
+- Upgraded the plugin to support grails 3.3.5
 
 ## Version 0.5.5 - [09-04-2018]
 
@@ -39,7 +43,7 @@
 * ####CircleCI configuration
     -  `.circleci/config.yml` for build automation using `CircleCI`.
     - `mavenCredsSetup.sh` for generating `gradle.properties` during the CircleCI build.
-    
+
 ## v0.5.1 - [01-11-2017]
 
 ### Fixed

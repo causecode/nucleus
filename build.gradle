@@ -72,7 +72,7 @@ dependencies {
 
     runtime "com.h2database:h2"
 
-    compile 'com.causecode.plugins:mongo-update-embedded:2.0.0'
+    compile 'com.causecode.plugins:mongo-update-embedded:2.0.1'
 
     testCompile "org.grails:grails-test-mixins:3.3.0"
     testCompile "org.grails:grails-gorm-testing-support"
