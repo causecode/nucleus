@@ -2,6 +2,7 @@ package com.causecode.user
 
 import groovy.transform.ToString
 import org.apache.commons.lang.builder.HashCodeBuilder
+import org.bson.types.ObjectId
 
 /**
  * UserRole join groovy class specifies authority for user.
@@ -40,6 +41,12 @@ class UserRole implements Serializable {
         }
 
         builder.toHashCode()
+    }
+
+    static UserRole get(ObjectId userId, long roleId) {
+        UserRole.where {
+            user == User.load(userId) && role == Role.load(roleId)
+        }.get()
     }
 
     static UserRole get(long userId, long roleId) {
