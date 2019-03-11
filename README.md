@@ -1,4 +1,4 @@
-# Nucleus Plugin (Latest 1.0.0)
+# Nucleus Plugin (Latest 1.0.1)
 
 Nucleus > 1.0.0 supports Grails 3.3.x
 Nucleus < 0.5.5 supports Grails 3.2.x (Tested upto 3.2.5)
@@ -22,33 +22,36 @@ Use command: `grails test-app`
 
 ### Domains
 
+Note: To use nucleus 1.0.1, you need to create User, Role and UserRole domain classes in the package `com.causecode.user` similar
+to present in the plugin in your app. Based on the requirement, you can use type of Id to ObjectId in case of MongoDB or Long in case of SQL.
+
 - **User**, **Role**, **UserRole**:
-A default domain generated using spring security core plugin to use standard user lookup, Customized according to 
+A default domain generated using spring security core plugin to use standard user lookup, Customized according to
 `CauseCode` application requirement.
-- **Country** : 
+- **Country** :
 Used for storing country name and code.
-- **PhoneCountryCode** : 
+- **PhoneCountryCode** :
 Used for storing country code with `Country`.
-- **Phone** : 
+- **Phone** :
 Used for storing phone number with `PhoneCountryCode`.
-- **City** : 
+- **City** :
 Used for storing city related information with `Country`.
-- **Location** : 
+- **Location** :
 Used for storing location related information with `City`.
-- **Currency** : 
+- **Currency** :
 Used for storing currency code and name.
-- **Contact** : 
+- **Contact** :
 A generic domain used to store `User` social network contact ID's, `Location` and `Phone`.
-- **Url** : 
+- **Url** :
 Used in conjunction with Sitemap.
-- **Sitemap** : 
+- **Sitemap** :
 Used for tracking request URL for which search engine discover these application.
 
 ### Controllers/Trait
 
-- **Currency** : 
+- **Currency** :
 Provides default CRUD end point for Admin.
-- **Sitemap** : 
+- **Sitemap** :
 Provides end point to `generate` sitemap.
 - **RestfulController** :
 This controller extends the Grails default RestfulController and overrides the index and delete actions.
@@ -58,16 +61,16 @@ that are required by all the controllers in the App.
 
 ### Utility Classes
 
-- **SitemapMarshaller** : 
+- **SitemapMarshaller** :
 Used to render sitemap in sitemap.xml pattern.
-- **CustomValidationErrorMarshaller** : 
+- **CustomValidationErrorMarshaller** :
 Used to render generic customizable validation error messages for domains.
-- **CustomUserDetailsService** : 
+- **CustomUserDetailsService** :
 Provides methods `loadUserByUsername` accepts String argument as username and returns user by username or email.
 **Note**: If User not found throws `UsernameNotFoundException` exception.
-- **DateUtil** : 
+- **DateUtil** :
 Provides multiple methods which transforms Dates.
-- **NucleusTagLib** : 
+- **NucleusTagLib** :
     - Provides `pagerInfo` tagLib with parameters max, offset and total.
     - Used to render HTML elements showing response for list pages record status.
 
@@ -77,7 +80,7 @@ Provides multiple methods which transforms Dates.
 
 1. A module named **angular** is required in order to user user management screen.
 
-### TagLib pagerInfo 
+### TagLib pagerInfo
 Generic tagLib used to render pagination information for list pages.
 
 ```
