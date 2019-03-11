@@ -22,8 +22,7 @@ Use command: `grails test-app`
 
 ### Domains
 
-Note: To use nucleus 1.0.1, you need to create User, Role and UserRole domain classes in the package `com.causecode.user` similar
-to present in the plugin in your app. Based on the requirement, you can use type of Id to ObjectId in case of MongoDB or Long in case of SQL.
+Note: To use nucleus 1.0.1, you need to create User, Role and UserRole domain classes in the package `com.causecode.user` similar to present in the plugin in your app. Based on the requirement, you can use type of Id to ObjectId in case of MongoDB or Long in case of SQL.
 
 - **User**, **Role**, **UserRole**:
 A default domain generated using spring security core plugin to use standard user lookup, Customized according to
