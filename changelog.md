@@ -2,7 +2,11 @@
 
 ## Version 1.0.0 - [Unreleased]
 ### Changed
-- Upgraded the plugin to support grails 3.3.5 
+- Exclude the classes which were present in the package com.causecode.user
+
+## Version 1.0.0 - [23-05-2018]
+### Changed
+- Upgraded the plugin to support grails 3.3.5
 
 ## Version 0.5.5 - [09-04-2018]
 
@@ -39,7 +43,7 @@
 * ####CircleCI configuration
     -  `.circleci/config.yml` for build automation using `CircleCI`.
     - `mavenCredsSetup.sh` for generating `gradle.properties` during the CircleCI build.
-    
+
 ## v0.5.1 - [01-11-2017]
 
 ### Fixed

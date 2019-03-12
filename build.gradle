@@ -15,7 +15,7 @@ buildscript {
 }
 
 group "com.causecode.plugins"
-version "1.0.0"
+version "1.0.1"
 
 apply plugin: 'idea'
 apply plugin: 'org.grails.grails-plugin'
@@ -180,6 +180,7 @@ jacocoTestReport {
 
 jar {
     exclude('**/nucleus/UrlMappings*')
+    exclude('**/com/causecode/user/**/**')
 }
 
 task wrapper(type: Wrapper) {
