@@ -8,7 +8,7 @@ Nucleus < 0.5.5 supports Grails 3.2.x (Tested upto 3.2.5)
 
 ## By CauseCode Technologies Pvt. Ltd.
 
-* This plugin is used as the base plugin of every project.
+* This is deprecated and no longer maintained
 
 ## ChangeLog
 
